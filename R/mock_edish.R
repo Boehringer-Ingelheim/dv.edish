@@ -4,11 +4,10 @@
 #'
 #' @keywords internal
 mock_edish_app <- function() {
-  
   dm <- pharmaverseadam::adsl
   lb <- pharmaverseadam::adlb
 
-  mock_edish_UI <- function() { #nolint
+  mock_edish_UI <- function() { # nolint
     shiny::fluidPage(edish_UI("edish"))
   }
 
@@ -32,10 +31,9 @@ mock_edish_app <- function() {
 #'
 #' @keywords internal
 mock_edish_mm <- function() {
-  
   dm <- pharmaverseadam::adsl
   lb <- pharmaverseadam::adlb
-  
+
   module_list <- list(
     "edish demo" = mod_edish(
       module_id = "edish",

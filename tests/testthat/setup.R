@@ -1,4 +1,4 @@
-is_CI <- isTRUE(as.logical(Sys.getenv("CI"))) #nolint
+is_CI <- isTRUE(as.logical(Sys.getenv("CI"))) # nolint
 
 package_name <- "dv.edish"
 

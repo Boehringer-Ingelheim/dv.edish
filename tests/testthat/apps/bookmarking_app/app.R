@@ -19,24 +19,23 @@ test_ui <- function() {
 }
 
 test_server <- function(input, output, session) {
-  
   usubjid <- c("01", "02")
   arm <- c("arm1", "arm2")
   visit <- c("visit 1", "visit 2", "visit 3")
   lbtest <- c("test 1", "test 2", "test 3")
-  
+
   set.seed(123) # needs to be set due to snapshot test
-  
+
   lb <- tidyr::expand_grid(
     "USUBJID" = usubjid,
-    "LBTEST" = lbtest, 
+    "LBTEST" = lbtest,
     "VISIT" = visit
   )
   lb$LBSTRESN <- runif(nrow(lb), min = 0, max = 10)
   lb$LBSTNRHI <- runif(nrow(lb), min = 5, max = 15)
-  
+
   dm <- data.frame("USUBJID" = usubjid, "ARM" = arm)
-  
+
   dv.edish::edish_server(
     module_id = "edish",
     dataset_list = shiny::reactive({
@@ -54,7 +53,7 @@ test_server <- function(input, output, session) {
     lb_result_var = "LBSTRESN",
     ref_range_upper_lim_var = "LBSTNRHI"
   )
-  
+
   exported_url <- shiny::reactiveVal(NULL)
   shiny::onBookmarked(function(url) exported_url(url))
   shiny::exportTestValues(url = exported_url())

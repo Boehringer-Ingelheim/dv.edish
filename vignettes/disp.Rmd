@@ -29,7 +29,6 @@ This code piece produces essentially the same app behavior as using the `dataset
 That is, any selection made by the user in the global filter menu affects the module display. 
 
 ```{r filtered, eval = FALSE}
-
 mod_edish(
   module_id = "edish_a",
   dataset_disp = dv.manager::mm_dispatch(
@@ -47,7 +46,6 @@ it is possible to define the dispatcher such that it delivers always unfiltered 
 This means that [any global filter will be ignored]{.ul}!
 
 ```{r unfiltered, eval = FALSE}
-
 mod_edish(
   module_id = "edish_b",
   dataset_disp = dv.manager::mm_dispatch(

@@ -1,24 +1,18 @@
 # CONSTANTS ----
-EDISH <- pack_of_constants( #nolint
+EDISH <- pack_of_constants( # nolint
   ARM_ID = "arm_id",
   ARM_LABEL = "Select arm:",
-  
   X_AXIS_HEADER = "Specify x-axis",
   Y_AXIS_HEADER = "Specify y-axis",
-  
   X_AXIS_ID = "x_axis",
   Y_AXIS_ID = "y_axis",
   AXIS_LABEL = "Parameter:",
-  
   X_REF_ID = "x_ref",
   Y_REF_ID = "y_ref",
   REF_LABEL = "Reference line:",
-  
   X_PLOT_TYPE_ID = "x_plot_type",
   Y_PLOT_TYPE_ID = "y_plot_type",
-
   PLOT_TYPE_CHOICES = c("x ULN (eDISH)", "x Baseline (mDISH)"),
-  
   PLOT_ID = "plot",
   NO_PLOT = "noplot"
 )
@@ -27,22 +21,22 @@ EDISH <- pack_of_constants( #nolint
 #' User Interface of the `dv.edish` module
 #'
 #' `edish_UI()` contains the UI of the `dv.edish` module.
-#' 
-#' @param module_id `[character(1)]` 
-#' 
+#'
+#' @param module_id `[character(1)]`
+#'
 #' A unique ID string to create a namespace. Must match the ID of `edish_server()`.
 #'
 #' @return A shiny \code{uiOutput} element.
 #'
 #' @seealso [mod_edish()] and [edish_server()]
 #' @export
-edish_UI <- function(module_id) { #nolint
-  
+edish_UI <- function(module_id) { # nolint
+
   # Check validity of arguments
   checkmate::assert_string(module_id, min.chars = 1)
-  
+
   ns <- shiny::NS(module_id)
-  
+
   ui <- shiny::tagList(
     shiny::sidebarLayout(
       shiny::sidebarPanel(
@@ -53,7 +47,6 @@ edish_UI <- function(module_id) { #nolint
           choices = NULL,
           multiple = TRUE
         ),
-        
         shiny::hr(),
         shiny::h4(EDISH$X_AXIS_HEADER),
         shiny::selectInput(
@@ -64,9 +57,9 @@ edish_UI <- function(module_id) { #nolint
         shiny::numericInput(
           inputId = ns(EDISH$X_REF_ID),
           label = EDISH$REF_LABEL,
-          value = 3,   
-          min = 0, 
-          max = 100, 
+          value = 3,
+          min = 0,
+          max = 100,
           step = 0.5
         ),
         shiny::radioButtons(
@@ -74,7 +67,6 @@ edish_UI <- function(module_id) { #nolint
           label = NULL,
           choices = EDISH$PLOT_TYPE_CHOICES
         ),
-        
         shiny::hr(),
         shiny::h4(EDISH$Y_AXIS_HEADER),
         shiny::selectInput(
@@ -86,8 +78,8 @@ edish_UI <- function(module_id) { #nolint
           inputId = ns(EDISH$Y_REF_ID),
           label = EDISH$REF_LABEL,
           value = 2,
-          min = 0, 
-          max = 100, 
+          min = 0,
+          max = 100,
           step = 0.5
         ),
         shiny::radioButtons(
@@ -102,19 +94,19 @@ edish_UI <- function(module_id) { #nolint
       )
     )
   )
-  
+
   return(ui)
 }
 
 #' Server of the `dv.edish` module
 #'
 #' `edish_server()` contains the server of the `dv.edish` module.
-#' 
-#' @param module_id `[character(1)]` 
-#' 
+#'
+#' @param module_id `[character(1)]`
+#'
 #' A unique ID string to create a namespace. Must match the ID of `edish_UI()`.
-#' @param dataset_list `[shiny::reactive(list(data.frame))]` 
-#' 
+#' @param dataset_list `[shiny::reactive(list(data.frame))]`
+#'
 #' A reactive list of named datasets.
 #' @param subjectid_var `[character(1)]`
 #'
@@ -123,7 +115,7 @@ edish_UI <- function(module_id) { #nolint
 #'
 #' Name of the variable containing the arm/treatment information.
 #' @param arm_default_vals `[character(1+)]`
-#' 
+#'
 #' Vector specifying the default value(s) for the arm selector.
 #' @param visit_var `[character(1)]`
 #'
@@ -138,10 +130,10 @@ edish_UI <- function(module_id) { #nolint
 #'
 #' Character vector specifying the possible choices of the laboratory test.
 #' @param lb_test_default_x_val `[character(1)]`
-#' 
+#'
 #' Character specifying the default laboratory test choice for the plot's x-axis.
 #' @param lb_test_default_y_val `[character(1)]`
-#' 
+#'
 #' Character specifying the default laboratory test choice for the plot's y-axis.
 #' @param lb_result_var `[character(1)]`
 #'
@@ -170,9 +162,7 @@ edish_server <- function(
     lb_test_default_x_val = "Aspartate Aminotransferase",
     lb_test_default_y_val = "Bilirubin",
     lb_result_var = "LBSTRESN",
-    ref_range_upper_lim_var = "LBSTNRHI"
-) {
-  
+    ref_range_upper_lim_var = "LBSTNRHI") {
   # Check validity of arguments
   ac <- checkmate::makeAssertCollection()
   checkmate::assert_string(module_id, min.chars = 1, add = ac)
@@ -181,12 +171,12 @@ edish_server <- function(
   checkmate::assert_string(arm_var, min.chars = 1, add = ac)
   checkmate::assert_character(
     arm_default_vals,
-    min.chars = 1, 
+    min.chars = 1,
     any.missing = FALSE,
-    all.missing = FALSE, 
-    unique = TRUE, 
-    min.len = 1, 
-    null.ok = TRUE, 
+    all.missing = FALSE,
+    unique = TRUE,
+    min.len = 1,
+    null.ok = TRUE,
     add = ac
   )
   checkmate::assert_string(visit_var, min.chars = 1, add = ac)
@@ -194,11 +184,11 @@ edish_server <- function(
   checkmate::assert_string(lb_test_var, min.chars = 1, add = ac)
   checkmate::assert_character(
     lb_test_choices,
-    min.chars = 1, 
+    min.chars = 1,
     any.missing = FALSE,
-    all.missing = FALSE, 
-    unique = TRUE, 
-    min.len = 1, 
+    all.missing = FALSE,
+    unique = TRUE,
+    min.len = 1,
     add = ac
   )
   checkmate::assert_string(lb_test_default_x_val, min.chars = 1, add = ac)
@@ -206,11 +196,10 @@ edish_server <- function(
   checkmate::assert_string(lb_result_var, min.chars = 1, add = ac)
   checkmate::assert_string(ref_range_upper_lim_var, min.chars = 1, add = ac)
   checkmate::reportAssertions(ac)
-  
+
 
   # Initiate module server
   shiny::moduleServer(module_id, function(input, output, session) {
-
     # Dataset validation
     v_dataset_list <- shiny::reactive({
       checkmate::assert_list(dataset_list(), types = "data.frame", null.ok = TRUE, names = "named")
@@ -219,25 +208,25 @@ edish_server <- function(
 
     work_data <- shiny::reactive({
       prepare_initial_data(
-        dataset_list = v_dataset_list(), 
-        subjectid_var = subjectid_var, 
-        arm_var =  arm_var, 
-        visit_var = visit_var, 
+        dataset_list = v_dataset_list(),
+        subjectid_var = subjectid_var,
+        arm_var = arm_var,
+        visit_var = visit_var,
         baseline_visit_val = baseline_visit_val,
-        lb_test_var = lb_test_var, 
-        lb_test_choices = lb_test_choices, 
-        lb_result_var = lb_result_var, 
+        lb_test_var = lb_test_var,
+        lb_test_choices = lb_test_choices,
+        lb_result_var = lb_result_var,
         ref_range_upper_lim_var = ref_range_upper_lim_var
       )
     })
-    
+
     # Store default values as reactive values in order to restore them correctly after bookmarking
     r_values <- shiny::reactiveValues(
       x_axis = lb_test_default_x_val,
       y_axis = lb_test_default_y_val,
       arm_id = arm_default_vals
     )
-    
+
     # To make bookmarking work also for r_values
     shiny::onRestore(function(state) {
       if (length(state$input) > 0) { # makes sure that the default_vars are displayed at app launch with SSO
@@ -251,7 +240,7 @@ edish_server <- function(
       choices_lb_test <- unique(stats::na.omit(work_data()[[lb_test_var]]))
       choices_arm <- unique(stats::na.omit(work_data()[[arm_var]]))
       sel_arm <- if (is.null(r_values$arm_id)) choices_arm else r_values$arm_id
-      
+
       shiny::updateSelectInput(inputId = EDISH$X_AXIS_ID, choices = choices_lb_test, selected = r_values$x_axis)
       shiny::updateSelectInput(inputId = EDISH$Y_AXIS_ID, choices = choices_lb_test, selected = r_values$y_axis)
       shiny::updateSelectInput(inputId = EDISH$ARM_ID, choices = choices_arm, selected = sel_arm)
@@ -260,21 +249,21 @@ edish_server <- function(
     plot_data <- shiny::reactive({
       filtered_data <- filter_data(
         dataset = work_data(),
-        arm_var = arm_var, 
+        arm_var = arm_var,
         sel_arm = input[[EDISH$ARM_ID]],
         lb_test_var = lb_test_var,
         sel_lb_test = c(input[[EDISH$X_AXIS_ID]], input[[EDISH$Y_AXIS_ID]])
       )
-        
+
       derive_req_vars(
         dataset = filtered_data,
-        subjectid_var = subjectid_var, 
-        arm_var = arm_var, 
+        subjectid_var = subjectid_var,
+        arm_var = arm_var,
         visit_var = visit_var,
-        lb_test_var = lb_test_var, 
+        lb_test_var = lb_test_var,
         lb_result_var = lb_result_var,
         ref_range_upper_lim_var = ref_range_upper_lim_var,
-        sel_x = shiny::req(input[[EDISH$X_AXIS_ID]]), 
+        sel_x = shiny::req(input[[EDISH$X_AXIS_ID]]),
         sel_y = shiny::req(input[[EDISH$Y_AXIS_ID]])
       )
     })
@@ -285,11 +274,11 @@ edish_server <- function(
         subjectid_var = subjectid_var, arm_var = arm_var, visit_var = visit_var,
         sel_x = input[[EDISH$X_AXIS_ID]], sel_y = input[[EDISH$Y_AXIS_ID]],
         x_plot_type = ifelse(grepl("eDISH", input[[EDISH$X_PLOT_TYPE_ID]]), "ULN", "Baseline"),
-        y_plot_type = ifelse(grepl("eDISH", input[[EDISH$Y_PLOT_TYPE_ID]]), "ULN", "Baseline"), 
+        y_plot_type = ifelse(grepl("eDISH", input[[EDISH$Y_PLOT_TYPE_ID]]), "ULN", "Baseline"),
         x_ref_line_num = input[[EDISH$X_REF_ID]], y_ref_line_num = input[[EDISH$Y_REF_ID]]
       )
     )
-    
+
     output[[EDISH$NO_PLOT]] <- shiny::renderPlot({
       if (is.null(plot_data())) {
         shiny::validate(shiny::need(!is.null(plot_data()), "No data available."))
@@ -299,12 +288,12 @@ edish_server <- function(
 }
 
 #' eDISH module
-#' 
+#'
 #' `mod_edish()` displays the (modified) evaluation of Drug-Induced Serious Hepatotoxicity (eDISH/mDISH) plot
 #' to support the assessment of drug-induced liver injury (DILI).
-#' 
-#' @param module_id `[character(1)]` 
-#' 
+#'
+#' @param module_id `[character(1)]`
+#'
 #' A unique module ID.
 #' @param dataset_names `[character(1+)]`
 #'
@@ -316,7 +305,7 @@ edish_server <- function(
 #'
 #' Name of the variable containing the arm/treatment information. Defaults to `"ACTARM"`.
 #' @param arm_default_vals `[character(1+)]`
-#' 
+#'
 #' Vector specifying the default value(s) for the arm selector. Defaults to `NULL`.
 #' @param visit_var `[character(1)]`
 #'
@@ -329,20 +318,20 @@ edish_server <- function(
 #' Name of the variable containing the laboratory test information. Defaults to `"LBTEST"`.
 #' @param lb_test_choices `[character(1+)]`
 #'
-#' Character vector specifying the possible choices of the laboratory test. Defaults to 
+#' Character vector specifying the possible choices of the laboratory test. Defaults to
 #' `c("Alkaline Phosphatase", "Alanine Aminotransferase", "Aspartate Aminotransferase", "Bilirubin")`
 #' @param lb_test_default_x_val `[character(1)]`
-#' 
-#' Character specifying the default laboratory test choice for the plot's x-axis. 
+#'
+#' Character specifying the default laboratory test choice for the plot's x-axis.
 #' Defaults to `"Aspartate Aminotransferase"`.
 #' @param lb_test_default_y_val `[character(1)]`
-#' 
+#'
 #' Character specifying the default laboratory test choice for the plot's y-axis.
 #' Defaults to `"Bilirubin"`.
 #' @param lb_result_var `[character(1)]`
 #'
-#' Name of the variable containing results of the laboratory test. Defaults to `"LBSTRESN"`. 
-#' In case of multiple values in `lb_result_var` per `subjectid_var`, `visit_var`, and 
+#' Name of the variable containing results of the laboratory test. Defaults to `"LBSTRESN"`.
+#' In case of multiple values in `lb_result_var` per `subjectid_var`, `visit_var`, and
 #' `lb_test_var`, only the maximum value will be used. Note that a NA value in the considered values
 #' will cause a value of NA to be returned as maximum value.
 #' @param ref_range_upper_lim_var `[character(1)]`
@@ -382,9 +371,7 @@ mod_edish <- function(
     lb_test_default_y_val = "Bilirubin",
     lb_result_var = "LBSTRESN",
     ref_range_upper_lim_var = "LBSTNRHI",
-    dataset_disp
-) {
-
+    dataset_disp) {
   # Check validity of parameters
   # Note: Skip assertions for module_id and _vars/_vals since they are checked in the server
   if (!missing(dataset_names)) {
@@ -401,7 +388,7 @@ mod_edish <- function(
   # Check correct use of dispatcher
   if (!missing(dataset_names) && !missing(dataset_disp)) {
     stop("`dataset_names` and `dataset_disp` cannot be used at the same time, use one or the other.")
-  } 
+  }
   if (missing(dataset_names) && missing(dataset_disp)) {
     stop("Neither `dataset_names` nor `dataset_disp` is specified, please specify one of them.")
   }
@@ -424,11 +411,11 @@ mod_edish <- function(
         module_id = module_id,
         dataset_list = dataset_list,
         subjectid_var = subjectid_var,
-        arm_var = arm_var, 
+        arm_var = arm_var,
         arm_default_vals = arm_default_vals,
-        visit_var = visit_var, 
+        visit_var = visit_var,
         baseline_visit_val = baseline_visit_val,
-        lb_test_var = lb_test_var, 
+        lb_test_var = lb_test_var,
         lb_test_choices = lb_test_choices,
         lb_test_default_x_val = lb_test_default_x_val,
         lb_test_default_y_val = lb_test_default_y_val,
