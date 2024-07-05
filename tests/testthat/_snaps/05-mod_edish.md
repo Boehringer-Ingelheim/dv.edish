@@ -1,4 +1,4 @@
-# the app displays the correct plot at app launch (snapshot test)
+# the app displays the correct plot at app launch (snapshot test)__spec_ids{plot_specs$data}
 
     Code
       app$get_values(input = TRUE, output = TRUE)

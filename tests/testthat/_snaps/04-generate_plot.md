@@ -1,4 +1,4 @@
-# the resulting plot object includes the correct hovertext (snapshot test)
+# the resulting plot object includes the correct hovertext (snapshot test)__spec_ids{plot_specs$hovering}
 
     Code
       actual
