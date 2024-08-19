@@ -71,7 +71,7 @@ prepare_initial_data <- function(
   dataset <- Reduce(dplyr::full_join, sel_dataset_list) %>%
     dplyr::filter(.data[[lb_test_var]] %in% lb_test_choices) %>%
     dplyr::group_by(.data[[subjectid_var]], .data[[arm_var]], .data[[lb_test_var]], .data[[visit_var]]) %>%
-    dplyr::filter(.data[[lb_result_var]] == max(.data[[lb_result_var]])) %>%
+    dplyr::filter(.data[[lb_result_var]] == max(.data[[lb_result_var]], na.rm = TRUE)) %>%
     dplyr::distinct() %>%
     dplyr::ungroup()
 
