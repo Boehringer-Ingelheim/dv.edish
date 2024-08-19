@@ -1,3 +1,7 @@
+# dv.edish 1.0.4
+
+- The module ignores now NA values when calculating the maximum value.
+
 # dv.edish 1.0.3
 
 - Initial release of dv.edish package to GitHub.
