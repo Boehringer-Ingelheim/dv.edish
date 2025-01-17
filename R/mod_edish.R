@@ -297,7 +297,7 @@ edish_server <- function(
 #' A unique module ID.
 #' @param dataset_names `[character(1+)]`
 #'
-#' Name(s) of the dataset(s) that will be displayed. Can not be used together with the parameter `dataset_disp`.
+#' Name(s) of the dataset(s) that will be displayed.
 #' @param subjectid_var `[character(1)]`
 #'
 #' Name of the variable containing the unique subject IDs. Defaults to `"USUBJID"`.
@@ -370,42 +370,19 @@ mod_edish <- function(
     lb_test_default_x_val = "Aspartate Aminotransferase",
     lb_test_default_y_val = "Bilirubin",
     lb_result_var = "LBSTRESN",
-    ref_range_upper_lim_var = "LBSTNRHI",
-    dataset_disp) {
+    ref_range_upper_lim_var = "LBSTNRHI") {
   # Check validity of parameters
   # Note: Skip assertions for module_id and _vars/_vals since they are checked in the server
-  if (!missing(dataset_names)) {
-    checkmate::assert_character(dataset_names)
-  }
-  if (!missing(dataset_disp)) {
-    ac <- checkmate::makeAssertCollection()
-    checkmate::assert_list(dataset_disp, types = "character", add = ac)
-    checkmate::assert_class(dataset_disp, "mm_dispatcher", add = ac)
-    checkmate::assert_names(names(dataset_disp), identical.to = c("from", "selection"), add = ac)
-    checkmate::reportAssertions(ac)
-  }
-
-  # Check correct use of dispatcher
-  if (!missing(dataset_names) && !missing(dataset_disp)) {
-    stop("`dataset_names` and `dataset_disp` cannot be used at the same time, use one or the other.")
-  }
-  if (missing(dataset_names) && missing(dataset_disp)) {
-    stop("Neither `dataset_names` nor `dataset_disp` is specified, please specify one of them.")
-  }
-  use_disp <- !missing(dataset_disp)
+  checkmate::assert_character(dataset_names)
 
   mod <- list(
     ui = function(module_id) {
       edish_UI(module_id = module_id)
     },
     server = function(afmm) {
-      dataset_list <- if (use_disp) {
-        dv.manager::mm_resolve_dispatcher(dataset_disp, afmm)
-      } else {
-        shiny::reactive({
-          afmm$filtered_dataset()[dataset_names]
-        })
-      }
+      dataset_list <- shiny::reactive({
+        afmm$filtered_dataset()[dataset_names]
+      })
 
       edish_server(
         module_id = module_id,
