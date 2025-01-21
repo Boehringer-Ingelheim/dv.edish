@@ -395,3 +395,101 @@ mod_edish <- function(
 
   return(mod)
 }
+
+# EDISH module interface description ----
+# TODO: Fill in
+mod_edish_API_docs <- list(
+  "Edish",
+  module_id = list(""),
+  dataset_names = list(""),
+  subjectid_var = list(""),
+  arm_var = list(""),
+  arm_default_vals = list(""),
+  visit_var = list(""),
+  baseline_visit_val = list(""),
+  lb_test_var = list(""),
+  lb_test_choices = list(""),
+  lb_test_default_x_val = list(""),
+  lb_test_default_y_val = list(""),
+  lb_result_var = list(""),
+  ref_range_upper_lim_var = list("")
+)
+
+mod_edish_API_spec <- TC$group(
+  module_id = TC$mod_ID(),
+  dataset_names = TC$dataset_name() |> TC$flag("one_or_more"),
+  # TODO: The TC API functions do not allow to talk about a column belonging to more than one dataset yet
+  subjectid_var = TC$group() |> TC$flag("ignore"),
+  arm_var = TC$group() |> TC$flag("ignore"),
+  arm_default_vals = TC$group() |> TC$flag("ignore"),
+  visit_var = TC$group() |> TC$flag("ignore"),
+  baseline_visit_val = TC$group() |> TC$flag("ignore"),
+  lb_test_var = TC$group() |> TC$flag("ignore"),
+  lb_test_choices = TC$group() |> TC$flag("ignore"),
+  lb_test_default_x_val = TC$group() |> TC$flag("ignore"),
+  lb_test_default_y_val = TC$group() |> TC$flag("ignore"),
+  lb_result_var = TC$group() |> TC$flag("ignore"),
+  ref_range_upper_lim_var = TC$group() |> TC$flag("ignore")
+) |> TC$attach_docs(mod_edish_API_docs)
+
+check_mod_edish <- function(
+    afmm, datasets, module_id, dataset_names, subjectid_var, arm_var, arm_default_vals, visit_var, baseline_visit_val,
+    lb_test_var, lb_test_choices, lb_test_default_x_val, lb_test_default_y_val, lb_result_var, ref_range_upper_lim_var
+  ) {
+  warn <- CM$container()
+  err <- CM$container()
+  
+  OK <- check_mod_edish_auto(
+    afmm, datasets, 
+    module_id, dataset_names, subjectid_var, arm_var, arm_default_vals, visit_var, baseline_visit_val,
+    lb_test_var, lb_test_choices, lb_test_default_x_val, lb_test_default_y_val, lb_result_var, ref_range_upper_lim_var,
+    warn, err
+  )
+  
+  # subjectid_var
+  if (OK[["dataset_names"]]) {
+    subkind <- list(kind = "or", options = list(list(kind = "character"), list(kind = "factor")))
+    flags <- structure(list(), names = character(0))
+
+    datasets_missing_subjidvar <- character(0)
+    tmp <- CM$container()
+    for (dataset_name in dataset_names){
+      ok <- CM$check_dataset_colum_name(name = "subjectid_var", value = subjectid_var, subkind = subkind, flags = flags,
+                                        dataset_name = dataset_name, dataset_value = datasets[[dataset_name]], 
+                                        warn = tmp, err = tmp)
+      if (isFALSE(ok)) {
+        datasets_missing_subjidvar <- c(datasets_missing_subjidvar, dataset_name)
+      }
+    }
+    CM$assert(
+      err, length(datasets_missing_subjidvar) == 0,
+      sprintf("Subject ID Column `%s` is missing or is not of [character|factor] type in the following datasets: %s",
+              subjectid_var, paste(datasets_missing_subjidvar, collapse = ", "))
+    )
+  }
+  # TODO: Checks that API spec does not (yet?) capture
+
+  # arm_default_vals
+  # visit_var
+  # baseline_visit_val
+  # lb_test_var
+  # lb_test_choices
+  # lb_test_default_x_val
+  # lb_test_default_y_val
+  # lb_result_var
+  # ref_range_upper_lim_var
+
+  
+  res <- list(warnings = warn[["messages"]], errors = err[["messages"]])
+  return(res)
+}
+
+dataset_info_edish <- function(dataset_names, ...) {
+  # TODO: Replace this function with a generic one that builds the list based on mod_edish_API_spec.
+  # Something along the lines of CM$dataset_info(mod_boxplot_API_spec, args = match.call())
+  all <- character(0)
+  if (length(dataset_names)) all <- unique(dataset_names)
+  return(list(all = all, subject_level = character(0)))
+}
+
+mod_edish <- CM$module(mod_edish, check_mod_edish, dataset_info_edish)
