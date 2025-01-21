@@ -1,5 +1,5 @@
 # CONSTANTS ----
-EDISH <- pack_of_constants( # nolint
+EDISH <- pack_of_constants(
   ARM_ID = "arm_id",
   ARM_LABEL = "Select arm:",
   X_AXIS_HEADER = "Specify x-axis",
@@ -30,10 +30,7 @@ EDISH <- pack_of_constants( # nolint
 #'
 #' @seealso [mod_edish()] and [edish_server()]
 #' @export
-edish_UI <- function(module_id) { # nolint
-
-  # Check validity of arguments
-  checkmate::assert_string(module_id, min.chars = 1)
+edish_UI <- function(module_id) {
 
   ns <- shiny::NS(module_id)
 
@@ -338,10 +335,6 @@ edish_server <- function(
 #'
 #' Name of the variable containing the reference range upper limits.
 #' Defaults to `"LBSTNRHI"`.
-#' @param dataset_disp `[dv.manager::mm_dispatch()]`
-#'
-#' This is only for advanced usage. An mm_dispatch object.
-#' Cannot be used together with the parameter `dataset_names`.
 #'
 #' @return A list containing the following elements to be used by the
 #' \pkg{dv.manager}:
@@ -371,9 +364,6 @@ mod_edish <- function(
     lb_test_default_y_val = "Bilirubin",
     lb_result_var = "LBSTRESN",
     ref_range_upper_lim_var = "LBSTNRHI") {
-  # Check validity of parameters
-  # Note: Skip assertions for module_id and _vars/_vals since they are checked in the server
-  checkmate::assert_character(dataset_names)
 
   mod <- list(
     ui = function(module_id) {
