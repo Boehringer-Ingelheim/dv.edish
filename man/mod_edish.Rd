@@ -6,7 +6,8 @@
 \usage{
 mod_edish(
   module_id,
-  dataset_names,
+  subject_level_dataset_name,
+  lab_dataset_name,
   subjectid_var = "USUBJID",
   arm_var = "ACTARM",
   arm_default_vals = NULL,
@@ -18,8 +19,7 @@ mod_edish(
   lb_test_default_x_val = "Aspartate Aminotransferase",
   lb_test_default_y_val = "Bilirubin",
   lb_result_var = "LBSTRESN",
-  ref_range_upper_lim_var = "LBSTNRHI",
-  dataset_disp
+  ref_range_upper_lim_var = "LBSTNRHI"
 )
 }
 \arguments{
@@ -27,9 +27,9 @@ mod_edish(
 
 A unique module ID.}
 
-\item{dataset_names}{\verb{[character(1+)]}
+\item{subject_level_dataset_name, lab_dataset_name}{\verb{[character(1)]}
 
-Name(s) of the dataset(s) that will be displayed. Can not be used together with the parameter \code{dataset_disp}.}
+Name(s) of the dataset(s) that will be displayed.}
 
 \item{subjectid_var}{\verb{[character(1)]}
 
@@ -81,11 +81,6 @@ will cause a value of NA to be returned as maximum value.}
 
 Name of the variable containing the reference range upper limits.
 Defaults to \code{"LBSTNRHI"}.}
-
-\item{dataset_disp}{\verb{[dv.manager::mm_dispatch()]}
-
-This is only for advanced usage. An mm_dispatch object.
-Cannot be used together with the parameter \code{dataset_names}.}
 }
 \value{
 A list containing the following elements to be used by the
