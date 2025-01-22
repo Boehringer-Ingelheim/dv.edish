@@ -162,7 +162,6 @@ edish_server <- function(
     ref_range_upper_lim_var = "LBSTNRHI") {
   # Check validity of arguments
   ac <- checkmate::makeAssertCollection()
-  checkmate::assert_string(module_id, min.chars = 1, add = ac)
   checkmate::assert_multi_class(dataset_list, c("reactive", "shinymeta_reactive"), add = ac)
   checkmate::assert_string(subjectid_var, min.chars = 1, add = ac)
   checkmate::assert_string(arm_var, min.chars = 1, add = ac)
@@ -292,7 +291,7 @@ edish_server <- function(
 #' @param module_id `[character(1)]`
 #'
 #' A unique module ID.
-#' @param dataset_names `[character(1+)]`
+#' @param subject_level_dataset_name,lab_dataset_name `[character(1)]`
 #'
 #' Name(s) of the dataset(s) that will be displayed.
 #' @param subjectid_var `[character(1)]`
@@ -347,7 +346,8 @@ edish_server <- function(
 #' @export
 mod_edish <- function(
     module_id,
-    dataset_names,
+    subject_level_dataset_name,
+    lab_dataset_name,
     subjectid_var = "USUBJID",
     arm_var = "ACTARM",
     arm_default_vals = NULL,
@@ -371,7 +371,7 @@ mod_edish <- function(
     },
     server = function(afmm) {
       dataset_list <- shiny::reactive({
-        afmm$filtered_dataset()[dataset_names]
+        afmm$filtered_dataset()[c(subject_level_dataset_name, lab_dataset_name)]
       })
 
       edish_server(
@@ -401,7 +401,8 @@ mod_edish <- function(
 mod_edish_API_docs <- list(
   "Edish",
   module_id = list(""),
-  dataset_names = list(""),
+  subject_level_dataset_name = list(""),
+  lab_dataset_name = list(""),
   subjectid_var = list(""),
   arm_var = list(""),
   arm_default_vals = list(""),
@@ -417,79 +418,88 @@ mod_edish_API_docs <- list(
 
 mod_edish_API_spec <- TC$group(
   module_id = TC$mod_ID(),
-  dataset_names = TC$dataset_name() |> TC$flag("one_or_more"),
-  # TODO: The TC API functions do not allow to talk about a column belonging to more than one dataset yet
-  subjectid_var = TC$group() |> TC$flag("ignore"),
-  arm_var = TC$group() |> TC$flag("ignore"),
-  arm_default_vals = TC$group() |> TC$flag("ignore"),
-  visit_var = TC$group() |> TC$flag("ignore"),
-  baseline_visit_val = TC$group() |> TC$flag("ignore"),
-  lb_test_var = TC$group() |> TC$flag("ignore"),
-  lb_test_choices = TC$group() |> TC$flag("ignore"),
-  lb_test_default_x_val = TC$group() |> TC$flag("ignore"),
-  lb_test_default_y_val = TC$group() |> TC$flag("ignore"),
-  lb_result_var = TC$group() |> TC$flag("ignore"),
-  ref_range_upper_lim_var = TC$group() |> TC$flag("ignore")
+  subject_level_dataset_name = TC$dataset_name() |> TC$flag("subject_level_dataset_name"),
+  lab_dataset_name = TC$dataset_name(),
+  subjectid_var = TC$col("subject_level_dataset_name", TC$or(TC$character(), TC$factor())) |> TC$flag("subjid_var"),
+  arm_var = TC$col("subject_level_dataset_name", TC$or(TC$character(), TC$factor())),
+  arm_default_vals = TC$choice_from_col_contents("arm_var") |> TC$flag("one_or_more", "optional"),
+  visit_var = TC$col("lab_dataset_name", TC$or(TC$character(), TC$factor())),
+  baseline_visit_val = TC$choice_from_col_contents("visit_var"),
+  lb_test_var = TC$col("lab_dataset_name", TC$or(TC$character(), TC$factor())),
+  lb_test_choices = TC$choice_from_col_contents("lb_test_var") |> TC$flag("one_or_more", "optional"),
+  lb_test_default_x_val = TC$choice_from_col_contents("lb_test_var") |> TC$flag("optional"),
+  lb_test_default_y_val = TC$choice_from_col_contents("lb_test_var") |> TC$flag("optional"),
+  lb_result_var = TC$col("lab_dataset_name", TC$or(TC$numeric())),
+  ref_range_upper_lim_var = TC$col("lab_dataset_name", TC$numeric()) |> TC$flag("optional")
 ) |> TC$attach_docs(mod_edish_API_docs)
 
 check_mod_edish <- function(
-    afmm, datasets, module_id, dataset_names, subjectid_var, arm_var, arm_default_vals, visit_var, baseline_visit_val,
-    lb_test_var, lb_test_choices, lb_test_default_x_val, lb_test_default_y_val, lb_result_var, ref_range_upper_lim_var
+    afmm, datasets, module_id, subject_level_dataset_name, lab_dataset_name, subjectid_var, arm_var, arm_default_vals, 
+    visit_var, baseline_visit_val, lb_test_var, lb_test_choices, lb_test_default_x_val, lb_test_default_y_val, 
+    lb_result_var, ref_range_upper_lim_var
   ) {
   warn <- CM$container()
   err <- CM$container()
   
   OK <- check_mod_edish_auto(
     afmm, datasets, 
-    module_id, dataset_names, subjectid_var, arm_var, arm_default_vals, visit_var, baseline_visit_val,
-    lb_test_var, lb_test_choices, lb_test_default_x_val, lb_test_default_y_val, lb_result_var, ref_range_upper_lim_var,
+    module_id, subject_level_dataset_name, lab_dataset_name, subjectid_var, arm_var, arm_default_vals, 
+    visit_var, baseline_visit_val, lb_test_var, lb_test_choices, lb_test_default_x_val, lb_test_default_y_val, 
+    lb_result_var, ref_range_upper_lim_var,
     warn, err
   )
-  
-  # subjectid_var
-  if (OK[["dataset_names"]]) {
-    subkind <- list(kind = "or", options = list(list(kind = "character"), list(kind = "factor")))
-    flags <- structure(list(), names = character(0))
-
-    datasets_missing_subjidvar <- character(0)
-    tmp <- CM$container()
-    for (dataset_name in dataset_names){
-      ok <- CM$check_dataset_colum_name(name = "subjectid_var", value = subjectid_var, subkind = subkind, flags = flags,
-                                        dataset_name = dataset_name, dataset_value = datasets[[dataset_name]], 
-                                        warn = tmp, err = tmp)
-      if (isFALSE(ok)) {
-        datasets_missing_subjidvar <- c(datasets_missing_subjidvar, dataset_name)
-      }
-    }
+ 
+  # NOTE: Prevents dplyr from exploding inside `prepare_initial_data`
+  var_parameters <- c("subjectid_var", "arm_var", "visit_var", "lb_test_var", "lb_result_var")
+  if (all(OK[var_parameters])) {
+    all_vars <- c(subjectid_var, arm_var, visit_var, lb_test_var, lb_result_var)
     CM$assert(
-      err, length(datasets_missing_subjidvar) == 0,
-      sprintf("Subject ID Column `%s` is missing or is not of [character|factor] type in the following datasets: %s",
-              subjectid_var, paste(datasets_missing_subjidvar, collapse = ", "))
+      container = err, 
+      cond = !any(duplicated(all_vars)),
+      msg = sprintf(
+        "This modules expects the following variables to refer to unique columns:<br><pre>%s</pre>",
+        paste(capture.output(setNames(all_vars, var_parameters)), collapse = "\n")
+      )
     )
   }
-  # TODO: Checks that API spec does not (yet?) capture
 
-  # arm_default_vals
-  # visit_var
-  # baseline_visit_val
-  # lb_test_var
-  # lb_test_choices
-  # lb_test_default_x_val
-  # lb_test_default_y_val
-  # lb_result_var
-  # ref_range_upper_lim_var
-
+  # NOTE: Ensures that `lb_test_default_{x,y}_val` are a subset of the available `lb_test_choices`
+  if (all(OK[c("lab_dataset_name", "lb_test_var", "lb_test_choices", "lb_test_default_x_val")])) {
+    if (OK["lb_test_default_x_val"]) {
+      CM$assert(
+        container = err,
+        cond = lb_test_default_x_val %in% lb_test_choices,
+        msg = sprintf(
+          'The value assigned to `lb_test_default_x_val` ("%s") should be among the ones provided by `lb_test_choices` (%s).',
+          lb_test_default_x_val, paste(sprintf('"%s"', lb_test_choices), collapse = ", ")
+        )
+      )
+    }
+    if (OK["lb_test_default_y_val"]) {
+      CM$assert(
+        container = err,
+        cond = lb_test_default_y_val %in% lb_test_choices,
+        msg = sprintf(
+          'The value assigned to `lb_test_default_y_val` ("%s") should be among the ones provided by `lb_test_choices` (%s).',
+          lb_test_default_y_val, paste(sprintf('"%s"', lb_test_choices), collapse = ", ")
+        )
+      )
+    }
+  }
   
   res <- list(warnings = warn[["messages"]], errors = err[["messages"]])
   return(res)
 }
 
-dataset_info_edish <- function(dataset_names, ...) {
+dataset_info_edish <- function(subject_level_dataset_name, lab_dataset_name, ...) {
   # TODO: Replace this function with a generic one that builds the list based on mod_edish_API_spec.
   # Something along the lines of CM$dataset_info(mod_boxplot_API_spec, args = match.call())
-  all <- character(0)
-  if (length(dataset_names)) all <- unique(dataset_names)
-  return(list(all = all, subject_level = character(0)))
+  return(
+    list(
+      all = unique(c(subject_level_dataset_name, lab_dataset_name)),
+      subject_level = subject_level_dataset_name
+    )
+  )
 }
 
 mod_edish <- CM$module(mod_edish, check_mod_edish, dataset_info_edish)

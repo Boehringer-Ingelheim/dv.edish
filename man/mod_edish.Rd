@@ -6,7 +6,8 @@
 \usage{
 mod_edish(
   module_id,
-  dataset_names,
+  subject_level_dataset_name,
+  lab_dataset_name,
   subjectid_var = "USUBJID",
   arm_var = "ACTARM",
   arm_default_vals = NULL,
@@ -26,7 +27,7 @@ mod_edish(
 
 A unique module ID.}
 
-\item{dataset_names}{\verb{[character(1+)]}
+\item{subject_level_dataset_name, lab_dataset_name}{\verb{[character(1)]}
 
 Name(s) of the dataset(s) that will be displayed.}
 

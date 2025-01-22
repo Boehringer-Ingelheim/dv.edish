@@ -408,7 +408,7 @@ CM <- local({ # _C_hecked _M_odule
     return(res)
   }
 
-  # TODO: Extend to all checker functions
+  # TODO: use check_flags instead and remove
   optional_and_empty <- function(flags, value) {
     return(isTRUE(flags[["optional"]]) && length(value) == 0)
   }
@@ -510,9 +510,6 @@ CM <- local({ # _C_hecked _M_odule
   }
 
   check_choice_from_col_contents <- function(name, value, flags, dataset_name, dataset_value, column, warn, err) {
-    if (optional_and_empty(flags, value)) {
-      return(TRUE)
-    }
     ok <- check_flags(name, value, flags, warn, err) &&
       assert(
         err, all(value %in% dataset_value[[column]]),
