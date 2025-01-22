@@ -34,7 +34,7 @@ lb <- pharmaverseadam::adlb
 module_list <- list(
   "edish" = dv.edish::mod_edish(
     module_id = "edish",
-    subject_level_dataset_name = 'dm',
+    subject_level_dataset_name = "dm",
     lab_dataset_name = 'lb',
     arm_default_vals = c("Xanomeline Low Dose", "Xanomeline High Dose"),
     baseline_visit_val = "SCREENING 1"
