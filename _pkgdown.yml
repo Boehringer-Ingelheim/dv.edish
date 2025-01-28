@@ -3,6 +3,10 @@ template:
 
 navbar:
   type: inverse
+  components:
+    qc:
+      text: Quality Control
+      href: articles/qc.html
 
 home:
   title: dv.edish
