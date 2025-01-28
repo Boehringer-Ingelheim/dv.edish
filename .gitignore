@@ -4,3 +4,4 @@
 .Ruserdata
 .lintr
 docs/
+man/*.Rd
