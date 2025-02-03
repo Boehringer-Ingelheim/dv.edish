@@ -3,6 +3,8 @@ template:
 
 navbar:
   type: inverse
+  structure:
+    left: [intro, reference, articles, tutorials, news, qc]
   components:
     qc:
       text: Quality Control
