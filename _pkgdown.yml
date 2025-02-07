@@ -2,9 +2,14 @@ template:
   bootstrap: 5
 
 navbar:
-  type: inverse
+type: inverse
+  right:
+    - icon: fa-github
+      href: https://github.com/boehringer-ingelheim/dv.edish
   structure:
-    left: [intro, reference, articles, tutorials, news, qc]
+    # "articles" removed since there are no vignettes to display
+    # QC report gets displayed as separate tab
+    left: [intro, reference, tutorials, news, qc]
   components:
     qc:
       text: Quality Control
