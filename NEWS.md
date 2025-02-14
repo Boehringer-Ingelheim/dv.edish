@@ -1,4 +1,4 @@
-# dv.edish 1.0.4.9000
+# dv.edish 1.1.0
 
 - Remove support for data dispatchers.
 - Split `mod_edish()` `dataset_names` parameter into subject-level and laboratory datasets.
