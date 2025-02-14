@@ -2,7 +2,7 @@ template:
   bootstrap: 5
 
 navbar:
-type: inverse
+  type: inverse
   right:
     - icon: fa-github
       href: https://github.com/boehringer-ingelheim/dv.edish
