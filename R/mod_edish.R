@@ -12,7 +12,8 @@ EDISH <- pack_of_constants(
   REF_LABEL = "Reference line:",
   X_PLOT_TYPE_ID = "x_plot_type",
   Y_PLOT_TYPE_ID = "y_plot_type",
-  PLOT_TYPE_CHOICES = c("x ULN (eDISH)", "x Baseline (mDISH)"),
+  PLOT_TYPE_CHOICES = c("\u00d7 ULN (eDISH)" = "ULN",
+                        "\u00d7 Baseline (mDISH)" = "Baseline"),
   PLOT_ID = "plot",
   NO_PLOT = "noplot"
 )
@@ -59,6 +60,14 @@ edish_UI <- function(module_id) {
           max = 100,
           step = 0.5
         ),
+        shinyWidgets::numericRangeInput(
+          inputId = ns("X_RNG_ID"),
+          label = "Range",
+          value = c(0, 10),
+          min = 0,
+          max = 100,
+          step = 0.1
+        ),
         shiny::radioButtons(
           inputId = ns(EDISH$X_PLOT_TYPE_ID),
           label = NULL,
@@ -78,6 +87,14 @@ edish_UI <- function(module_id) {
           min = 0,
           max = 100,
           step = 0.5
+        ),
+        shinyWidgets::numericRangeInput(
+          inputId = ns("Y_RNG_ID"),
+          label = "Range",
+          value = c(0, 10),
+          min = 0,
+          max = 100,
+          step = 0.1
         ),
         shiny::radioButtons(
           inputId = ns(EDISH$Y_PLOT_TYPE_ID),
@@ -264,14 +281,41 @@ edish_server <- function(
       )
     })
 
+    shiny::observeEvent(plot_data(), {
+      #browser()
+  
+      #"r_ULN_{{sel_x}}" = as.numeric(.data[[paste0("r_ULN_", sel_x)]]),
+      #"r_ULN_{{sel_y}}" = as.numeric(.data[[paste0("r_ULN_", sel_y)]]),
+      #"r_Baseline_{{sel_x}}" = as.numeric(.data[[paste0("r_Baseline_", sel_x)]]),
+      #"r_Baseline_{{sel_y}}" = as.numeric(.data[[paste0("r_Baseline_", sel_y)]])
+      
+      x_plot_type <- input[[EDISH$X_PLOT_TYPE_ID]]
+      y_plot_type <- input[[EDISH$Y_PLOT_TYPE_ID]]
+      
+      x <- plot_data()[[paste0("r_", x_plot_type, "_{{sel_x}}")]]
+      y <- plot_data()[[paste0("r_", y_plot_type, "_{{sel_y}}")]]
+      
+      shinyWidgets::updateNumericRangeInput(
+        inputId = "X_RNG_ID",
+        value = c(0, max(ceiling(max(x) + 0.0001), input[[EDISH$X_REF_ID]]))
+      )
+
+      shinyWidgets::updateNumericRangeInput(
+        inputId = "Y_RNG_ID",
+        value = c(0, max(ceiling(max(y) + 0.0001), input[[EDISH$Y_REF_ID]]))
+      )
+    })
+    
     output[[EDISH$PLOT_ID]] <- plotly::renderPlotly(
       generate_plot(
         dataset = plot_data(),
         subjectid_var = subjectid_var, arm_var = arm_var, visit_var = visit_var,
         sel_x = input[[EDISH$X_AXIS_ID]], sel_y = input[[EDISH$Y_AXIS_ID]],
-        x_plot_type = ifelse(grepl("eDISH", input[[EDISH$X_PLOT_TYPE_ID]]), "ULN", "Baseline"),
-        y_plot_type = ifelse(grepl("eDISH", input[[EDISH$Y_PLOT_TYPE_ID]]), "ULN", "Baseline"),
-        x_ref_line_num = input[[EDISH$X_REF_ID]], y_ref_line_num = input[[EDISH$Y_REF_ID]]
+        x_plot_type = input[[EDISH$X_PLOT_TYPE_ID]],
+        y_plot_type = input[[EDISH$Y_PLOT_TYPE_ID]],
+        x_ref_line_num = input[[EDISH$X_REF_ID]], y_ref_line_num = input[[EDISH$Y_REF_ID]],
+        x_rng_lower = input[["X_RNG_ID"]][1], x_rng_upper = input[["X_RNG_ID"]][2],
+        y_rng_lower = input[["Y_RNG_ID"]][1], y_rng_upper = input[["Y_RNG_ID"]][2]
       )
     )
 

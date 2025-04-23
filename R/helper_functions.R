@@ -243,7 +243,11 @@ generate_plot <- function(
     x_plot_type,
     y_plot_type,
     x_ref_line_num,
-    y_ref_line_num) {
+    y_ref_line_num,
+    x_rng_lower,
+    x_rng_upper,
+    y_rng_lower,
+    y_rng_upper) {
   if (is.null(dataset)) {
     return(dataset)
   }
@@ -263,8 +267,10 @@ generate_plot <- function(
       hoverinfo = "text"
     ) %>%
     plotly::layout(
-      xaxis = list(title = paste0(sel_x, "/", x_plot_type)),
-      yaxis = list(title = paste0(sel_y, "/", y_plot_type)),
+      xaxis = list(title = paste0(sel_x, "/", x_plot_type),
+                   range = c(x_rng_lower, x_rng_upper + 0.005)),
+      yaxis = list(title = paste0(sel_y, "/", y_plot_type),
+                   range = c(y_rng_lower, y_rng_upper + 0.005)),
       shapes = list(
         list( # vline
           type = "line",
