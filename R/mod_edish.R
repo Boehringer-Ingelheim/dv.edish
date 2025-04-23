@@ -282,13 +282,6 @@ edish_server <- function(
     })
 
     shiny::observeEvent(plot_data(), {
-      #browser()
-  
-      #"r_ULN_{{sel_x}}" = as.numeric(.data[[paste0("r_ULN_", sel_x)]]),
-      #"r_ULN_{{sel_y}}" = as.numeric(.data[[paste0("r_ULN_", sel_y)]]),
-      #"r_Baseline_{{sel_x}}" = as.numeric(.data[[paste0("r_Baseline_", sel_x)]]),
-      #"r_Baseline_{{sel_y}}" = as.numeric(.data[[paste0("r_Baseline_", sel_y)]])
-      
       x_plot_type <- input[[EDISH$X_PLOT_TYPE_ID]]
       y_plot_type <- input[[EDISH$Y_PLOT_TYPE_ID]]
       
