@@ -9,6 +9,8 @@ EDISH <- pack_of_constants(
   AXIS_LABEL = "Parameter:",
   X_REF_ID = "x_ref",
   Y_REF_ID = "y_ref",
+  X_RNG_ID = "x_rng",
+  Y_RNG_ID = "y_rng",
   REF_LABEL = "Reference line:",
   X_PLOT_TYPE_ID = "x_plot_type",
   Y_PLOT_TYPE_ID = "y_plot_type",
@@ -61,7 +63,7 @@ edish_UI <- function(module_id) {
           step = 0.5
         ),
         shinyWidgets::numericRangeInput(
-          inputId = ns("X_RNG_ID"),
+          inputId = ns(EDISH$X_RNG_ID),
           label = "Range",
           value = c(0, 10),
           min = 0,
@@ -89,7 +91,7 @@ edish_UI <- function(module_id) {
           step = 0.5
         ),
         shinyWidgets::numericRangeInput(
-          inputId = ns("Y_RNG_ID"),
+          inputId = ns(EDISH$Y_RNG_ID),
           label = "Range",
           value = c(0, 10),
           min = 0,
@@ -289,12 +291,12 @@ edish_server <- function(
       y <- plot_data()[[paste0("r_", y_plot_type, "_{{sel_y}}")]]
       
       shinyWidgets::updateNumericRangeInput(
-        inputId = "X_RNG_ID",
+        inputId = EDISH$X_RNG_ID,
         value = c(0, max(ceiling(max(x) + 0.0001), input[[EDISH$X_REF_ID]]))
       )
 
       shinyWidgets::updateNumericRangeInput(
-        inputId = "Y_RNG_ID",
+        inputId = EDISH$Y_RNG_ID,
         value = c(0, max(ceiling(max(y) + 0.0001), input[[EDISH$Y_REF_ID]]))
       )
     })
