@@ -185,7 +185,7 @@ derive_req_vars <- function(
     dplyr::select(dplyr::all_of(c(subjectid_var, arm_var, lb_test_var, visit_var, "r_ULN", "r_Baseline"))) %>%
     dplyr::group_by(.data[[subjectid_var]], .data[[arm_var]], .data[[lb_test_var]], .data[[visit_var]]) %>%
     dplyr::mutate(row = dplyr::row_number()) %>%
-    tidyr::pivot_wider(names_from = lb_test_var, values_from = c("r_ULN", "r_Baseline")) %>%
+    tidyr::pivot_wider(names_from = tidyr::all_of(lb_test_var), values_from = c("r_ULN", "r_Baseline")) %>%
     dplyr::select(-dplyr::all_of("row")) %>%
     dplyr::mutate(
       "r_ULN_{{sel_x}}" = as.numeric(.data[[paste0("r_ULN_", sel_x)]]),
