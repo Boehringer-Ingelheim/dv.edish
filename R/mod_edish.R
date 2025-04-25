@@ -290,14 +290,17 @@ edish_server <- function(
       x <- plot_data()[[paste0("r_", x_plot_type, "_{{sel_x}}")]]
       y <- plot_data()[[paste0("r_", y_plot_type, "_{{sel_y}}")]]
       
+      # Upper limit of axis range set to integer of maximum of data (rounded up
+      # to next integer) and the reference line
+      # + 0.0001
       shinyWidgets::updateNumericRangeInput(
         inputId = EDISH$X_RNG_ID,
-        value = c(0, max(ceiling(max(x) + 0.0001), input[[EDISH$X_REF_ID]]))
+        value = c(0, max(ceiling(max(x)), input[[EDISH$X_REF_ID]]))
       )
 
       shinyWidgets::updateNumericRangeInput(
         inputId = EDISH$Y_RNG_ID,
-        value = c(0, max(ceiling(max(y) + 0.0001), input[[EDISH$Y_REF_ID]]))
+        value = c(0, max(ceiling(max(y)), input[[EDISH$Y_REF_ID]]))
       )
     })
     
@@ -309,8 +312,8 @@ edish_server <- function(
         x_plot_type = input[[EDISH$X_PLOT_TYPE_ID]],
         y_plot_type = input[[EDISH$Y_PLOT_TYPE_ID]],
         x_ref_line_num = input[[EDISH$X_REF_ID]], y_ref_line_num = input[[EDISH$Y_REF_ID]],
-        x_rng_lower = input[["X_RNG_ID"]][1], x_rng_upper = input[["X_RNG_ID"]][2],
-        y_rng_lower = input[["Y_RNG_ID"]][1], y_rng_upper = input[["Y_RNG_ID"]][2]
+        x_rng_lower = input[[EDISH$X_RNG_ID]][1], x_rng_upper = input[[EDISH$X_RNG_ID]][2],
+        y_rng_lower = input[[EDISH$Y_RNG_ID]][1], y_rng_upper = input[[EDISH$Y_RNG_ID]][2]
       )
     )
 

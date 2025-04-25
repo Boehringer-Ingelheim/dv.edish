@@ -252,6 +252,10 @@ generate_plot <- function(
     return(dataset)
   }
 
+  # Slightly extend upper limit of axes to ensure points and ref lines not truncated
+  alpha_x <- (x_rng_upper - x_rng_lower) / 150
+  alpha_y <- (y_rng_upper - y_rng_lower) / 150
+  
   plt_obj <- dataset %>%
     plotly::plot_ly(type = "scatter", mode = "markers", color = .[[arm_var]]) %>%
     plotly::add_trace(
@@ -268,9 +272,9 @@ generate_plot <- function(
     ) %>%
     plotly::layout(
       xaxis = list(title = paste0(sel_x, "/", x_plot_type),
-                   range = c(x_rng_lower, x_rng_upper + 0.005)),
+                   range = c(x_rng_lower, x_rng_upper + alpha_x)),
       yaxis = list(title = paste0(sel_y, "/", y_plot_type),
-                   range = c(y_rng_lower, y_rng_upper + 0.005)),
+                   range = c(y_rng_lower, y_rng_upper + alpha_y)),
       shapes = list(
         list( # vline
           type = "line",
