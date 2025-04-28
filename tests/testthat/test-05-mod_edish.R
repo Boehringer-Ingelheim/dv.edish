@@ -64,7 +64,9 @@ test_that("the app's state is restored when bookmarking" %>%
   app_bmk$set_inputs(`edish-x_axis` = "test 2")
   app_bmk$set_inputs(`edish-x_ref` = 3)
   app_bmk$set_inputs(`edish-x_plot_type` = "Baseline")
-
+  app_bmk$set_inputs(`edish-x_rng` = c(0, 3.1))
+  app_bmk$set_inputs(`edish-x_rng` = c(0, 4.1))
+  
   # Bookmark
   app_bmk$set_inputs(!!"._bookmark_" := "click") # nolint
 
@@ -79,7 +81,9 @@ test_that("the app's state is restored when bookmarking" %>%
       `edish-arm_id` = c("arm1", "arm2"),
       `edish-x_axis` = "test 2",
       `edish-x_plot_type` = "Baseline",
-      `edish-x_ref` = 3
+      `edish-x_ref` = 3,
+      `edish-x_rng` = c(0, 3.1),
+      `edish-y_rng` = c(0, 4.1)
     )
   )
   testthat::expect_equal(actual, expected)
