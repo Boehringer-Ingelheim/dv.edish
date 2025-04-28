@@ -292,7 +292,7 @@ edish_server <- function(
       
       # Upper limit of axis range set to integer of maximum of data (rounded up
       # to next integer) and the reference line
-      # + 0.0001
+      
       shinyWidgets::updateNumericRangeInput(
         inputId = EDISH$X_RNG_ID,
         value = c(0, max(ceiling(max(x)), input[[EDISH$X_REF_ID]]))
