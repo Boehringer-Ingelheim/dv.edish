@@ -63,7 +63,7 @@ test_that("the app's state is restored when bookmarking" %>%
   app_bmk$set_inputs(`edish-arm_id` = c("arm1", "arm2"))
   app_bmk$set_inputs(`edish-x_axis` = "test 2")
   app_bmk$set_inputs(`edish-x_ref` = 3)
-  app_bmk$set_inputs(`edish-x_plot_type` = c("\u00d7 Baseline (mDISH)" = "Baseline"))
+  app_bmk$set_inputs(`edish-x_plot_type` = "Baseline")
 
   # Bookmark
   app_bmk$set_inputs(!!"._bookmark_" := "click") # nolint
@@ -78,7 +78,7 @@ test_that("the app's state is restored when bookmarking" %>%
     input = list(
       `edish-arm_id` = c("arm1", "arm2"),
       `edish-x_axis` = "test 2",
-      `edish-x_plot_type` = c("\u00d7 Baseline (mDISH)" = "Baseline"),
+      `edish-x_plot_type` = "Baseline",
       `edish-x_ref` = 3
     )
   )
