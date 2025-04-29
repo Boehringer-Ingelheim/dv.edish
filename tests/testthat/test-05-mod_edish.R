@@ -43,7 +43,7 @@ test_that("the app displays the correct plot at app launch (snapshot test)" %>%
   app$stop()
 })
 
-test_that("default settigns are visible after Single-Sign-On redirect", {
+test_that("default settings are visible after Single-Sign-On redirect", {
   skip("Cannot integrate SSO within unit tests, i.e., this test has to be performed manually.")
 })
 
@@ -64,8 +64,8 @@ test_that("the app's state is restored when bookmarking" %>%
   app_bmk$set_inputs(`edish-x_axis` = "test 2")
   app_bmk$set_inputs(`edish-x_ref` = 3)
   app_bmk$set_inputs(`edish-x_plot_type` = "Baseline")
-  app_bmk$set_inputs(`edish-x_rng` = c(0, 3.1))
-  app_bmk$set_inputs(`edish-y_rng` = c(0, 4.1))
+  app_bmk$set_inputs(`edish-x_rng` = c(0, 5.1))
+  app_bmk$set_inputs(`edish-y_rng` = c(0, 7.1))
   
   # Bookmark
   app_bmk$set_inputs(!!"._bookmark_" := "click") # nolint
@@ -83,8 +83,8 @@ test_that("the app's state is restored when bookmarking" %>%
       `edish-x_axis` = "test 2",
       `edish-x_plot_type` = "Baseline",
       `edish-x_ref` = 3,
-      `edish-x_rng` = c(0, 3.1),
-      `edish-y_rng` = c(0, 4.1)
+      `edish-x_rng` = c(0, 5.1),
+      `edish-y_rng` = c(0, 7.1)
     )
   )
   testthat::expect_equal(actual, expected)
