@@ -57,7 +57,7 @@ test_that("the app's state is restored when bookmarking" %>%
     app_dir = "./apps/bookmarking_app", name = "test_bookmarking"
   )
 
-  app$wait_for_idle()
+  app_bmk$wait_for_idle()
 
   # Update values
   app_bmk$set_inputs(`edish-arm_id` = c("arm1", "arm2"))
@@ -74,6 +74,8 @@ test_that("the app's state is restored when bookmarking" %>%
   bmk_url <- app_bmk$get_value(export = "url")
   app_rst <- shinytest2::AppDriver$new(app_dir = bmk_url, name = "test_restoring")
 
+  app_rst$wait_for_idle()
+  
   # Get values and test
   actual <- app_rst$get_values(input = c("edish-arm_id", "edish-x_axis", "edish-x_plot_type", "edish-x_ref",
                                          "edish-x_rng", "edish-y_rng"))
