@@ -65,7 +65,7 @@ test_that("the app's state is restored when bookmarking" %>%
   app_bmk$set_inputs(`edish-x_ref` = 3)
   app_bmk$set_inputs(`edish-x_plot_type` = "Baseline")
   app_bmk$set_inputs(`edish-x_rng` = c(0, 3.1))
-  app_bmk$set_inputs(`edish-x_rng` = c(0, 4.1))
+  app_bmk$set_inputs(`edish-y_rng` = c(0, 4.1))
   
   # Bookmark
   app_bmk$set_inputs(!!"._bookmark_" := "click") # nolint
@@ -75,7 +75,8 @@ test_that("the app's state is restored when bookmarking" %>%
   app_rst <- shinytest2::AppDriver$new(app_dir = bmk_url, name = "test_restoring")
 
   # Get values and test
-  actual <- app_rst$get_values(input = c("edish-arm_id", "edish-x_axis", "edish-x_plot_type", "edish-x_ref"))
+  actual <- app_rst$get_values(input = c("edish-arm_id", "edish-x_axis", "edish-x_plot_type", "edish-x_ref",
+                                         "edish-x_rng", "edish-y_rng"))
   expected <- list(
     input = list(
       `edish-arm_id` = c("arm1", "arm2"),
