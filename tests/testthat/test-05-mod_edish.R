@@ -70,9 +70,12 @@ test_that("the app's state is restored when bookmarking" %>%
   # Bookmark
   app_bmk$set_inputs(!!"._bookmark_" := "click") # nolint
 
+  app_bmk$wait_for_idle() # New!!
+  
   # Initialize bookmarked app
   bmk_url <- app_bmk$get_value(export = "url")
   warning(bmk_url)
+  warning(app_bmk$get_value(export = "edish-x_rng"))
   app_rst <- shinytest2::AppDriver$new(app_dir = bmk_url, name = "test_restoring")
 
   app_rst$wait_for_idle()
