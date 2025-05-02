@@ -66,8 +66,8 @@ edish_UI <- function(module_id) {
           inputId = ns(EDISH$X_RNG_ID),
           label = "Range",
           value = c(NA, NA),
-          #min = 0,
-          #max = 100,
+          min = 0,
+          max = 100,
           step = 0.1
         ),
         shiny::radioButtons(
@@ -94,8 +94,8 @@ edish_UI <- function(module_id) {
           inputId = ns(EDISH$Y_RNG_ID),
           label = "Range",
           value = c(NA, NA),
-          #min = 0,
-          #max = 100,
+          min = 0,
+          max = 100,
           step = 0.1
         ),
         shiny::radioButtons(

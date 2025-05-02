@@ -132,7 +132,7 @@ filter_data <- function(dataset, arm_var, sel_arm, lb_test_var, sel_lb_test) {
 #'
 #' @param dataset `[data.frame]`
 #'
-#' A dataframe containing the variables listed below as columns.
+#' A data frame containing the variables listed below as columns.
 #' @param subjectid_var `[character(1)]`
 #'
 #' Name of the variable containing the unique subject IDs.
@@ -175,7 +175,7 @@ derive_req_vars <- function(
     return(NULL)
   }
 
-  # Get the data-frame in required structure (Pivot wider grouped by certain variables)
+  # Get the data frame in required structure (Pivot wider grouped by certain variables)
   dataset <- dataset %>%
     dplyr::filter(.data[[lb_test_var]] %in% c(sel_x, sel_y)) %>%
     dplyr::mutate(
@@ -205,7 +205,7 @@ derive_req_vars <- function(
 #'
 #' @param dataset `[data.frame]`
 #'
-#' A dataframe containing the variables listed below as columns.
+#' A data frame containing the variables listed below as columns.
 #' @param subjectid_var `[character(1)]`
 #'
 #' Name of the variable containing the unique subject IDs.
@@ -229,6 +229,24 @@ derive_req_vars <- function(
 #'
 #' Character specifying the plot type for the y-axis. This leads to
 #' using the `dataset`'s column "r_<y_plot_type>_<y_sel>" for the y-values.
+#' @param x_ref_line_num `[numeric(1)]`
+#'
+#' Numeric specifying the reference line for the x-axis.
+#' @param y_ref_line_num `[numeric(1)]`
+#'
+#' Numeric specifying the reference line for the y-axis.
+#' @param x_rng_lower `[numeric(1)]`
+#'
+#' Numeric specifying the lower point in the x-axis range.
+#' @param x_rng_upper `[numeric(1)]`
+#'
+#' Numeric specifying the upper point in the x-axis range.
+#' @param y_rng_lower `[numeric(1)]`
+#'
+#' Numeric specifying the lower point in the y-axis range.
+#' @param y_rng_upper `[numeric(1)]`
+#'
+#' Numeric specifying the upper point in the y-axis range.
 #'
 #' @return A plotly object specifying the generated eDISH plot.
 #'
