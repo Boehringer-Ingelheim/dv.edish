@@ -65,7 +65,7 @@ edish_UI <- function(module_id) {
         shinyWidgets::numericRangeInput(
           inputId = ns(EDISH$X_RNG_ID),
           label = "Range",
-          value = c(0, 10),
+          value = c(NA, NA),
           min = 0,
           max = 100,
           step = 0.1
@@ -93,7 +93,7 @@ edish_UI <- function(module_id) {
         shinyWidgets::numericRangeInput(
           inputId = ns(EDISH$Y_RNG_ID),
           label = "Range",
-          value = c(0, 10),
+          value = c(NA, NA),
           min = 0,
           max = 100,
           step = 0.1
@@ -283,27 +283,6 @@ edish_server <- function(
       )
     })
 
-    shiny::observeEvent(plot_data(), {
-      x_plot_type <- input[[EDISH$X_PLOT_TYPE_ID]]
-      y_plot_type <- input[[EDISH$Y_PLOT_TYPE_ID]]
-      
-      x <- plot_data()[[paste0("r_", x_plot_type, "_{{sel_x}}")]]
-      y <- plot_data()[[paste0("r_", y_plot_type, "_{{sel_y}}")]]
-      
-      # Upper limit of axis range set to integer of maximum of data (rounded up
-      # to next integer) and the reference line
-      
-      shinyWidgets::updateNumericRangeInput(
-        inputId = EDISH$X_RNG_ID,
-        value = c(0, max(ceiling(max(x)), input[[EDISH$X_REF_ID]]))
-      )
-
-      shinyWidgets::updateNumericRangeInput(
-        inputId = EDISH$Y_RNG_ID,
-        value = c(0, max(ceiling(max(y)), input[[EDISH$Y_REF_ID]]))
-      )
-    })
-    
     output[[EDISH$PLOT_ID]] <- plotly::renderPlotly(
       generate_plot(
         dataset = plot_data(),

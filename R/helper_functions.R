@@ -252,9 +252,19 @@ generate_plot <- function(
     return(dataset)
   }
 
-  # Slightly extend upper limit of axes to ensure points and ref lines not truncated
-  alpha_x <- (x_rng_upper - x_rng_lower) / 150
-  alpha_y <- (y_rng_upper - y_rng_lower) / 150
+  # Prepare x-axis layout based on whether range has been specified
+  layout_xaxis <- list(title = paste0(sel_x, "/", x_plot_type))
+  if (!is.null(x_rng_lower) && !is.null(x_rng_upper)) {
+    layout_xaxis <- c(layout_xaxis,
+                      list(range = c(x_rng_lower, x_rng_upper)))
+  }
+
+  # Prepare y-axis layout based on whether range has been specified
+  layout_yaxis <- list(title = paste0(sel_y, "/", y_plot_type))
+  if (!is.null(y_rng_lower) && !is.null(y_rng_upper)) {
+    layout_yaxis <- c(layout_yaxis,
+                      list(range = c(y_rng_lower, y_rng_upper)))
+  }
   
   plt_obj <- dataset %>%
     plotly::plot_ly(type = "scatter", mode = "markers", color = .[[arm_var]]) %>%
@@ -271,10 +281,8 @@ generate_plot <- function(
       hoverinfo = "text"
     ) %>%
     plotly::layout(
-      xaxis = list(title = paste0(sel_x, "/", x_plot_type),
-                   range = c(x_rng_lower, x_rng_upper + alpha_x)),
-      yaxis = list(title = paste0(sel_y, "/", y_plot_type),
-                   range = c(y_rng_lower, y_rng_upper + alpha_y)),
+      xaxis = layout_xaxis,
+      yaxis = layout_yaxis,
       shapes = list(
         list( # vline
           type = "line",
