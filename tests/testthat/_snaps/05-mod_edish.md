@@ -45,7 +45,7 @@
       [1] 3
       
       $input$`edish-x_rng`
-      [1] NULL
+      NULL
       
       $input$`edish-y_axis`
       [1] "test 2"
@@ -57,7 +57,7 @@
       [1] 2
       
       $input$`edish-y_rng`
-      [1] NULL
+      NULL
       
       $input$`plotly_afterplot-A`
       [1] "\"edish-plot\""
