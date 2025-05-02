@@ -123,12 +123,8 @@ test_that("the resulting plot object includes the correct axis range" %>%
   actual_x <- plt_obj$x$layoutAttrs[[1]]$xaxis$range
   actual_y <- plt_obj$x$layoutAttrs[[1]]$yaxis$range
   
-  # Slightly extend upper limit of axes to ensure points and ref lines not truncated
-  alpha_x <- (x_rng_upper - x_rng_lower) / 150
-  alpha_y <- (y_rng_upper - y_rng_lower) / 150
-  
-  expected_x <- c(x_rng_lower, x_rng_upper + alpha_x)
-  expected_y <- c(y_rng_lower, y_rng_upper + alpha_y)
+  expected_x <- c(x_rng_lower, x_rng_upper)
+  expected_y <- c(y_rng_lower, y_rng_upper)
   
   expect_identical(actual_x, expected_x)
   expect_identical(actual_y, expected_y)
