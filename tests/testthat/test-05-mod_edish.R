@@ -53,32 +53,35 @@ test_that("default settings are visible after Single-Sign-On redirect", {
 test_that("the app's state is restored when bookmarking" %>%
   vdoc[["add_spec"]](specs$framework_specs$bookmarking), {
   # Initialize test app
-  app_bmk <- shinytest2::AppDriver$new(
-    app_dir = "./apps/bookmarking_app", name = "test_bookmarking"
-  )
+   app_bmk <- shinytest2::AppDriver$new(
+     app_dir = "./apps/bookmarking_app", name = "test_bookmarking"
+   )
 
   app_bmk$wait_for_idle()
 
   # Update values
   app_bmk$set_inputs(`edish-arm_id` = c("arm1", "arm2"))
   app_bmk$set_inputs(`edish-x_axis` = "test 2")
-  app_bmk$set_inputs(`edish-x_ref` = 4)
+  app_bmk$set_inputs(`edish-x_ref` = 4.1)
   app_bmk$set_inputs(`edish-x_plot_type` = "Baseline")
-  app_bmk$set_inputs(`edish-x_rng` = c(0, 5.1))
-  app_bmk$set_inputs(`edish-y_rng` = c(0, 7.1))
-  
+
+  # It is not possible to set shinyWidgets::numericalRangeInput using shinytest2
+  # We use an alternative approach by setting the url query part manually
+  # app_bmk$set_inputs(`edish-x_rng` = c(.5, 2.5))
+  # app_bmk$set_inputs(`edish-y_rng` = c(.5, 1.5))
+  range_url_part <- "&edish-x_rng=%5B0.5%2C2.5%5D&edish-y_rng=%5B0.5%2C1.5%5D"
+
   # Bookmark
   app_bmk$set_inputs(!!"._bookmark_" := "click") # nolint
 
   # Initialize bookmarked app
-  bmk_url <- app_bmk$get_value(export = "url")
-  warning(bmk_url)
-  gvw <- app_bmk$get_values(input = c("edish-x_rng", "edish-x_axis"))
-  warning(gvw)
-  app_rst <- shinytest2::AppDriver$new(app_dir = bmk_url, name = "test_restoring")
+  bmk_url <- app_bmk$get_value(export = "url")  
+
+  bmk_url_with_range <- paste0(bmk_url, range_url_part)
+  app_rst <- shinytest2::AppDriver$new(app_dir = bmk_url_with_range, name = "test_restoring")
 
   app_rst$wait_for_idle()
-  
+
   # Get values and test
   actual <- app_rst$get_values(input = c("edish-arm_id", "edish-x_axis", "edish-x_plot_type", "edish-x_ref",
                                          "edish-x_rng", "edish-y_rng"))
@@ -87,9 +90,9 @@ test_that("the app's state is restored when bookmarking" %>%
       `edish-arm_id` = c("arm1", "arm2"),
       `edish-x_axis` = "test 2",
       `edish-x_plot_type` = "Baseline",
-      `edish-x_ref` = 4,
-      `edish-x_rng` = c(0, 5.1),
-      `edish-y_rng` = c(0, 7.1)
+      `edish-x_ref` = 4.1,
+      `edish-x_rng` = c(.5, 2.5),
+      `edish-y_rng` = c(.5, 1.5)
     )
   )
   testthat::expect_identical(actual, expected)
