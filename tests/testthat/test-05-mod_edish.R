@@ -53,23 +53,23 @@ test_that("default settings are visible after Single-Sign-On redirect", {
 test_that("the app's state is restored when bookmarking" %>%
   vdoc[["add_spec"]](specs$framework_specs$bookmarking), {
   # Initialize test app
-   app_bmk <- shinytest2::AppDriver$new(
-     app_dir = "./apps/bookmarking_app", name = "test_bookmarking"
-   )
-
+  app_bmk <- shinytest2::AppDriver$new(
+    app_dir = "./apps/bookmarking_app", name = "test_bookmarking"
+  )
+    
   app_bmk$wait_for_idle()
 
   # Update values
   app_bmk$set_inputs(`edish-arm_id` = c("arm1", "arm2"))
   app_bmk$set_inputs(`edish-x_axis` = "test 2")
-  app_bmk$set_inputs(`edish-x_ref` = 4.1)
+  app_bmk$set_inputs(`edish-x_ref` = 4.0)
   app_bmk$set_inputs(`edish-x_plot_type` = "Baseline")
 
   # It is not possible to set shinyWidgets::numericalRangeInput using shinytest2
   # We use an alternative approach by setting the url query part manually
-  # app_bmk$set_inputs(`edish-x_rng` = c(.5, 2.5))
-  # app_bmk$set_inputs(`edish-y_rng` = c(.5, 1.5))
-  range_url_part <- "&edish-x_rng=%5B0.5%2C2.5%5D&edish-y_rng=%5B0.5%2C1.5%5D"
+  # app_bmk$set_inputs(`edish-x_rng` = c(0.1, 5.1))
+  # app_bmk$set_inputs(`edish-y_rng` = c(0.1, 7.1))
+  range_url_part <- "&edish-x_rng=%5B0.1%2C5.1%5D&edish-y_rng=%5B0.1%2C7.1%5D"
 
   # Bookmark
   app_bmk$set_inputs(!!"._bookmark_" := "click") # nolint
@@ -90,9 +90,9 @@ test_that("the app's state is restored when bookmarking" %>%
       `edish-arm_id` = c("arm1", "arm2"),
       `edish-x_axis` = "test 2",
       `edish-x_plot_type` = "Baseline",
-      `edish-x_ref` = 4.1,
-      `edish-x_rng` = c(.5, 2.5),
-      `edish-y_rng` = c(.5, 1.5)
+      `edish-x_ref` = 4.0,
+      `edish-x_rng` = c(0.1, 5.1),
+      `edish-y_rng` = c(0.1, 7.1)
     )
   )
   testthat::expect_identical(actual, expected)
