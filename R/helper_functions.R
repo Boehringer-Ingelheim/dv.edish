@@ -237,16 +237,16 @@ derive_req_vars <- function(
 #' Numeric specifying the reference line for the y-axis.
 #' @param x_rng_lower `[numeric(1)]`
 #'
-#' Numeric specifying the lower point in the x-axis range.
+#' Numeric specifying the lower limit in the x-axis range.
 #' @param x_rng_upper `[numeric(1)]`
 #'
-#' Numeric specifying the upper point in the x-axis range.
+#' Numeric specifying the upper limit in the x-axis range.
 #' @param y_rng_lower `[numeric(1)]`
 #'
-#' Numeric specifying the lower point in the y-axis range.
+#' Numeric specifying the lower limit in the y-axis range.
 #' @param y_rng_upper `[numeric(1)]`
 #'
-#' Numeric specifying the upper point in the y-axis range.
+#' Numeric specifying the upper limit in the y-axis range.
 #'
 #' @return A plotly object specifying the generated eDISH plot.
 #'
