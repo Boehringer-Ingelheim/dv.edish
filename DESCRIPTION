@@ -1,11 +1,12 @@
 Package: dv.edish
 Type: Package
 Title: eDISH Plot Module for DILI assessment
-Version: 1.1.0
+Version: 1.1.0-1
 Authors@R: 
     c(
       person("Boehringer-Ingelheim Pharma GmbH & Co.KG", role = c("cph", "fnd")),
-      person("Isabel", "Glauss", email = "isabel.glauss@boehringer-ingelheim.com", role = c("aut", "cre"))
+      person("Isabel", "Glauss", email = "isabel.glauss@boehringer-ingelheim.com", role = c("aut", "cre")),
+      person("Mark", "Luff", email = "mark.luff.ext@boehringer-ingelheim.com", role = "aut")
     )
 Description: This DaVinci package contains a module which is meant to support the assessment of drug-induced liver 
     injury by means of the (modified) evaluation of Drug-Induced Serious Hepatotoxicity plot.

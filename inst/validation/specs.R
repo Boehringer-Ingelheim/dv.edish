@@ -17,6 +17,7 @@ plot_specs <- specs_list(
   normalization = "The plot displays data normalized according to the selected method.",
   axis_labels = "The plot's axis are labelled according to the parameter selection and normalization method.",
   ref_lines = "The plot displays the specified reference lines.",
+  axis_ranges = "The plot shows the x- and y-axis ranges according to specified lower and upper limits.",
   hovering = "The plot shows details when hovering over a data point.",
   multiple_vals = "In case of multiple values per subject, visit, and lab test, only the maximum value should be shown."
 )

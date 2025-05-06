@@ -119,7 +119,7 @@ test_that("the resulting plot object includes the correct reference lines" %>%
 })
 
 test_that("the resulting plot object includes the correct axis range" %>%
-  vdoc[["add_spec"]](specs$plot_specs$axis_labels), {
+  vdoc[["add_spec"]](specs$plot_specs$axis_ranges), {
   actual_x <- plt_obj$x$layoutAttrs[[1]]$xaxis$range
   actual_y <- plt_obj$x$layoutAttrs[[1]]$yaxis$range
   
