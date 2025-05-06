@@ -1,6 +1,6 @@
 # dv.edish 1.1.0-1
 
-- The user can now specify the x- and y-axis range limits, or go with the default `plotly` ranges.
+- The user can now specify the x- and y-axis range limits, or go with the default `{plotly}` ranges.
 
 # dv.edish 1.1.0
 
