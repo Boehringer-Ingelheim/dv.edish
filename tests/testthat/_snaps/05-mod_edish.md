@@ -39,19 +39,25 @@
       [1] "test 1"
       
       $input$`edish-x_plot_type`
-      [1] "x ULN (eDISH)"
+      [1] "ULN"
       
       $input$`edish-x_ref`
       [1] 3
+      
+      $input$`edish-x_rng`
+      NULL
       
       $input$`edish-y_axis`
       [1] "test 2"
       
       $input$`edish-y_plot_type`
-      [1] "x ULN (eDISH)"
+      [1] "ULN"
       
       $input$`edish-y_ref`
       [1] 2
+      
+      $input$`edish-y_rng`
+      NULL
       
       $input$`plotly_afterplot-A`
       [1] "\"edish-plot\""

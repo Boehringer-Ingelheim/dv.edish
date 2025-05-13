@@ -19,7 +19,7 @@ derive_req_vars(
 \arguments{
 \item{dataset}{\verb{[data.frame]}
 
-A dataframe containing the variables listed below as columns.}
+A data frame containing the variables listed below as columns.}
 
 \item{subjectid_var}{\verb{[character(1)]}
 

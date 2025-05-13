@@ -132,7 +132,7 @@ filter_data <- function(dataset, arm_var, sel_arm, lb_test_var, sel_lb_test) {
 #'
 #' @param dataset `[data.frame]`
 #'
-#' A dataframe containing the variables listed below as columns.
+#' A data frame containing the variables listed below as columns.
 #' @param subjectid_var `[character(1)]`
 #'
 #' Name of the variable containing the unique subject IDs.
@@ -175,7 +175,7 @@ derive_req_vars <- function(
     return(NULL)
   }
 
-  # Get the data-frame in required structure (Pivot wider grouped by certain variables)
+  # Get the data frame in required structure (Pivot wider grouped by certain variables)
   dataset <- dataset %>%
     dplyr::filter(.data[[lb_test_var]] %in% c(sel_x, sel_y)) %>%
     dplyr::mutate(
@@ -185,7 +185,7 @@ derive_req_vars <- function(
     dplyr::select(dplyr::all_of(c(subjectid_var, arm_var, lb_test_var, visit_var, "r_ULN", "r_Baseline"))) %>%
     dplyr::group_by(.data[[subjectid_var]], .data[[arm_var]], .data[[lb_test_var]], .data[[visit_var]]) %>%
     dplyr::mutate(row = dplyr::row_number()) %>%
-    tidyr::pivot_wider(names_from = lb_test_var, values_from = c("r_ULN", "r_Baseline")) %>%
+    tidyr::pivot_wider(names_from = tidyr::all_of(lb_test_var), values_from = c("r_ULN", "r_Baseline")) %>%
     dplyr::select(-dplyr::all_of("row")) %>%
     dplyr::mutate(
       "r_ULN_{{sel_x}}" = as.numeric(.data[[paste0("r_ULN_", sel_x)]]),
@@ -205,7 +205,7 @@ derive_req_vars <- function(
 #'
 #' @param dataset `[data.frame]`
 #'
-#' A dataframe containing the variables listed below as columns.
+#' A data frame containing the variables listed below as columns.
 #' @param subjectid_var `[character(1)]`
 #'
 #' Name of the variable containing the unique subject IDs.
@@ -229,6 +229,24 @@ derive_req_vars <- function(
 #'
 #' Character specifying the plot type for the y-axis. This leads to
 #' using the `dataset`'s column "r_<y_plot_type>_<y_sel>" for the y-values.
+#' @param x_ref_line_num `[numeric(1)]`
+#'
+#' Numeric specifying the reference line for the x-axis.
+#' @param y_ref_line_num `[numeric(1)]`
+#'
+#' Numeric specifying the reference line for the y-axis.
+#' @param x_rng_lower `[numeric(1)]`
+#'
+#' Numeric specifying the lower limit in the x-axis range.
+#' @param x_rng_upper `[numeric(1)]`
+#'
+#' Numeric specifying the upper limit in the x-axis range.
+#' @param y_rng_lower `[numeric(1)]`
+#'
+#' Numeric specifying the lower limit in the y-axis range.
+#' @param y_rng_upper `[numeric(1)]`
+#'
+#' Numeric specifying the upper limit in the y-axis range.
 #'
 #' @return A plotly object specifying the generated eDISH plot.
 #'
@@ -243,11 +261,29 @@ generate_plot <- function(
     x_plot_type,
     y_plot_type,
     x_ref_line_num,
-    y_ref_line_num) {
+    y_ref_line_num,
+    x_rng_lower,
+    x_rng_upper,
+    y_rng_lower,
+    y_rng_upper) {
   if (is.null(dataset)) {
     return(dataset)
   }
 
+  # Prepare x-axis layout based on whether range has been specified
+  layout_xaxis <- list(title = paste0(sel_x, "/", x_plot_type))
+  if (!is.null(x_rng_lower) && !is.null(x_rng_upper)) {
+    layout_xaxis <- c(layout_xaxis,
+                      list(range = c(x_rng_lower, x_rng_upper)))
+  }
+
+  # Prepare y-axis layout based on whether range has been specified
+  layout_yaxis <- list(title = paste0(sel_y, "/", y_plot_type))
+  if (!is.null(y_rng_lower) && !is.null(y_rng_upper)) {
+    layout_yaxis <- c(layout_yaxis,
+                      list(range = c(y_rng_lower, y_rng_upper)))
+  }
+  
   plt_obj <- dataset %>%
     plotly::plot_ly(type = "scatter", mode = "markers", color = .[[arm_var]]) %>%
     plotly::add_trace(
@@ -263,8 +299,8 @@ generate_plot <- function(
       hoverinfo = "text"
     ) %>%
     plotly::layout(
-      xaxis = list(title = paste0(sel_x, "/", x_plot_type)),
-      yaxis = list(title = paste0(sel_y, "/", y_plot_type)),
+      xaxis = layout_xaxis,
+      yaxis = layout_yaxis,
       shapes = list(
         list( # vline
           type = "line",

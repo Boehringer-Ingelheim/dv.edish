@@ -14,13 +14,17 @@ generate_plot(
   x_plot_type,
   y_plot_type,
   x_ref_line_num,
-  y_ref_line_num
+  y_ref_line_num,
+  x_rng_lower,
+  x_rng_upper,
+  y_rng_lower,
+  y_rng_upper
 )
 }
 \arguments{
 \item{dataset}{\verb{[data.frame]}
 
-A dataframe containing the variables listed below as columns.}
+A data frame containing the variables listed below as columns.}
 
 \item{subjectid_var}{\verb{[character(1)]}
 
@@ -51,6 +55,30 @@ using the \code{dataset}'s column "r_<x_plot_type>_<x_sel>" for the x-values.}
 
 Character specifying the plot type for the y-axis. This leads to
 using the \code{dataset}'s column "r_<y_plot_type>_<y_sel>" for the y-values.}
+
+\item{x_ref_line_num}{\verb{[numeric(1)]}
+
+Numeric specifying the reference line for the x-axis.}
+
+\item{y_ref_line_num}{\verb{[numeric(1)]}
+
+Numeric specifying the reference line for the y-axis.}
+
+\item{x_rng_lower}{\verb{[numeric(1)]}
+
+Numeric specifying the lower limit in the x-axis range.}
+
+\item{x_rng_upper}{\verb{[numeric(1)]}
+
+Numeric specifying the upper limit in the x-axis range.}
+
+\item{y_rng_lower}{\verb{[numeric(1)]}
+
+Numeric specifying the lower limit in the y-axis range.}
+
+\item{y_rng_upper}{\verb{[numeric(1)]}
+
+Numeric specifying the upper limit in the y-axis range.}
 }
 \value{
 A plotly object specifying the generated eDISH plot.

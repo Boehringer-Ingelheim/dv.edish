@@ -10,9 +10,13 @@ EDISH <- pack_of_constants(
   X_REF_ID = "x_ref",
   Y_REF_ID = "y_ref",
   REF_LABEL = "Reference line:",
+  X_RNG_ID = "x_rng",
+  Y_RNG_ID = "y_rng",
+  RNG_LABEL = "Range:",
   X_PLOT_TYPE_ID = "x_plot_type",
   Y_PLOT_TYPE_ID = "y_plot_type",
-  PLOT_TYPE_CHOICES = c("x ULN (eDISH)", "x Baseline (mDISH)"),
+  PLOT_TYPE_CHOICES = c("\u00d7 ULN (eDISH)" = "ULN",
+                        "\u00d7 Baseline (mDISH)" = "Baseline"),
   PLOT_ID = "plot",
   NO_PLOT = "noplot"
 )
@@ -59,6 +63,14 @@ edish_UI <- function(module_id) {
           max = 100,
           step = 0.5
         ),
+        shinyWidgets::numericRangeInput(
+          inputId = ns(EDISH$X_RNG_ID),
+          label = EDISH$RNG_LABEL,
+          value = c(NA, NA),
+          min = 0,
+          max = 100,
+          step = 0.1
+        ),
         shiny::radioButtons(
           inputId = ns(EDISH$X_PLOT_TYPE_ID),
           label = NULL,
@@ -78,6 +90,14 @@ edish_UI <- function(module_id) {
           min = 0,
           max = 100,
           step = 0.5
+        ),
+        shinyWidgets::numericRangeInput(
+          inputId = ns(EDISH$Y_RNG_ID),
+          label = EDISH$RNG_LABEL,
+          value = c(NA, NA),
+          min = 0,
+          max = 100,
+          step = 0.1
         ),
         shiny::radioButtons(
           inputId = ns(EDISH$Y_PLOT_TYPE_ID),
@@ -269,9 +289,11 @@ edish_server <- function(
         dataset = plot_data(),
         subjectid_var = subjectid_var, arm_var = arm_var, visit_var = visit_var,
         sel_x = input[[EDISH$X_AXIS_ID]], sel_y = input[[EDISH$Y_AXIS_ID]],
-        x_plot_type = ifelse(grepl("eDISH", input[[EDISH$X_PLOT_TYPE_ID]]), "ULN", "Baseline"),
-        y_plot_type = ifelse(grepl("eDISH", input[[EDISH$Y_PLOT_TYPE_ID]]), "ULN", "Baseline"),
-        x_ref_line_num = input[[EDISH$X_REF_ID]], y_ref_line_num = input[[EDISH$Y_REF_ID]]
+        x_plot_type = input[[EDISH$X_PLOT_TYPE_ID]],
+        y_plot_type = input[[EDISH$Y_PLOT_TYPE_ID]],
+        x_ref_line_num = input[[EDISH$X_REF_ID]], y_ref_line_num = input[[EDISH$Y_REF_ID]],
+        x_rng_lower = input[[EDISH$X_RNG_ID]][1], x_rng_upper = input[[EDISH$X_RNG_ID]][2],
+        y_rng_lower = input[[EDISH$Y_RNG_ID]][1], y_rng_upper = input[[EDISH$Y_RNG_ID]][2]
       )
     )
 
