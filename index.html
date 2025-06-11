@@ -32,7 +32,7 @@
     
     <a class="navbar-brand me-2" href="index.html">dv.edish</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -72,7 +72,7 @@
   <main id="main" class="col-md-9"><div class="section level1">
 <div class="page-header"><h1 id="edish-module">eDISH Module<a class="anchor" aria-label="anchor" href="#edish-module"></a>
 </h1></div>
-<p>The {dv.edish} package is meant to support the assessment of drug-induced liver injury by means of the (modified) evaluation of Drug-Induced Serious Hepatotoxicity plot.</p>
+<p>The eDISH module supports the assessment of drug-induced liver injury by means of the (modified) evaluation of Drug-Induced Serious Hepatotoxicity plot.</p>
 <p><img src="reference/figures/full_app.png"></p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -84,7 +84,10 @@
 <div class="section level2">
 <h2 id="features">Features<a class="anchor" aria-label="anchor" href="#features"></a>
 </h2>
-<p>The eDISH module shows a scatter plot depicting correlations of two lab parameters on subject-level. The parameter to be displayed on each axis can be selected by the app user. Moreover, the parameters can be displayed in multiples of either their upper limit normals (resulting in the eDISH plot) or the corresponding subject’s baseline values (resulting in the mDISH plot). Horizontal and vertical lines are indicating Hy’s law and are customizable as well within the input menu.</p>
+<p>The eDISH module shows a scatter plot depicting correlations of two lab parameters on a subject-level.</p>
+<p>The parameter to be displayed on each axis can be selected by the app user. Moreover, the parameters can be displayed in multiples of either their upper limit normals (resulting in the eDISH plot) or the corresponding subject’s baseline values (resulting in the mDISH plot).</p>
+<p>Horizontal and vertical reference lines indicate Hy’s law multiples and can be updated by the user.</p>
+<p>By default, the x- and y-axis ranges are determined by the data, but the user can specify their own ranges. Both lower and upper values of an axis range need to be specified for the range to take effect. If either value is missing then the default axis range is used.</p>
 </div>
 <div class="section level2">
 <h2 id="creating-an-edish-application">Creating an eDISH application<a class="anchor" aria-label="anchor" href="#creating-an-edish-application"></a>
@@ -151,6 +154,7 @@
 <ul class="list-unstyled">
 <li>Boehringer-Ingelheim Pharma GmbH &amp; Co.KG <br><small class="roles"> Copyright holder, funder </small>  </li>
 <li>Isabel Glauss <br><small class="roles"> Author, maintainer </small>  </li>
+<li>Mark Luff <br><small class="roles"> Author </small>  </li>
 </ul>
 </div>
 
@@ -162,7 +166,7 @@
 
     <footer><div class="pkgdown-footer-left">
   <p></p>
-<p>Developed by Boehringer-Ingelheim Pharma GmbH &amp; Co.KG, Isabel Glauss.</p>
+<p>Developed by Boehringer-Ingelheim Pharma GmbH &amp; Co.KG, Isabel Glauss, Mark Luff.</p>
 </div>
 
 <div class="pkgdown-footer-right">

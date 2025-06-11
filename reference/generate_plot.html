@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">dv.edish</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -64,7 +64,11 @@
 <span>  <span class="va">x_plot_type</span>,</span>
 <span>  <span class="va">y_plot_type</span>,</span>
 <span>  <span class="va">x_ref_line_num</span>,</span>
-<span>  <span class="va">y_ref_line_num</span></span>
+<span>  <span class="va">y_ref_line_num</span>,</span>
+<span>  <span class="va">x_rng_lower</span>,</span>
+<span>  <span class="va">x_rng_upper</span>,</span>
+<span>  <span class="va">y_rng_lower</span>,</span>
+<span>  <span class="va">y_rng_upper</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -72,7 +76,7 @@
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>dataset</dt>
 <dd><p><code>[data.frame]</code></p>
-<p>A dataframe containing the variables listed below as columns.</p></dd>
+<p>A data frame containing the variables listed below as columns.</p></dd>
 
 
 <dt>subjectid_var</dt>
@@ -111,6 +115,36 @@ using the <code>dataset</code>'s column "r_&lt;x_plot_type&gt;_&lt;x_sel&gt;" fo
 <p>Character specifying the plot type for the y-axis. This leads to
 using the <code>dataset</code>'s column "r_&lt;y_plot_type&gt;_&lt;y_sel&gt;" for the y-values.</p></dd>
 
+
+<dt>x_ref_line_num</dt>
+<dd><p><code>[numeric(1)]</code></p>
+<p>Numeric specifying the reference line for the x-axis.</p></dd>
+
+
+<dt>y_ref_line_num</dt>
+<dd><p><code>[numeric(1)]</code></p>
+<p>Numeric specifying the reference line for the y-axis.</p></dd>
+
+
+<dt>x_rng_lower</dt>
+<dd><p><code>[numeric(1)]</code></p>
+<p>Numeric specifying the lower limit in the x-axis range.</p></dd>
+
+
+<dt>x_rng_upper</dt>
+<dd><p><code>[numeric(1)]</code></p>
+<p>Numeric specifying the upper limit in the x-axis range.</p></dd>
+
+
+<dt>y_rng_lower</dt>
+<dd><p><code>[numeric(1)]</code></p>
+<p>Numeric specifying the lower limit in the y-axis range.</p></dd>
+
+
+<dt>y_rng_upper</dt>
+<dd><p><code>[numeric(1)]</code></p>
+<p>Numeric specifying the upper limit in the y-axis range.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -124,7 +158,7 @@ using the <code>dataset</code>'s column "r_&lt;y_plot_type&gt;_&lt;y_sel&gt;" fo
 
 
     <footer><div class="pkgdown-footer-left">
-  <p></p><p>Developed by Boehringer-Ingelheim Pharma GmbH &amp; Co.KG, Isabel Glauss.</p>
+  <p></p><p>Developed by Boehringer-Ingelheim Pharma GmbH &amp; Co.KG, Isabel Glauss, Mark Luff.</p>
 </div>
 
 <div class="pkgdown-footer-right">
