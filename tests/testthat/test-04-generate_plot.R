@@ -48,6 +48,10 @@ x_plot_type <- "ULN"
 y_plot_type <- "Baseline"
 x_ref_line_num <- 3
 y_ref_line_num <- 2
+x_rng_lower <- 0
+x_rng_upper <- 10
+y_rng_lower <- 0
+y_rng_upper <- 10
 
 # Invoke the function
 plt_obj <- generate_plot(
@@ -60,7 +64,11 @@ plt_obj <- generate_plot(
   x_plot_type = x_plot_type,
   y_plot_type = y_plot_type,
   x_ref_line_num = x_ref_line_num,
-  y_ref_line_num = y_ref_line_num
+  y_ref_line_num = y_ref_line_num,
+  x_rng_lower = x_rng_lower,
+  x_rng_upper = x_rng_upper,
+  y_rng_lower = y_rng_lower,
+  y_rng_upper = y_rng_upper
 )
 
 # Tests
@@ -108,6 +116,18 @@ test_that("the resulting plot object includes the correct reference lines" %>%
   expect_identical(actual_x1, x_ref_line_num)
   expect_identical(actual_y0, y_ref_line_num)
   expect_identical(actual_y1, y_ref_line_num)
+})
+
+test_that("the resulting plot object includes the correct axis range" %>%
+  vdoc[["add_spec"]](specs$plot_specs$axis_ranges), {
+  actual_x <- plt_obj$x$layoutAttrs[[1]]$xaxis$range
+  actual_y <- plt_obj$x$layoutAttrs[[1]]$yaxis$range
+  
+  expected_x <- c(x_rng_lower, x_rng_upper)
+  expected_y <- c(y_rng_lower, y_rng_upper)
+  
+  expect_identical(actual_x, expected_x)
+  expect_identical(actual_y, expected_y)
 })
 
 test_that("the resulting plot object includes the correct coloring" %>%

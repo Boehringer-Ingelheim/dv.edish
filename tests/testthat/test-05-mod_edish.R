@@ -43,7 +43,7 @@ test_that("the app displays the correct plot at app launch (snapshot test)" %>%
   app$stop()
 })
 
-test_that("default settigns are visible after Single-Sign-On redirect", {
+test_that("default settings are visible after Single-Sign-On redirect", {
   skip("Cannot integrate SSO within unit tests, i.e., this test has to be performed manually.")
 })
 
@@ -56,33 +56,48 @@ test_that("the app's state is restored when bookmarking" %>%
   app_bmk <- shinytest2::AppDriver$new(
     app_dir = "./apps/bookmarking_app", name = "test_bookmarking"
   )
-
-  app$wait_for_idle()
+    
+  app_bmk$wait_for_idle()
 
   # Update values
   app_bmk$set_inputs(`edish-arm_id` = c("arm1", "arm2"))
   app_bmk$set_inputs(`edish-x_axis` = "test 2")
-  app_bmk$set_inputs(`edish-x_ref` = 3)
-  app_bmk$set_inputs(`edish-x_plot_type` = "x Baseline (mDISH)")
+  app_bmk$set_inputs(`edish-x_ref` = 3.5)
+  app_bmk$set_inputs(`edish-x_plot_type` = "Baseline")
+
+  # It is not possible to set shinyWidgets::numericalRangeInput using shinytest2
+  # We use an alternative approach by setting the url query part manually
+  # nolint start
+  # app_bmk$set_inputs(`edish-x_rng` = c(0.1, 5.1))
+  # app_bmk$set_inputs(`edish-y_rng` = c(0.1, 7.1))
+  # nolint end
+  range_url_part <- "&edish-x_rng=%5B0.1%2C5.1%5D&edish-y_rng=%5B0.1%2C7.1%5D"
 
   # Bookmark
   app_bmk$set_inputs(!!"._bookmark_" := "click") # nolint
 
   # Initialize bookmarked app
-  bmk_url <- app_bmk$get_value(export = "url")
-  app_rst <- shinytest2::AppDriver$new(app_dir = bmk_url, name = "test_restoring")
+  bmk_url <- app_bmk$get_value(export = "url")  
+
+  bmk_url_with_range <- paste0(bmk_url, range_url_part)
+  app_rst <- shinytest2::AppDriver$new(app_dir = bmk_url_with_range, name = "test_restoring")
+
+  app_rst$wait_for_idle()
 
   # Get values and test
-  actual <- app_rst$get_values(input = c("edish-arm_id", "edish-x_axis", "edish-x_plot_type", "edish-x_ref"))
+  actual <- app_rst$get_values(input = c("edish-arm_id", "edish-x_axis", "edish-x_plot_type", "edish-x_ref",
+                                         "edish-x_rng", "edish-y_rng"))
   expected <- list(
     input = list(
       `edish-arm_id` = c("arm1", "arm2"),
       `edish-x_axis` = "test 2",
-      `edish-x_plot_type` = "x Baseline (mDISH)",
-      `edish-x_ref` = 3
+      `edish-x_plot_type` = "Baseline",
+      `edish-x_ref` = 3.5,
+      `edish-x_rng` = c(0.1, 5.1),
+      `edish-y_rng` = c(0.1, 7.1)
     )
   )
-  testthat::expect_equal(actual, expected)
+  testthat::expect_identical(actual, expected)
 
   # Stop apps
   app_bmk$stop()
