@@ -18,7 +18,8 @@ generate_plot(
   x_rng_lower,
   x_rng_upper,
   y_rng_lower,
-  y_rng_upper
+  y_rng_upper,
+  source = NULL
 )
 }
 \arguments{

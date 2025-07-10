@@ -125,40 +125,12 @@ edish_UI <- function(module_id) {
 #' @param dataset_list `[shiny::reactive(list(data.frame))]`
 #'
 #' A reactive list of named datasets.
-#' @param subjectid_var `[character(1)]`
+#' @param afmm_param `[list]`
 #'
-#' Name of the variable containing the unique subject IDs.
-#' @param arm_var `[character(1)]`
-#'
-#' Name of the variable containing the arm/treatment information.
-#' @param arm_default_vals `[character(1+)]`
-#'
-#' Vector specifying the default value(s) for the arm selector.
-#' @param visit_var `[character(1)]`
-#'
-#' Name of the variable containing the visit information.
-#' @param baseline_visit_val `[character(1)]`
-#'
-#' Character indicating which visit should be used as baseline visit.
-#' @param lb_test_var `[character(1)]`
-#'
-#' Name of the variable containing the laboratory test information.
-#' @param lb_test_choices `[character(1+)]`
-#'
-#' Character vector specifying the possible choices of the laboratory test.
-#' @param lb_test_default_x_val `[character(1)]`
-#'
-#' Character specifying the default laboratory test choice for the plot's x-axis.
-#' @param lb_test_default_y_val `[character(1)]`
-#'
-#' Character specifying the default laboratory test choice for the plot's y-axis.
-#' @param lb_result_var `[character(1)]`
-#'
-#' Name of the variable containing results of the laboratory test.
-#' @param ref_range_upper_lim_var `[character(1)]`
-#'
-#' Name of the variable containing the reference range upper limits.
-#'
+#' Named list of a selection of arguments from module manager. Expects
+#' at least two elements: \code{utils} and \code{module_names} defining a character vector
+#' whose entries have the corresponding module IDs as names.
+#' @inheritParams mod_edish
 #' @seealso [mod_edish()] and [edish_UI()]
 #' @export
 edish_server <- function(
@@ -179,7 +151,10 @@ edish_server <- function(
     lb_test_default_x_val = "Aspartate Aminotransferase",
     lb_test_default_y_val = "Bilirubin",
     lb_result_var = "LBSTRESN",
-    ref_range_upper_lim_var = "LBSTNRHI") {
+    ref_range_upper_lim_var = "LBSTNRHI",
+    receiver_id = NULL,
+    afmm_param = NULL) {
+  
   # Check validity of arguments
   ac <- checkmate::makeAssertCollection()
   checkmate::assert_multi_class(dataset_list, c("reactive", "shinymeta_reactive"), add = ac)
@@ -211,11 +186,14 @@ edish_server <- function(
   checkmate::assert_string(lb_test_default_y_val, min.chars = 1, add = ac)
   checkmate::assert_string(lb_result_var, min.chars = 1, add = ac)
   checkmate::assert_string(ref_range_upper_lim_var, min.chars = 1, add = ac)
+  checkmate::assert_string(receiver_id, min.chars = 1, null.ok = TRUE, add = ac)
+  checkmate::assert_list(afmm_param, null.ok = TRUE, add = ac)
   checkmate::reportAssertions(ac)
 
 
   # Initiate module server
   shiny::moduleServer(module_id, function(input, output, session) {
+    
     # Dataset validation
     v_dataset_list <- shiny::reactive({
       checkmate::assert_list(dataset_list(), types = "data.frame", null.ok = TRUE, names = "named")
@@ -283,7 +261,7 @@ edish_server <- function(
         sel_y = shiny::req(input[[EDISH$Y_AXIS_ID]])
       )
     })
-
+    
     output[[EDISH$PLOT_ID]] <- plotly::renderPlotly(
       generate_plot(
         dataset = plot_data(),
@@ -293,7 +271,8 @@ edish_server <- function(
         y_plot_type = input[[EDISH$Y_PLOT_TYPE_ID]],
         x_ref_line_num = input[[EDISH$X_REF_ID]], y_ref_line_num = input[[EDISH$Y_REF_ID]],
         x_rng_lower = input[[EDISH$X_RNG_ID]][1], x_rng_upper = input[[EDISH$X_RNG_ID]][2],
-        y_rng_lower = input[[EDISH$Y_RNG_ID]][1], y_rng_upper = input[[EDISH$Y_RNG_ID]][2]
+        y_rng_lower = input[[EDISH$Y_RNG_ID]][1], y_rng_upper = input[[EDISH$Y_RNG_ID]][2],
+        source = "plot"
       )
     )
 
@@ -302,6 +281,24 @@ edish_server <- function(
         shiny::validate(shiny::need(!is.null(plot_data()), "No data available."))
       }
     })
+    
+    # Jumping feature 
+    shiny::observeEvent(plotly::event_data("plotly_click", source = "plot"), {
+      if (!receiver_id %in% names(afmm_param$module_names) && !is.null(receiver_id)) {
+        shiny::showNotification(
+          paste0("Can't find receiver module with ID ", receiver_id, "."),
+          type = "message"
+        )
+      } else if (!is.null(receiver_id)) {
+        afmm_param$utils$switch2mod(receiver_id)
+      }
+    })
+    
+    # Return subj_id for communication with dv.papo
+    return(
+      list(subj_id = shiny::reactive({plotly::event_data("plotly_click", source = "plot")$key}))
+    )
+    
   })
 }
 
@@ -356,6 +353,10 @@ edish_server <- function(
 #'
 #' Name of the variable containing the reference range upper limits.
 #' Defaults to `"LBSTNRHI"`.
+#' @param receiver_id `[character(1) | NULL]`
+#'
+#' Character string defining the ID of the module to which to send a subject ID. The
+#' module must exist in the module list. The default is NULL which disables communication. 
 #'
 #' @return A list containing the following elements to be used by the
 #' \pkg{dv.manager}:
@@ -385,7 +386,8 @@ mod_edish <- function(
     lb_test_default_x_val = "Aspartate Aminotransferase",
     lb_test_default_y_val = "Bilirubin",
     lb_result_var = "LBSTRESN",
-    ref_range_upper_lim_var = "LBSTNRHI") {
+    ref_range_upper_lim_var = "LBSTNRHI",
+    receiver_id = NULL) {
 
   mod <- list(
     ui = function(module_id) {
@@ -409,7 +411,9 @@ mod_edish <- function(
         lb_test_default_x_val = lb_test_default_x_val,
         lb_test_default_y_val = lb_test_default_y_val,
         lb_result_var = lb_result_var,
-        ref_range_upper_lim_var = ref_range_upper_lim_var
+        ref_range_upper_lim_var = ref_range_upper_lim_var,
+        receiver_id = receiver_id,
+        afmm_param = list(utils = afmm$utils, module_names = afmm$module_names)
       )
     },
     module_id = module_id
@@ -435,7 +439,8 @@ mod_edish_API_docs <- list(
   lb_test_default_x_val = list(""),
   lb_test_default_y_val = list(""),
   lb_result_var = list(""),
-  ref_range_upper_lim_var = list("")
+  ref_range_upper_lim_var = list(""),
+  receiver_id = list("")
 )
 
 mod_edish_API_spec <- TC$group(
@@ -452,13 +457,14 @@ mod_edish_API_spec <- TC$group(
   lb_test_default_x_val = TC$choice_from_col_contents("lb_test_var") |> TC$flag("optional"),
   lb_test_default_y_val = TC$choice_from_col_contents("lb_test_var") |> TC$flag("optional"),
   lb_result_var = TC$col("lab_dataset_name", TC$or(TC$numeric())),
-  ref_range_upper_lim_var = TC$col("lab_dataset_name", TC$numeric()) |> TC$flag("optional")
+  ref_range_upper_lim_var = TC$col("lab_dataset_name", TC$numeric()) |> TC$flag("optional"),
+  receiver_id = TC$character() |> TC$flag("optional")
 ) |> TC$attach_docs(mod_edish_API_docs)
 
 check_mod_edish <- function(
     afmm, datasets, module_id, subject_level_dataset_name, lab_dataset_name, subjectid_var, arm_var, arm_default_vals, 
     visit_var, baseline_visit_val, lb_test_var, lb_test_choices, lb_test_default_x_val, lb_test_default_y_val, 
-    lb_result_var, ref_range_upper_lim_var
+    lb_result_var, ref_range_upper_lim_var, receiver_id
   ) {
   warn <- CM$container()
   err <- CM$container()
@@ -467,7 +473,7 @@ check_mod_edish <- function(
     afmm, datasets, 
     module_id, subject_level_dataset_name, lab_dataset_name, subjectid_var, arm_var, arm_default_vals, 
     visit_var, baseline_visit_val, lb_test_var, lb_test_choices, lb_test_default_x_val, lb_test_default_y_val, 
-    lb_result_var, ref_range_upper_lim_var,
+    lb_result_var, ref_range_upper_lim_var, receiver_id,
     warn, err
   )
  

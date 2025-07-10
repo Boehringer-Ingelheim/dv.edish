@@ -265,7 +265,8 @@ generate_plot <- function(
     x_rng_lower,
     x_rng_upper,
     y_rng_lower,
-    y_rng_upper) {
+    y_rng_upper,
+    source = NULL) {
   if (is.null(dataset)) {
     return(dataset)
   }
@@ -285,7 +286,13 @@ generate_plot <- function(
   }
   
   plt_obj <- dataset %>%
-    plotly::plot_ly(type = "scatter", mode = "markers", color = .[[arm_var]]) %>%
+    plotly::plot_ly(
+      type = "scatter", 
+      mode = "markers", 
+      color = .[[arm_var]], 
+      key = .[[subjectid_var]],
+      source = source
+    ) %>%
     plotly::add_trace(
       x = ~ .data[[paste0("r_", x_plot_type, "_", sel_x)]],
       y = ~ .data[[paste0("r_", y_plot_type, "_", sel_y)]],
@@ -322,6 +329,8 @@ generate_plot <- function(
         )
       )
     )
+  
+  plotly::event_register(plt_obj, 'plotly_click')
 
   return(plt_obj)
 }

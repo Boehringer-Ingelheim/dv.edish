@@ -5,7 +5,7 @@
 # dv.edish::mod_edish
 check_mod_edish_auto <- function(afmm, datasets, module_id, subject_level_dataset_name, lab_dataset_name,
     subjectid_var, arm_var, arm_default_vals, visit_var, baseline_visit_val, lb_test_var, lb_test_choices,
-    lb_test_default_x_val, lb_test_default_y_val, lb_result_var, ref_range_upper_lim_var, warn, err) {
+    lb_test_default_x_val, lb_test_default_y_val, lb_result_var, ref_range_upper_lim_var, receiver_id, warn, err) {
     OK <- logical(0)
     used_dataset_names <- new.env(parent = emptyenv())
     OK[["module_id"]] <- CM$check_module_id("module_id", module_id, warn, err)

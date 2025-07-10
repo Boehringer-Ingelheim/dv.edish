@@ -7,6 +7,6 @@
 mock_edish_mm()
 }
 \description{
-\code{mock_table_mm()} launches a mock app containing the dv.edish shiny module by means of the \code{dv.manager}.
+\code{mock_edish_mm()} launches a mock app containing the dv.edish shiny module by means of the \code{dv.manager}.
 }
 \keyword{internal}
