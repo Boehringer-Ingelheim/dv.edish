@@ -330,7 +330,7 @@ generate_plot <- function(
       )
     )
   
-  plotly::event_register(plt_obj, 'plotly_click')
+  plotly::event_register(plt_obj, "plotly_click")
 
   return(plt_obj)
 }

@@ -296,7 +296,9 @@ edish_server <- function(
     
     # Return subj_id for communication with dv.papo
     return(
-      list(subj_id = shiny::reactive({plotly::event_data("plotly_click", source = "plot")$key}))
+      list(subj_id = shiny::reactive({
+        plotly::event_data("plotly_click", source = "plot")$key
+      }))
     )
     
   })
