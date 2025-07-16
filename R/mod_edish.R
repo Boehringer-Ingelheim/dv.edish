@@ -272,7 +272,7 @@ edish_server <- function(
         x_ref_line_num = input[[EDISH$X_REF_ID]], y_ref_line_num = input[[EDISH$Y_REF_ID]],
         x_rng_lower = input[[EDISH$X_RNG_ID]][1], x_rng_upper = input[[EDISH$X_RNG_ID]][2],
         y_rng_lower = input[[EDISH$Y_RNG_ID]][1], y_rng_upper = input[[EDISH$Y_RNG_ID]][2],
-        source = "plot"
+        source = session[["ns"]]("plot")
       )
     )
 
@@ -283,7 +283,7 @@ edish_server <- function(
     })
     
     # Jumping feature 
-    shiny::observeEvent(plotly::event_data("plotly_click", source = "plot"), {
+    shiny::observeEvent(plotly::event_data("plotly_click", source = session[["ns"]]("plot")), {
       if (!receiver_id %in% names(afmm_param$module_names) && !is.null(receiver_id)) {
         shiny::showNotification(
           paste0("Can't find receiver module with ID ", receiver_id, "."),
@@ -297,7 +297,7 @@ edish_server <- function(
     # Return subj_id for communication with dv.papo
     return(
       list(subj_id = shiny::reactive({
-        plotly::event_data("plotly_click", source = "plot")$key
+        plotly::event_data("plotly_click", source = session[["ns"]]("plot"))$key
       }))
     )
     
