@@ -152,8 +152,7 @@ edish_server <- function(
     lb_test_default_y_val = "Bilirubin",
     lb_result_var = "LBSTRESN",
     ref_range_upper_lim_var = "LBSTNRHI",
-    receiver_id = NULL,
-    afmm_param = NULL) {
+    on_sbj_click = NULL) {
   
   # Check validity of arguments
   ac <- checkmate::makeAssertCollection()
@@ -186,8 +185,6 @@ edish_server <- function(
   checkmate::assert_string(lb_test_default_y_val, min.chars = 1, add = ac)
   checkmate::assert_string(lb_result_var, min.chars = 1, add = ac)
   checkmate::assert_string(ref_range_upper_lim_var, min.chars = 1, add = ac)
-  checkmate::assert_string(receiver_id, min.chars = 1, null.ok = TRUE, add = ac)
-  checkmate::assert_list(afmm_param, null.ok = TRUE, add = ac)
   checkmate::reportAssertions(ac)
 
 
@@ -283,23 +280,20 @@ edish_server <- function(
     })
     
     # Jumping feature 
-    shiny::observeEvent(plotly::event_data("plotly_click", source = session[["ns"]]("plot")), {
-      if (!receiver_id %in% names(afmm_param$module_names) && !is.null(receiver_id)) {
-        shiny::showNotification(
-          paste0("Can't find receiver module with ID ", receiver_id, "."),
-          type = "message"
-        )
-      } else if (!is.null(receiver_id)) {
-        afmm_param$utils$switch2mod(receiver_id)
-      }
-    })
+    mod_return_value <- NULL
+    if (!is.null(on_sbj_click)) {
+      shiny::observe({
+        shiny::req(!is.null(plotly::event_data("plotly_click", source = session[["ns"]]("plot"))))
+        on_sbj_click()
+      })
+      mod_return_value <- list(
+        subj_id = shiny::reactive({
+          plotly::event_data("plotly_click", source = session[["ns"]]("plot"))$key
+        })
+      )
+    }
     
-    # Return subj_id for communication with dv.papo
-    return(
-      list(subj_id = shiny::reactive({
-        plotly::event_data("plotly_click", source = session[["ns"]]("plot"))$key
-      }))
-    )
+    return(mod_return_value)
     
   })
 }
@@ -399,6 +393,20 @@ mod_edish <- function(
       dataset_list <- shiny::reactive({
         afmm$filtered_dataset()[c(subject_level_dataset_name, lab_dataset_name)]
       })
+      
+      on_sbj_click_fun <- NULL
+      if (!is.null(receiver_id)) {
+        on_sbj_click_fun <- function() {
+          if (!receiver_id %in% names(afmm[["module_names"]])) {
+            shiny::showNotification(
+              paste0("Can't find receiver module with ID ", receiver_id, "."),
+              type = "message"
+            )
+          } else {
+            afmm[["utils"]][["switch2mod"]](receiver_id)
+          }
+        }
+      }
 
       edish_server(
         module_id = module_id,
@@ -414,8 +422,7 @@ mod_edish <- function(
         lb_test_default_y_val = lb_test_default_y_val,
         lb_result_var = lb_result_var,
         ref_range_upper_lim_var = ref_range_upper_lim_var,
-        receiver_id = receiver_id,
-        afmm_param = list(utils = afmm$utils, module_names = afmm$module_names)
+        on_sbj_click = on_sbj_click_fun
       )
     },
     module_id = module_id
