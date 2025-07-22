@@ -292,7 +292,10 @@ edish_server <- function(
       })
       mod_return_value <- list(
         subj_id = shiny::reactive({
-          plotly::event_data("plotly_click", source = session[["ns"]]("plot"))$key
+          plotly::event_data(
+            event = "plotly_click", 
+            source = session[["ns"]]("plot"), 
+            priority = "event")$key
         })
       )
     }
