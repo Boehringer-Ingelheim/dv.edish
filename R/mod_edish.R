@@ -283,6 +283,8 @@ edish_server <- function(
     mod_return_value <- NULL
     if (!is.null(on_sbj_click)) {
       shiny::observe({
+        # Below req is needed to avoid warning when plot object is not there
+        shiny::req(output$plot() != "{\"x\":null,\"evals\":[],\"jsHooks\":null,\"deps\":[]}")
         shiny::req(!is.null(plotly::event_data(
           event = "plotly_click", 
           source = session[["ns"]]("plot"), 
@@ -292,6 +294,8 @@ edish_server <- function(
       })
       mod_return_value <- list(
         subj_id = shiny::reactive({
+          # Below req is needed to avoid warning when plot object is not there
+          shiny::req(output$plot() != "{\"x\":null,\"evals\":[],\"jsHooks\":null,\"deps\":[]}")
           plotly::event_data(
             event = "plotly_click", 
             source = session[["ns"]]("plot"), 
