@@ -283,7 +283,11 @@ edish_server <- function(
     mod_return_value <- NULL
     if (!is.null(on_sbj_click)) {
       shiny::observe({
-        shiny::req(!is.null(plotly::event_data("plotly_click", source = session[["ns"]]("plot"))))
+        shiny::req(!is.null(plotly::event_data(
+          event = "plotly_click", 
+          source = session[["ns"]]("plot"), 
+          priority = "event" # needed when clicking the same point twice
+        )))
         on_sbj_click()
       })
       mod_return_value <- list(

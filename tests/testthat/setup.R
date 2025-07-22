@@ -82,7 +82,6 @@ test_communication_with_papo <- function(mod, data, trigger_input_id) {
       # Module outputs selection once
       testthat::expect_equal(exports[["ret_value"]], subject_ids[[i]])
       testthat::expect_equal(exports[["update_count"]], i)
-      # print(exports[["update_count"]])
     }
     
     app$stop()      
