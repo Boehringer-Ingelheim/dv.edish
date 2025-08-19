@@ -259,8 +259,9 @@ edish_server <- function(
       )
     })
     
-    output[[EDISH$PLOT_ID]] <- plotly::renderPlotly(
-      generate_plot(
+    plot_active <- shiny::reactiveVal(FALSE)
+    output[[EDISH$PLOT_ID]] <- plotly::renderPlotly({
+      plot <- generate_plot(
         dataset = plot_data(),
         subjectid_var = subjectid_var, arm_var = arm_var, visit_var = visit_var,
         sel_x = input[[EDISH$X_AXIS_ID]], sel_y = input[[EDISH$Y_AXIS_ID]],
@@ -271,7 +272,9 @@ edish_server <- function(
         y_rng_lower = input[[EDISH$Y_RNG_ID]][1], y_rng_upper = input[[EDISH$Y_RNG_ID]][2],
         source = session[["ns"]]("plot")
       )
-    )
+      if (!is.null(plot)) plot_active(TRUE)
+      plot
+    })
 
     output[[EDISH$NO_PLOT]] <- shiny::renderPlot({
       if (is.null(plot_data())) {
@@ -282,21 +285,20 @@ edish_server <- function(
     # Jumping feature 
     mod_return_value <- NULL
     if (!is.null(on_sbj_click)) {
+      return_value_content <- shiny::reactiveVal(NULL)
       shiny::observe({
-        shiny::req(!is.null(plotly::event_data(
-          event = "plotly_click", 
-          source = session[["ns"]]("plot"), 
-          priority = "event" # needed when clicking the same point twice
-        )))
+        shiny::req(plot_active())
+        click_event <- plotly::event_data(
+          event = "plotly_click",
+          source = session[["ns"]](EDISH$PLOT_ID),
+          priority = "event")
+        
+        shiny::req(!is.null(click_event))
         on_sbj_click()
+        return_value_content(click_event[["key"]])
       })
       mod_return_value <- list(
-        subj_id = shiny::reactive({
-          plotly::event_data(
-            event = "plotly_click", 
-            source = session[["ns"]]("plot"), 
-            priority = "event")$key
-        })
+        subj_id = return_value_content
       )
     }
     
