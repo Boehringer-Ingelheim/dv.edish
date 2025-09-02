@@ -19,8 +19,7 @@ edish_server(
   lb_test_default_y_val = "Bilirubin",
   lb_result_var = "LBSTRESN",
   ref_range_upper_lim_var = "LBSTNRHI",
-  receiver_id = NULL,
-  afmm_param = NULL
+  on_sbj_click = NULL
 )
 }
 \arguments{
@@ -83,16 +82,9 @@ will cause a value of NA to be returned as maximum value.}
 Name of the variable containing the reference range upper limits.
 Defaults to \code{"LBSTNRHI"}.}
 
-\item{receiver_id}{\verb{[character(1) | NULL]}
+\item{on_sbj_click}{\verb{[function() | NULL]}
 
-Character string defining the ID of the module to which to send a subject ID. The
-module must exist in the module list. The default is NULL which disables communication.}
-
-\item{afmm_param}{\verb{[list]}
-
-Named list of a selection of arguments from module manager. Expects
-at least two elements: \code{utils} and \code{module_names} defining a character vector
-whose entries have the corresponding module IDs as names.}
+Function to invoke when a subject is clicked on the plot. If \code{NULL}, no action is taken.}
 }
 \description{
 \code{edish_server()} contains the server of the \code{dv.edish} module.

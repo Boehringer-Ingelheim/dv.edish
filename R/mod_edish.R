@@ -125,11 +125,10 @@ edish_UI <- function(module_id) {
 #' @param dataset_list `[shiny::reactive(list(data.frame))]`
 #'
 #' A reactive list of named datasets.
-#' @param afmm_param `[list]`
+#' 
+#' @param on_sbj_click `[function() | NULL]`
 #'
-#' Named list of a selection of arguments from module manager. Expects
-#' at least two elements: \code{utils} and \code{module_names} defining a character vector
-#' whose entries have the corresponding module IDs as names.
+#' Function to invoke when a subject is clicked on the plot. If `NULL`, no action is taken.
 #' @inheritParams mod_edish
 #' @seealso [mod_edish()] and [edish_UI()]
 #' @export
