@@ -1,3 +1,7 @@
+# dv.edish 1.2.0-9000
+
+- Add jumping feature.
+
 # dv.edish 1.2.0
 
 - The user can now specify the x- and y-axis range limits, or go with the default `{plotly}` ranges.

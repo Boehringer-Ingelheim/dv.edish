@@ -19,7 +19,8 @@ mod_edish(
   lb_test_default_x_val = "Aspartate Aminotransferase",
   lb_test_default_y_val = "Bilirubin",
   lb_result_var = "LBSTRESN",
-  ref_range_upper_lim_var = "LBSTNRHI"
+  ref_range_upper_lim_var = "LBSTNRHI",
+  receiver_id = NULL
 )
 }
 \arguments{
@@ -81,6 +82,11 @@ will cause a value of NA to be returned as maximum value.}
 
 Name of the variable containing the reference range upper limits.
 Defaults to \code{"LBSTNRHI"}.}
+
+\item{receiver_id}{\verb{[character(1) | NULL]}
+
+Character string defining the ID of the module to which to send a subject ID. The
+module must exist in the module list. The default is NULL which disables communication.}
 }
 \value{
 A list containing the following elements to be used by the
