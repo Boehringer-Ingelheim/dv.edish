@@ -285,8 +285,7 @@ edish_server <- function(
     # Jumping feature 
     mod_return_value <- NULL
     if (!is.null(on_sbj_click)) {
-      return_value_content <- shiny::reactiveVal(NULL)
-      shiny::observe({
+      return_value_content <- shiny::reactive({
         shiny::req(plot_active())
         click_event <- plotly::event_data(
           event = "plotly_click",
@@ -294,8 +293,8 @@ edish_server <- function(
           priority = "event")
         
         shiny::req(!is.null(click_event))
-        on_sbj_click()
-        return_value_content(click_event[["key"]])
+        on_sbj_click() # reactive side effect to be able to jump to another module
+        click_event[["key"]]
       })
       mod_return_value <- list(
         subj_id = return_value_content
