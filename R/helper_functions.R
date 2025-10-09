@@ -175,25 +175,25 @@ derive_req_vars <- function(
     ref_range_upper_lim_var,
     sel_x,
     sel_y) {
-  if (!is.null(dataset)) {
+  if (!is.null(dataset) & nrow(dataset) != 0) {
     # Get the data frame in required structure (Pivot wider grouped by certain variables)
-  dataset <- dataset %>%
-    dplyr::filter(.data[[lb_test_var]] %in% c(sel_x, sel_y)) %>%
-    dplyr::mutate(
-      r_ULN = .data[[lb_result_var]] / .data[[ref_range_upper_lim_var]],
-      r_Baseline = .data[[lb_result_var]] / .data[["BASE"]]
-    ) %>%
-    dplyr::select(dplyr::all_of(c(subjectid_var, arm_var, lb_test_var, visit_var, "r_ULN", "r_Baseline"))) %>%
-    dplyr::group_by(.data[[subjectid_var]], .data[[arm_var]], .data[[lb_test_var]], .data[[visit_var]]) %>%
-    dplyr::mutate(row = dplyr::row_number()) %>%
-    tidyr::pivot_wider(names_from = tidyr::all_of(lb_test_var), values_from = c("r_ULN", "r_Baseline")) %>%
-    dplyr::select(-dplyr::all_of("row")) %>%
-    dplyr::mutate(
-      "r_ULN_{{sel_x}}" = as.numeric(.data[[paste0("r_ULN_", sel_x)]]),
-      "r_ULN_{{sel_y}}" = as.numeric(.data[[paste0("r_ULN_", sel_y)]]),
-      "r_Baseline_{{sel_x}}" = as.numeric(.data[[paste0("r_Baseline_", sel_x)]]),
-      "r_Baseline_{{sel_y}}" = as.numeric(.data[[paste0("r_Baseline_", sel_y)]])
-    )
+    dataset <- dataset %>%
+      dplyr::filter(.data[[lb_test_var]] %in% c(sel_x, sel_y)) %>%
+      dplyr::mutate(
+        r_ULN = .data[[lb_result_var]] / .data[[ref_range_upper_lim_var]],
+        r_Baseline = .data[[lb_result_var]] / .data[["BASE"]]
+      ) %>%
+      dplyr::select(dplyr::all_of(c(subjectid_var, arm_var, lb_test_var, visit_var, "r_ULN", "r_Baseline"))) %>%
+      dplyr::group_by(.data[[subjectid_var]], .data[[arm_var]], .data[[lb_test_var]], .data[[visit_var]]) %>%
+      dplyr::mutate(row = dplyr::row_number()) %>%
+      tidyr::pivot_wider(names_from = tidyr::all_of(lb_test_var), values_from = c("r_ULN", "r_Baseline")) %>%
+      dplyr::select(-dplyr::all_of("row")) %>%
+      dplyr::mutate(
+        "r_ULN_{{sel_x}}" = as.numeric(.data[[paste0("r_ULN_", sel_x)]]),
+        "r_ULN_{{sel_y}}" = as.numeric(.data[[paste0("r_ULN_", sel_y)]]),
+        "r_Baseline_{{sel_x}}" = as.numeric(.data[[paste0("r_Baseline_", sel_x)]]),
+        "r_Baseline_{{sel_y}}" = as.numeric(.data[[paste0("r_Baseline_", sel_y)]])
+      )
   }
   return(dataset)
 }
@@ -268,8 +268,8 @@ generate_plot <- function(
     y_rng_lower,
     y_rng_upper,
     source = NULL) {
-  if (is.null(dataset)) {
-    return(dataset)
+  if (is.null(dataset) | nrow(dataset) == 0) {
+    return(NULL)
   }
 
   # Prepare x-axis layout based on whether range has been specified
