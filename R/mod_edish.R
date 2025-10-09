@@ -465,7 +465,7 @@ mod_edish_API_spec <- TC$group(
   lab_dataset_name = TC$dataset_name(),
   subjectid_var = TC$col("subject_level_dataset_name", TC$or(TC$character(), TC$factor())) |> TC$flag("subjid_var"),
   arm_var = TC$col("subject_level_dataset_name", TC$or(TC$character(), TC$factor())),
-  arm_default_vals = TC$choice_from_col_contents("arm_var") |> TC$flag("one_or_more", "optional"),
+  arm_default_vals = TC$choice_from_col_contents("arm_var") |> TC$flag("one_or_more", "optional", "manual_check"),
   visit_var = TC$col("lab_dataset_name", TC$or(TC$character(), TC$factor())),
   baseline_visit_val = TC$choice_from_col_contents("visit_var"),
   lb_test_var = TC$col("lab_dataset_name", TC$or(TC$character(), TC$factor())),
