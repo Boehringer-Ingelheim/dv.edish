@@ -497,9 +497,9 @@ check_mod_edish <- function(
   # Reason: Arbitrary values allowed in case multiple studies are included with different arm values
   CM$assert(
     container = err,
-    cond = is.character(arm_default_vals),
+    cond = is.character(arm_default_vals) | is.null(arm_default_vals),
     msg = sprintf(
-      'The values assigned to `arm_default_vals` are of type %s, but should be of type character.',
+      "The values assigned to `arm_default_vals` are of type %s, but should be of type character.",
       typeof(arm_default_vals)
     )
   )
