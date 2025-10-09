@@ -175,7 +175,7 @@ derive_req_vars <- function(
     ref_range_upper_lim_var,
     sel_x,
     sel_y) {
-  if (!is.null(dataset) & nrow(dataset) != 0) {
+  if (!is.null(dataset) && nrow(dataset) != 0) {
     # Get the data frame in required structure (Pivot wider grouped by certain variables)
     dataset <- dataset %>%
       dplyr::filter(.data[[lb_test_var]] %in% c(sel_x, sel_y)) %>%
@@ -268,7 +268,7 @@ generate_plot <- function(
     y_rng_lower,
     y_rng_upper,
     source = NULL) {
-  if (is.null(dataset) | nrow(dataset) == 0) {
+  if (is.null(dataset) || nrow(dataset) == 0) {
     return(NULL)
   }
 
