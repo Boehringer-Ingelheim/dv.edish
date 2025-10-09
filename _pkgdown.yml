@@ -17,6 +17,9 @@ navbar:
 
 home:
   title: dv.edish
+  links:
+  - text: Browse source code
+    href: https://github.com/Boehringer-Ingelheim/dv.edish/
 
 reference:
 - title: "Modules and utils"
