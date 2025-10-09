@@ -492,6 +492,17 @@ check_mod_edish <- function(
     lb_result_var, ref_range_upper_lim_var, receiver_id,
     warn, err
   )
+  
+  # Check only if `arm_default_vals` is a character vector
+  # Reason: Arbitrary values allowed in case multiple studies are included with different arm values
+  CM$assert(
+    container = err,
+    cond = is.character(arm_default_vals),
+    msg = sprintf(
+      'The values assigned to `arm_default_vals` are of type %s, but should be of type character.',
+      typeof(arm_default_vals)
+    )
+  )
  
   # NOTE: Prevents dplyr from exploding inside `prepare_initial_data`
   var_parameters <- c("subjectid_var", "arm_var", "visit_var", "lb_test_var", "lb_result_var")
