@@ -67,7 +67,8 @@ prepare_initial_data <- function(
         )
       )
   })
-if (nrow(sel_dataset_list[[1]]) == 0) {
+  
+  if (nrow(sel_dataset_list[[1]]) == 0) {
     return(NULL)
   }
   dataset <- Reduce(dplyr::full_join, sel_dataset_list) %>%
@@ -176,7 +177,8 @@ derive_req_vars <- function(
     sel_x,
     sel_y) {
   
-  if (nrow(dataset) == 0) {
+  # the following check is needed in case global or local filter is used to deselect all
+  if (is.null(dataset) || nrow(dataset) == 0) {
     return(NULL)
   }
   
