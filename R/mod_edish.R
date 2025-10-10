@@ -465,7 +465,7 @@ mod_edish_API_spec <- TC$group(
   lab_dataset_name = TC$dataset_name(),
   subjectid_var = TC$col("subject_level_dataset_name", TC$or(TC$character(), TC$factor())) |> TC$flag("subjid_var"),
   arm_var = TC$col("subject_level_dataset_name", TC$or(TC$character(), TC$factor())),
-  arm_default_vals = TC$choice_from_col_contents("arm_var") |> TC$flag("one_or_more", "optional"),
+  arm_default_vals = TC$choice_from_col_contents("arm_var") |> TC$flag("one_or_more", "optional", "manual_check"),
   visit_var = TC$col("lab_dataset_name", TC$or(TC$character(), TC$factor())),
   baseline_visit_val = TC$choice_from_col_contents("visit_var"),
   lb_test_var = TC$col("lab_dataset_name", TC$or(TC$character(), TC$factor())),
@@ -491,6 +491,22 @@ check_mod_edish <- function(
     visit_var, baseline_visit_val, lb_test_var, lb_test_choices, lb_test_default_x_val, lb_test_default_y_val, 
     lb_result_var, ref_range_upper_lim_var, receiver_id,
     warn, err
+  )
+  
+  # Check only if `arm_default_vals` is a character vector
+  # Reason: Arbitrary values allowed in case multiple studies are included with different arm values
+  CM$assert(
+    container = err,
+    cond = checkmate::test_character(
+      arm_default_vals, 
+      min.chars = 1, any.missing = FALSE, 
+      all.missing = FALSE, unique = TRUE, 
+      min.len = 1, null.ok = TRUE
+    ),
+    msg = sprintf(
+      "The values assigned to `arm_default_vals` are of type %s, but should be of type character.",
+      typeof(arm_default_vals)
+    )
   )
  
   # NOTE: Prevents dplyr from exploding inside `prepare_initial_data`

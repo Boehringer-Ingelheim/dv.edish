@@ -67,7 +67,8 @@ prepare_initial_data <- function(
         )
       )
   })
-if (nrow(sel_dataset_list[[1]]) == 0) {
+  
+  if (nrow(sel_dataset_list[[1]]) == 0) {
     return(NULL)
   }
   dataset <- Reduce(dplyr::full_join, sel_dataset_list) %>%
@@ -175,8 +176,13 @@ derive_req_vars <- function(
     ref_range_upper_lim_var,
     sel_x,
     sel_y) {
-  if (!is.null(dataset)) {
-    # Get the data frame in required structure (Pivot wider grouped by certain variables)
+  
+  # the following check is needed in case global or local filter is used to deselect all
+  if (is.null(dataset) || nrow(dataset) == 0) {
+    return(NULL)
+  }
+  
+  # Get the data frame in required structure (Pivot wider grouped by certain variables)
   dataset <- dataset %>%
     dplyr::filter(.data[[lb_test_var]] %in% c(sel_x, sel_y)) %>%
     dplyr::mutate(
@@ -194,7 +200,7 @@ derive_req_vars <- function(
       "r_Baseline_{{sel_x}}" = as.numeric(.data[[paste0("r_Baseline_", sel_x)]]),
       "r_Baseline_{{sel_y}}" = as.numeric(.data[[paste0("r_Baseline_", sel_y)]])
     )
-  }
+  
   return(dataset)
 }
 
@@ -268,8 +274,9 @@ generate_plot <- function(
     y_rng_lower,
     y_rng_upper,
     source = NULL) {
+  
   if (is.null(dataset)) {
-    return(dataset)
+    return(NULL)
   }
 
   # Prepare x-axis layout based on whether range has been specified
