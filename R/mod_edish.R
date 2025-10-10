@@ -497,7 +497,12 @@ check_mod_edish <- function(
   # Reason: Arbitrary values allowed in case multiple studies are included with different arm values
   CM$assert(
     container = err,
-    cond = is.character(arm_default_vals) | is.null(arm_default_vals),
+    cond = checkmate::test_character(
+      arm_default_vals, 
+      min.chars = 1, any.missing = FALSE, 
+      all.missing = FALSE, unique = TRUE, 
+      min.len = 1, null.ok = TRUE
+    ),
     msg = sprintf(
       "The values assigned to `arm_default_vals` are of type %s, but should be of type character.",
       typeof(arm_default_vals)
