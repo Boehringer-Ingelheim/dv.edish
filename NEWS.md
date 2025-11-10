@@ -1,4 +1,4 @@
-# dv.edish 1.2.0-9002
+# dv.edish 1.3.0
 
 - Add jumping feature.
 - Arm default values can be arbitrarily specified as long as they are character strings. This supports including multiple studies with different arm values.
