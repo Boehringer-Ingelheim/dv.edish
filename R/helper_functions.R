@@ -67,10 +67,14 @@ prepare_initial_data <- function(
         )
       )
   })
-
+  
+  if (nrow(sel_dataset_list[[1]]) == 0) {
+    return(NULL)
+  }
   dataset <- Reduce(dplyr::full_join, sel_dataset_list) %>%
     dplyr::filter(.data[[lb_test_var]] %in% lb_test_choices) %>%
     dplyr::group_by(.data[[subjectid_var]], .data[[arm_var]], .data[[lb_test_var]], .data[[visit_var]]) %>%
+    dplyr::filter(!all(is.na(.data[[lb_result_var]]))) %>%  # Filter out groups with all NA to avoid warning
     dplyr::filter(.data[[lb_result_var]] == max(.data[[lb_result_var]], na.rm = TRUE)) %>%
     dplyr::distinct() %>%
     dplyr::ungroup()
@@ -113,12 +117,13 @@ prepare_initial_data <- function(
 #'
 #' @keywords internal
 filter_data <- function(dataset, arm_var, sel_arm, lb_test_var, sel_lb_test) {
-  dataset <- dataset %>%
-    dplyr::filter(
-      .data[[lb_test_var]] %in% sel_lb_test,
-      .data[[arm_var]] %in% sel_arm
-    )
-
+  if (!is.null(dataset)) {
+    dataset <- dataset %>%
+      dplyr::filter(
+        .data[[lb_test_var]] %in% sel_lb_test,
+        .data[[arm_var]] %in% sel_arm
+      )
+  }
   return(dataset)
 }
 
@@ -171,10 +176,12 @@ derive_req_vars <- function(
     ref_range_upper_lim_var,
     sel_x,
     sel_y) {
-  if (nrow(dataset) == 0) {
+  
+  # the following check is needed in case global or local filter is used to deselect all
+  if (is.null(dataset) || nrow(dataset) == 0) {
     return(NULL)
   }
-
+  
   # Get the data frame in required structure (Pivot wider grouped by certain variables)
   dataset <- dataset %>%
     dplyr::filter(.data[[lb_test_var]] %in% c(sel_x, sel_y)) %>%
@@ -193,7 +200,7 @@ derive_req_vars <- function(
       "r_Baseline_{{sel_x}}" = as.numeric(.data[[paste0("r_Baseline_", sel_x)]]),
       "r_Baseline_{{sel_y}}" = as.numeric(.data[[paste0("r_Baseline_", sel_y)]])
     )
-
+  
   return(dataset)
 }
 
@@ -265,9 +272,11 @@ generate_plot <- function(
     x_rng_lower,
     x_rng_upper,
     y_rng_lower,
-    y_rng_upper) {
+    y_rng_upper,
+    source = NULL) {
+  
   if (is.null(dataset)) {
-    return(dataset)
+    return(NULL)
   }
 
   # Prepare x-axis layout based on whether range has been specified
@@ -285,7 +294,13 @@ generate_plot <- function(
   }
   
   plt_obj <- dataset %>%
-    plotly::plot_ly(type = "scatter", mode = "markers", color = .[[arm_var]]) %>%
+    plotly::plot_ly(
+      type = "scatter", 
+      mode = "markers", 
+      color = .[[arm_var]], 
+      key = .[[subjectid_var]],
+      source = source
+    ) %>%
     plotly::add_trace(
       x = ~ .data[[paste0("r_", x_plot_type, "_", sel_x)]],
       y = ~ .data[[paste0("r_", y_plot_type, "_", sel_y)]],
@@ -322,6 +337,8 @@ generate_plot <- function(
         )
       )
     )
+  
+  plotly::event_register(plt_obj, "plotly_click")
 
   return(plt_obj)
 }

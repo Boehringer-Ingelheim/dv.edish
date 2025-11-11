@@ -23,7 +23,8 @@ plot_specs <- specs_list(
 )
 
 framework_specs <- specs_list(
-  bookmarking = "The app's state gets restored correctly after bookmarking."
+  bookmarking = "The app's state gets restored correctly after bookmarking.",
+  jumping_feature = "The module allows to drill-down by jumping to the Patient Profile module."
 )
 
 specs <- specs_list(

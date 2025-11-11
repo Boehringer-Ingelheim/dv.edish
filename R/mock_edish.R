@@ -27,7 +27,7 @@ mock_edish_app <- function() {
 
 #' Mock app integrated in the module manager framework
 #'
-#' `mock_table_mm()` launches a mock app containing the dv.edish shiny module by means of the `dv.manager`.
+#' `mock_edish_mm()` launches a mock app containing the dv.edish shiny module by means of the `dv.manager`.
 #'
 #' @keywords internal
 mock_edish_mm <- function() {
@@ -35,7 +35,7 @@ mock_edish_mm <- function() {
   lb <- pharmaverseadam::adlb
 
   module_list <- list(
-    "edish demo" = mod_edish(
+    "eDISH Demo" = mod_edish(
       module_id = "edish",
       subject_level_dataset_name = "dm",
       lab_dataset_name = "lb",
