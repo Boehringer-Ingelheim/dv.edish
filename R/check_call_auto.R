@@ -4,9 +4,9 @@
 
 # dv.edish::mod_edish
 check_mod_edish_auto <- function(afmm, datasets, module_id, subject_level_dataset_name, lab_dataset_name,
-    subjectid_var, arm_var, arm_default_vals, visit_var, baseline_visit_val, lb_test_var, lb_test_choices,
-    lb_test_default_x_val, lb_test_default_y_val, lb_result_var, ref_range_upper_lim_var, receiver_id,
-    warn, err) {
+    subjectid_var, arm_var, arm_default_vals, visit_var, baseline_visit_val, lb_test_var, at_choices,
+    tbili_choice, alp_choice, lb_date_var, lb_result_var, ref_range_upper_lim_var, receiver_id, warn,
+    err) {
     OK <- logical(0)
     used_dataset_names <- new.env(parent = emptyenv())
     OK[["module_id"]] <- CM$check_module_id("module_id", module_id, warn, err)
@@ -40,19 +40,20 @@ check_mod_edish_auto <- function(afmm, datasets, module_id, subject_level_datase
     flags <- structure(list(), names = character(0))
     OK[["lb_test_var"]] <- OK[["lab_dataset_name"]] && CM$check_dataset_colum_name("lb_test_var", lb_test_var,
         subkind, flags, lab_dataset_name, datasets[[lab_dataset_name]], warn, err)
-    flags <- list(one_or_more = TRUE, optional = TRUE)
-    OK[["lb_test_choices"]] <- OK[["lb_test_var"]] && CM$check_choice_from_col_contents("lb_test_choices",
-        lb_test_choices, flags, "lab_dataset_name", datasets[[lab_dataset_name]], lb_test_var, warn,
-        err)
+    flags <- list(one_or_more = TRUE)
+    OK[["at_choices"]] <- OK[["lb_test_var"]] && CM$check_choice_from_col_contents("at_choices", at_choices,
+        flags, "lab_dataset_name", datasets[[lab_dataset_name]], lb_test_var, warn, err)
+    flags <- structure(list(), names = character(0))
+    OK[["tbili_choice"]] <- OK[["lb_test_var"]] && CM$check_choice_from_col_contents("tbili_choice",
+        tbili_choice, flags, "lab_dataset_name", datasets[[lab_dataset_name]], lb_test_var, warn, err)
     flags <- list(optional = TRUE)
-    OK[["lb_test_default_x_val"]] <- OK[["lb_test_var"]] && CM$check_choice_from_col_contents("lb_test_default_x_val",
-        lb_test_default_x_val, flags, "lab_dataset_name", datasets[[lab_dataset_name]], lb_test_var,
-        warn, err)
-    flags <- list(optional = TRUE)
-    OK[["lb_test_default_y_val"]] <- OK[["lb_test_var"]] && CM$check_choice_from_col_contents("lb_test_default_y_val",
-        lb_test_default_y_val, flags, "lab_dataset_name", datasets[[lab_dataset_name]], lb_test_var,
-        warn, err)
-    subkind <- list(kind = "or", options = list(list(kind = "numeric", min = NA, max = NA)))
+    OK[["alp_choice"]] <- OK[["lb_test_var"]] && CM$check_choice_from_col_contents("alp_choice", alp_choice,
+        flags, "lab_dataset_name", datasets[[lab_dataset_name]], lb_test_var, warn, err)
+    subkind <- list(kind = "or", options = list(list(kind = "date"), list(kind = "datetime")))
+    flags <- structure(list(), names = character(0))
+    OK[["lb_date_var"]] <- OK[["lab_dataset_name"]] && CM$check_dataset_colum_name("lb_date_var", lb_date_var,
+        subkind, flags, lab_dataset_name, datasets[[lab_dataset_name]], warn, err)
+    subkind <- list(kind = "numeric", min = NA, max = NA)
     flags <- structure(list(), names = character(0))
     OK[["lb_result_var"]] <- OK[["lab_dataset_name"]] && CM$check_dataset_colum_name("lb_result_var",
         lb_result_var, subkind, flags, lab_dataset_name, datasets[[lab_dataset_name]], warn, err)

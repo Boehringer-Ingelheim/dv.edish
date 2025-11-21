@@ -33,12 +33,11 @@ utils::globalVariables(".")
 #'
 #' Name of the variable containing the reference range upper limits.
 #'
-#' @return A single dataframe including columns defined by `subjectid_var`,
+#' @return A single data frame including columns defined by `subjectid_var`,
 #' `arm_var`, `visit_var`, `lb_test_var`, `lb_result_var`, and `ref_range_upper_lim_var`,
 #' as well as the column "BASE" containing the corresponding baseline values.
 #' In case of multiple values in `lb_result_var` per `subjectid_var`, `visit_var`, and
-#' `lb_test_var`, only the maximum value will be used. Note that a NA value in the considered values
-#' will cause a value of NA to be returned as maximum value.
+#' `lb_test_var`, only the maximum value will be used. Note that NA values will not be considered.
 #'
 #' @importFrom rlang .data
 #' @keywords internal
@@ -50,28 +49,37 @@ prepare_initial_data <- function(
     baseline_visit_val,
     lb_test_var,
     lb_test_choices,
+    alp_choice,
+    lb_date_var,
     lb_result_var,
     ref_range_upper_lim_var) {
+  
+  # Keep only the necessary variables
   sel_dataset_list <- lapply(dataset_list, function(x) {
-    x %>%
-      dplyr::select(
-        dplyr::any_of(
-          c(
-            subjectid_var,
-            arm_var,
-            visit_var,
-            lb_test_var,
-            lb_result_var,
-            ref_range_upper_lim_var
-          )
-        )
-      )
+    vars <- c(
+      subjectid_var,
+      arm_var,
+      visit_var,
+      lb_test_var,
+      lb_date_var,
+      lb_result_var,
+      ref_range_upper_lim_var
+    )
+    x[intersect(vars, names(x))]
   })
   
+  # Return if subject-level dataset has zero rows
   if (nrow(sel_dataset_list[[1]]) == 0) {
     return(NULL)
   }
-  dataset <- Reduce(dplyr::full_join, sel_dataset_list) %>%
+  
+  #browser()
+  ## !!! What if date is NA? Should such rows be dropped with warning?
+  ## ! Need tests for this function
+  ## ! Do not forget: POSIXct needs to be converted to Date
+  
+  # Join subject-level dataset with lab dataset keeping only max value at each visit
+  combined_dataset <- Reduce(dplyr::full_join, sel_dataset_list) %>%
     dplyr::filter(.data[[lb_test_var]] %in% lb_test_choices) %>%
     dplyr::group_by(.data[[subjectid_var]], .data[[arm_var]], .data[[lb_test_var]], .data[[visit_var]]) %>%
     dplyr::filter(!all(is.na(.data[[lb_result_var]]))) %>%  # Filter out groups with all NA to avoid warning
@@ -79,15 +87,36 @@ prepare_initial_data <- function(
     dplyr::distinct() %>%
     dplyr::ungroup()
 
-  base_data <- dataset %>%
+  # Process baseline data
+  base_data <- combined_dataset %>%
     dplyr::filter(.data[[visit_var]] == baseline_visit_val) %>%
-    dplyr::mutate(BASE = .data[[lb_result_var]]) %>%
-    dplyr::select(dplyr::all_of(c(subjectid_var, lb_test_var, arm_var, "BASE")))
+    dplyr::mutate(BASE = .data[[lb_result_var]],
+                  BASEDT = .data[[lb_date_var]]) %>%
+    dplyr::select(dplyr::all_of(c(subjectid_var, lb_test_var, arm_var, "BASE", "BASEDT")))
 
-  dataset <- dataset %>%
+  # Merge on baseline values
+  combined_dataset <- combined_dataset %>%
     dplyr::left_join(base_data, by = c(subjectid_var, lb_test_var, arm_var))
-
-  return(dataset)
+  
+  # Get peak values of post-baseline rows
+  peak_data <- combined_dataset %>%
+    dplyr::filter(.data[[visit_var]] != baseline_visit_val) %>%
+    dplyr::group_by(.data[[subjectid_var]], .data[[arm_var]], .data[[lb_test_var]]) %>%
+    dplyr::slice_max(.data[[lb_result_var]], with_ties = TRUE) %>%
+    dplyr::slice_min(.data[[lb_date_var]], n = 1, with_ties = FALSE) %>%
+    dplyr::ungroup()
+   
+  # Get alkaline phosphatase values
+  alp_data <- combined_dataset |>
+    dplyr::filter(.data[[lb_test_var]] == alp_choice) |>
+    dplyr::mutate(ALP_ULN = .data[[lb_result_var]] / .data[[ref_range_upper_lim_var]],
+                  ALP_Baseline = .data[[lb_result_var]] / .data[["BASE"]]) |>
+    dplyr::select(dplyr::all_of(c(subjectid_var, arm_var, visit_var, "ALP_ULN", "ALP_Baseline")))
+  
+  final_dataset <- peak_data |>
+    dplyr::left_join(alp_data, by = c(subjectid_var, arm_var, visit_var))
+  
+  return(final_dataset)
 }
 
 
@@ -99,7 +128,7 @@ prepare_initial_data <- function(
 #'
 #' @param dataset `[data.frame]`
 #'
-#' A dataframe containing the columns specified by `lb_test_var` and `arm_var`.
+#' A data frame containing the columns specified by `lb_test_var` and `arm_var`.
 #' @param arm_var `[character(1)]`
 #'
 #' Name of the variable containing the arm/treatment information.
@@ -127,7 +156,32 @@ filter_data <- function(dataset, arm_var, sel_arm, lb_test_var, sel_lb_test) {
   return(dataset)
 }
 
-
+#' Identify data related to a single axis
+#' 
+#' @return A data frame.
+#' 
+#' @inheritParams prepare_initial_data
+#' @keywords internal
+identify_axis_data <- function(dataset, arm_var, visit_var, lb_test_var, lb_test, lb_date_var, lb_result_var,
+                               ref_range_upper_lim_var, suffix) {
+  
+  axis_data <- dataset |>
+    dplyr::filter(.data[[lb_test_var]] == lb_test) |>
+    dplyr::mutate(
+      !!paste0("r_ULN_", suffix) := .data[[lb_result_var]] / .data[[ref_range_upper_lim_var]],
+      !!paste0("r_Baseline_", suffix) := .data[[lb_result_var]] / .data[["BASE"]],
+      !!paste0("BASE_", suffix) := .data[["BASE"]],
+      !!paste0("BASEDT_", suffix) := .data[["BASEDT"]],
+      !!paste0("VISIT_", suffix) := .data[[visit_var]],
+      !!paste0("DATE_", suffix) := .data[[lb_date_var]],
+      !!paste0("LBTEST_", suffix) := lb_test
+    )
+  
+  drop_vars <- c(visit_var, lb_test_var, lb_date_var, lb_result_var, ref_range_upper_lim_var, "BASE", "BASEDT")
+  axis_data <- axis_data[, setdiff(names(axis_data), drop_vars)]
+  
+  return(axis_data)
+}
 
 #' Derive required variables
 #'
@@ -172,6 +226,7 @@ derive_req_vars <- function(
     arm_var,
     visit_var,
     lb_test_var,
+    lb_date_var,
     lb_result_var,
     ref_range_upper_lim_var,
     sel_x,
@@ -181,27 +236,36 @@ derive_req_vars <- function(
   if (is.null(dataset) || nrow(dataset) == 0) {
     return(NULL)
   }
+ 
+  dataset_x <- identify_axis_data(dataset, arm_var, visit_var, lb_test_var,sel_x, lb_date_var, lb_result_var,
+                                  ref_range_upper_lim_var, "{{sel_x}}")
+  dataset_y <- identify_axis_data(dataset, arm_var, visit_var, lb_test_var, sel_y, lb_date_var, lb_result_var,
+                                  ref_range_upper_lim_var, "{{sel_y}}")
+
+  # Merge x-axis data with y-axis data dropping ALP/ULN and ALP/Baseline associated to y-axis
+  merged_data <- dataset_x |>
+    dplyr::full_join(dataset_y[, !names(dataset_y) %in% c("ALP_ULN", "ALP_Baseline")])
   
-  # Get the data frame in required structure (Pivot wider grouped by certain variables)
-  dataset <- dataset %>%
-    dplyr::filter(.data[[lb_test_var]] %in% c(sel_x, sel_y)) %>%
-    dplyr::mutate(
-      r_ULN = .data[[lb_result_var]] / .data[[ref_range_upper_lim_var]],
-      r_Baseline = .data[[lb_result_var]] / .data[["BASE"]]
-    ) %>%
-    dplyr::select(dplyr::all_of(c(subjectid_var, arm_var, lb_test_var, visit_var, "r_ULN", "r_Baseline"))) %>%
-    dplyr::group_by(.data[[subjectid_var]], .data[[arm_var]], .data[[lb_test_var]], .data[[visit_var]]) %>%
-    dplyr::mutate(row = dplyr::row_number()) %>%
-    tidyr::pivot_wider(names_from = tidyr::all_of(lb_test_var), values_from = c("r_ULN", "r_Baseline")) %>%
-    dplyr::select(-dplyr::all_of("row")) %>%
-    dplyr::mutate(
-      "r_ULN_{{sel_x}}" = as.numeric(.data[[paste0("r_ULN_", sel_x)]]),
-      "r_ULN_{{sel_y}}" = as.numeric(.data[[paste0("r_ULN_", sel_y)]]),
-      "r_Baseline_{{sel_x}}" = as.numeric(.data[[paste0("r_Baseline_", sel_x)]]),
-      "r_Baseline_{{sel_y}}" = as.numeric(.data[[paste0("r_Baseline_", sel_y)]])
-    )
+  # # Get the data frame in required structure (Pivot wider grouped by certain variables)
+  # dataset <- dataset %>%
+  #   dplyr::filter(.data[[lb_test_var]] %in% c(sel_x, sel_y)) %>%
+  #   dplyr::mutate(
+  #     r_ULN = .data[[lb_result_var]] / .data[[ref_range_upper_lim_var]],
+  #     r_Baseline = .data[[lb_result_var]] / .data[["BASE"]]
+  #   ) %>%
+  #   dplyr::select(dplyr::all_of(c(subjectid_var, arm_var, lb_test_var, visit_var, "r_ULN", "r_Baseline"))) %>%
+  #   dplyr::group_by(.data[[subjectid_var]], .data[[arm_var]], .data[[lb_test_var]], .data[[visit_var]]) %>%
+  #   dplyr::mutate(row = dplyr::row_number()) %>%
+  #   tidyr::pivot_wider(names_from = tidyr::all_of(lb_test_var), values_from = c("r_ULN", "r_Baseline")) %>%
+  #   dplyr::select(-dplyr::all_of("row")) %>%
+  #   dplyr::mutate(
+  #     "r_ULN_{{sel_x}}" = as.numeric(.data[[paste0("r_ULN_", sel_x)]]),
+  #     "r_ULN_{{sel_y}}" = as.numeric(.data[[paste0("r_ULN_", sel_y)]]),
+  #     "r_Baseline_{{sel_x}}" = as.numeric(.data[[paste0("r_Baseline_", sel_x)]]),
+  #     "r_Baseline_{{sel_y}}" = as.numeric(.data[[paste0("r_Baseline_", sel_y)]])
+  #   )
   
-  return(dataset)
+  return(merged_data)
 }
 
 
@@ -265,8 +329,9 @@ generate_plot <- function(
     visit_var,
     sel_x,
     sel_y,
-    x_plot_type,
-    y_plot_type,
+    # x_plot_type,
+    # y_plot_type,
+    plot_type,
     x_ref_line_num,
     y_ref_line_num,
     x_rng_lower,
@@ -280,18 +345,40 @@ generate_plot <- function(
   }
 
   # Prepare x-axis layout based on whether range has been specified
-  layout_xaxis <- list(title = paste0(sel_x, "/", x_plot_type))
+  layout_xaxis <- list(title = paste0(sel_x, "/", plot_type), type = "log")
   if (!is.null(x_rng_lower) && !is.null(x_rng_upper)) {
     layout_xaxis <- c(layout_xaxis,
                       list(range = c(x_rng_lower, x_rng_upper)))
   }
 
   # Prepare y-axis layout based on whether range has been specified
-  layout_yaxis <- list(title = paste0(sel_y, "/", y_plot_type))
+  layout_yaxis <- list(title = paste0(sel_y, "/", plot_type), type = "log")
   if (!is.null(y_rng_lower) && !is.null(y_rng_upper)) {
     layout_yaxis <- c(layout_yaxis,
                       list(range = c(y_rng_lower, y_rng_upper)))
   }
+  
+  #browser()
+
+  dataset[["hover_date_x"]] <- gsub(
+    "NA", "",
+    paste0(dataset[["DATE_{{sel_x}}"]],
+           ifelse(dataset[["DATE_{{sel_x}}"]] <= dataset[["DATE_{{sel_y}}"]],
+                  " (1st)", " (2nd)"))
+  )
+  
+  dataset[["hover_date_y"]] <- gsub(
+    "NA", "",
+    paste0(dataset[["DATE_{{sel_y}}"]],
+           ifelse(dataset[["DATE_{{sel_y}}"]] < dataset[["DATE_{{sel_x}}"]],
+                  " (1st)", " (2nd)"))
+  )
+
+  dataset[["hover_alp"]] <- gsub(
+    "NA", "",
+    paste(sprintf("%.3f", dataset[[paste0("ALP_", plot_type)]]),
+          ifelse(dataset[[paste0("ALP_", plot_type)]] <= 2, " (<= 2)", " (> 2)"))
+  )
   
   plt_obj <- dataset %>%
     plotly::plot_ly(
@@ -302,14 +389,19 @@ generate_plot <- function(
       source = source
     ) %>%
     plotly::add_trace(
-      x = ~ .data[[paste0("r_", x_plot_type, "_", sel_x)]],
-      y = ~ .data[[paste0("r_", y_plot_type, "_", sel_y)]],
+      x = ~ .data[[paste0("r_", plot_type, "_{{sel_x}}")]],
+      y = ~ .data[[paste0("r_", plot_type, "_{{sel_y}}")]],
       hovertext = ~ paste0(
         "Subject: ", .data[[subjectid_var]],
         "<br>Arm: ", .data[[arm_var]],
-        "<br>Visit: ", .data[[visit_var]],
-        "<br>x-axis: ", round(.data[[paste0("r_", x_plot_type, "_", sel_x)]], digits = 3),
-        "<br>y-axis: ", round(.data[[paste0("r_", y_plot_type, "_", sel_y)]], digits = 3)
+        "<br>---<br>", .data[["LBTEST_{{sel_x}}"]], ": ", sprintf("%.3f", .data[[paste0("r_", plot_type, "_{{sel_x}}")]]),
+        "<br>  Visit: ", .data[["VISIT_{{sel_x}}"]],
+        "<br>  Date: ", .data[["hover_date_x"]],
+        "<br>  ALP/", plot_type, ": ", .data[["hover_alp"]],
+        "<br>---<br>", .data[["LBTEST_{{sel_y}}"]], ": ", sprintf("%.3f", .data[[paste0("r_", plot_type, "_{{sel_y}}")]]),
+        "<br>  Visit: ", .data[["VISIT_{{sel_y}}"]],
+        "<br>  Date: ", .data[["hover_date_y"]],
+        "<br>---<br>Time between peaks: ", abs(.data[["DATE_{{sel_y}}"]] - .data[["DATE_{{sel_x}}"]]), " days"
       ),
       hoverinfo = "text"
     ) %>%

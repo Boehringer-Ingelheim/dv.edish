@@ -1,5 +1,7 @@
 # CONSTANTS ----
 EDISH <- pack_of_constants(
+  PLOT_OPTIONS_ID = "plot_options",
+  PLOT_OPTIONS_LABEL = "Plot Options",
   ARM_ID = "arm_id",
   ARM_LABEL = "Select arm:",
   X_AXIS_HEADER = "Specify x-axis",
@@ -13,8 +15,9 @@ EDISH <- pack_of_constants(
   X_RNG_ID = "x_rng",
   Y_RNG_ID = "y_rng",
   RNG_LABEL = "Range:",
-  X_PLOT_TYPE_ID = "x_plot_type",
-  Y_PLOT_TYPE_ID = "y_plot_type",
+  #X_PLOT_TYPE_ID = "x_plot_type",
+  #Y_PLOT_TYPE_ID = "y_plot_type",
+  PLOT_TYPE_ID = "plot_type",
   PLOT_TYPE_CHOICES = c("\u00d7 ULN (eDISH)" = "ULN",
                         "\u00d7 Baseline (mDISH)" = "Baseline"),
   PLOT_ID = "plot",
@@ -38,80 +41,87 @@ edish_UI <- function(module_id) {
 
   ns <- shiny::NS(module_id)
 
-  ui <- shiny::tagList(
-    shiny::sidebarLayout(
-      shiny::sidebarPanel(
-        width = 2,
-        shiny::selectInput(
-          inputId = ns(EDISH$ARM_ID),
-          label = EDISH$ARM_LABEL,
-          choices = NULL,
-          multiple = TRUE
-        ),
-        shiny::hr(),
-        shiny::h4(EDISH$X_AXIS_HEADER),
-        shiny::selectInput(
-          inputId = ns(EDISH$X_AXIS_ID),
-          label = EDISH$AXIS_LABEL,
-          choices = NULL
-        ),
-        shiny::numericInput(
-          inputId = ns(EDISH$X_REF_ID),
-          label = EDISH$REF_LABEL,
-          value = 3,
-          min = 0,
-          max = 100,
-          step = 0.5
-        ),
-        shinyWidgets::numericRangeInput(
-          inputId = ns(EDISH$X_RNG_ID),
-          label = EDISH$RNG_LABEL,
-          value = c(NA, NA),
-          min = 0,
-          max = 100,
-          step = 0.1
-        ),
-        shiny::radioButtons(
-          inputId = ns(EDISH$X_PLOT_TYPE_ID),
-          label = NULL,
-          choices = EDISH$PLOT_TYPE_CHOICES
-        ),
-        shiny::hr(),
-        shiny::h4(EDISH$Y_AXIS_HEADER),
-        shiny::selectInput(
-          inputId = ns(EDISH$Y_AXIS_ID),
-          label = EDISH$AXIS_LABEL,
-          choices = NULL
-        ),
-        shiny::numericInput(
-          inputId = ns(EDISH$Y_REF_ID),
-          label = EDISH$REF_LABEL,
-          value = 2,
-          min = 0,
-          max = 100,
-          step = 0.5
-        ),
-        shinyWidgets::numericRangeInput(
-          inputId = ns(EDISH$Y_RNG_ID),
-          label = EDISH$RNG_LABEL,
-          value = c(NA, NA),
-          min = 0,
-          max = 100,
-          step = 0.1
-        ),
-        shiny::radioButtons(
-          inputId = ns(EDISH$Y_PLOT_TYPE_ID),
-          label = NULL,
-          choices = EDISH$PLOT_TYPE_CHOICES
-        )
-      ),
-      shiny::mainPanel(
-        plotly::plotlyOutput(outputId = ns(EDISH$PLOT_ID)),
-        shiny::plotOutput(outputId = ns(EDISH$NO_PLOT))
-      )
+  drop_menu <- shinyWidgets::dropMenu(
+    tag = shiny::actionButton(
+      inputId = ns(EDISH$PLOT_OPTIONS_ID), 
+      label = EDISH$PLOT_OPTIONS_LABEL,
+      icon = shiny::icon("gear")
+    ),
+    shiny::radioButtons(
+      inputId = ns(EDISH$PLOT_TYPE_ID),
+      label = NULL,
+      choices = EDISH$PLOT_TYPE_CHOICES
+    ),
+    shiny::selectInput(
+      inputId = ns(EDISH$ARM_ID),
+      label = EDISH$ARM_LABEL,
+      choices = NULL,
+      multiple = TRUE
+    ),
+    shiny::hr(),
+    shiny::h4(EDISH$X_AXIS_HEADER),
+    shiny::selectInput(
+      inputId = ns(EDISH$X_AXIS_ID),
+      label = EDISH$AXIS_LABEL,
+      choices = NULL
+    ),
+    shiny::numericInput(
+      inputId = ns(EDISH$X_REF_ID),
+      label = EDISH$REF_LABEL,
+      value = 3,
+      min = 0,
+      max = 100,
+      step = 0.5
+    ),
+    shinyWidgets::numericRangeInput(
+      inputId = ns(EDISH$X_RNG_ID),
+      label = EDISH$RNG_LABEL,
+      value = c(NA, NA),
+      min = 0,
+      max = 100,
+      step = 0.1
+    ),
+    # shiny::radioButtons(
+    #   inputId = ns(EDISH$X_PLOT_TYPE_ID),
+    #   label = NULL,
+    #   choices = EDISH$PLOT_TYPE_CHOICES
+    # ),
+    shiny::hr(),
+    shiny::h4(EDISH$Y_AXIS_HEADER),
+    shiny::selectInput(
+      inputId = ns(EDISH$Y_AXIS_ID),
+      label = EDISH$AXIS_LABEL,
+      choices = NULL
+    ),
+    shiny::numericInput(
+      inputId = ns(EDISH$Y_REF_ID),
+      label = EDISH$REF_LABEL,
+      value = 2,
+      min = 0,
+      max = 100,
+      step = 0.5
+    ),
+    shinyWidgets::numericRangeInput(
+      inputId = ns(EDISH$Y_RNG_ID),
+      label = EDISH$RNG_LABEL,
+      value = c(NA, NA),
+      min = 0,
+      max = 100,
+      step = 0.1
     )
+    # shiny::radioButtons(
+    #   inputId = ns(EDISH$Y_PLOT_TYPE_ID),
+    #   label = NULL,
+    #   choices = EDISH$PLOT_TYPE_CHOICES
+    # )
   )
-
+    
+  ui <- shiny::tagList(
+    drop_menu,
+    plotly::plotlyOutput(outputId = ns(EDISH$PLOT_ID)),
+    shiny::plotOutput(outputId = ns(EDISH$NO_PLOT))
+  )
+  
   return(ui)
 }
 
@@ -141,17 +151,25 @@ edish_server <- function(
     visit_var = "VISIT",
     baseline_visit_val = "VISIT 01",
     lb_test_var = "LBTEST",
-    lb_test_choices = c(
-      "Alkaline Phosphatase",
-      "Alanine Aminotransferase",
-      "Aspartate Aminotransferase",
-      "Bilirubin"
-    ),
-    lb_test_default_x_val = "Aspartate Aminotransferase",
-    lb_test_default_y_val = "Bilirubin",
+    # lb_test_choices = c(
+    #   "Alkaline Phosphatase",
+    #   "Alanine Aminotransferase",
+    #   "Aspartate Aminotransferase",
+    #   "Bilirubin"
+    # ),
+    # lb_test_default_x_val = "Aspartate Aminotransferase",
+    # lb_test_default_y_val = "Bilirubin",
+    at_choices = NULL,
+    tbili_choice = NULL,
+    alp_choice = NULL,
+    lb_date_var = NULL,
     lb_result_var = "LBSTRESN",
     ref_range_upper_lim_var = "LBSTNRHI",
     on_sbj_click = NULL) {
+  
+  lb_test_choices <- c(at_choices, tbili_choice, alp_choice)
+  lb_test_default_x_val <- at_choices[1]
+  lb_test_default_y_val <- tbili_choice
   
   # Check validity of arguments
   ac <- checkmate::makeAssertCollection()
@@ -182,6 +200,7 @@ edish_server <- function(
   )
   checkmate::assert_string(lb_test_default_x_val, min.chars = 1, add = ac)
   checkmate::assert_string(lb_test_default_y_val, min.chars = 1, add = ac)
+  checkmate::assert_string(lb_date_var, min.chars = 1, add = ac)
   checkmate::assert_string(lb_result_var, min.chars = 1, add = ac)
   checkmate::assert_string(ref_range_upper_lim_var, min.chars = 1, add = ac)
   checkmate::reportAssertions(ac)
@@ -205,6 +224,8 @@ edish_server <- function(
         baseline_visit_val = baseline_visit_val,
         lb_test_var = lb_test_var,
         lb_test_choices = lb_test_choices,
+        alp_choice = alp_choice,
+        lb_date_var = lb_date_var,
         lb_result_var = lb_result_var,
         ref_range_upper_lim_var = ref_range_upper_lim_var
       )
@@ -251,6 +272,7 @@ edish_server <- function(
         arm_var = arm_var,
         visit_var = visit_var,
         lb_test_var = lb_test_var,
+        lb_date_var = lb_date_var,
         lb_result_var = lb_result_var,
         ref_range_upper_lim_var = ref_range_upper_lim_var,
         sel_x = shiny::req(input[[EDISH$X_AXIS_ID]]),
@@ -264,8 +286,9 @@ edish_server <- function(
         dataset = plot_data(),
         subjectid_var = subjectid_var, arm_var = arm_var, visit_var = visit_var,
         sel_x = input[[EDISH$X_AXIS_ID]], sel_y = input[[EDISH$Y_AXIS_ID]],
-        x_plot_type = input[[EDISH$X_PLOT_TYPE_ID]],
-        y_plot_type = input[[EDISH$Y_PLOT_TYPE_ID]],
+        # x_plot_type = input[[EDISH$X_PLOT_TYPE_ID]],
+        # y_plot_type = input[[EDISH$Y_PLOT_TYPE_ID]],
+        plot_type = input[[EDISH$PLOT_TYPE_ID]],
         x_ref_line_num = input[[EDISH$X_REF_ID]], y_ref_line_num = input[[EDISH$Y_REF_ID]],
         x_rng_lower = input[[EDISH$X_RNG_ID]][1], x_rng_upper = input[[EDISH$X_RNG_ID]][2],
         y_rng_lower = input[[EDISH$Y_RNG_ID]][1], y_rng_upper = input[[EDISH$Y_RNG_ID]][2],
@@ -380,14 +403,18 @@ mod_edish <- function(
     visit_var = "VISIT",
     baseline_visit_val = "VISIT 01",
     lb_test_var = "LBTEST",
-    lb_test_choices = c(
-      "Alkaline Phosphatase",
-      "Alanine Aminotransferase",
-      "Aspartate Aminotransferase",
-      "Bilirubin"
-    ),
-    lb_test_default_x_val = "Aspartate Aminotransferase",
-    lb_test_default_y_val = "Bilirubin",
+    # lb_test_choices = c(
+    #   "Alkaline Phosphatase",
+    #   "Alanine Aminotransferase",
+    #   "Aspartate Aminotransferase",
+    #   "Bilirubin"
+    # ),
+    # lb_test_default_x_val = "Aspartate Aminotransferase",
+    # lb_test_default_y_val = "Bilirubin",
+    at_choices = c("Alanine Aminotransferase", "Aspartate Aminotransferase"),
+    tbili_choice = "Bilirubin",
+    alp_choice = "Alkaline Phosphatase",
+    lb_date_var = NULL,
     lb_result_var = "LBSTRESN",
     ref_range_upper_lim_var = "LBSTNRHI",
     receiver_id = NULL) {
@@ -424,9 +451,13 @@ mod_edish <- function(
         visit_var = visit_var,
         baseline_visit_val = baseline_visit_val,
         lb_test_var = lb_test_var,
-        lb_test_choices = lb_test_choices,
-        lb_test_default_x_val = lb_test_default_x_val,
-        lb_test_default_y_val = lb_test_default_y_val,
+        # lb_test_choices = lb_test_choices,
+        # lb_test_default_x_val = lb_test_default_x_val,
+        # lb_test_default_y_val = lb_test_default_y_val,
+        at_choices = at_choices,
+        tbili_choice = tbili_choice,
+        alp_choice = alp_choice,
+        lb_date_var = lb_date_var,
         lb_result_var = lb_result_var,
         ref_range_upper_lim_var = ref_range_upper_lim_var,
         on_sbj_click = on_sbj_click_fun
@@ -451,9 +482,13 @@ mod_edish_API_docs <- list(
   visit_var = list(""),
   baseline_visit_val = list(""),
   lb_test_var = list(""),
-  lb_test_choices = list(""),
-  lb_test_default_x_val = list(""),
-  lb_test_default_y_val = list(""),
+  #lb_test_choices = list(""),
+  #lb_test_default_x_val = list(""),
+  #lb_test_default_y_val = list(""),
+  at_choices = list(""),
+  tbili_choice = list(""),
+  alp_choice = list(""),
+  lb_date_var = list(""),
   lb_result_var = list(""),
   ref_range_upper_lim_var = list(""),
   receiver_id = list("")
@@ -469,18 +504,23 @@ mod_edish_API_spec <- TC$group(
   visit_var = TC$col("lab_dataset_name", TC$or(TC$character(), TC$factor())),
   baseline_visit_val = TC$choice_from_col_contents("visit_var"),
   lb_test_var = TC$col("lab_dataset_name", TC$or(TC$character(), TC$factor())),
-  lb_test_choices = TC$choice_from_col_contents("lb_test_var") |> TC$flag("one_or_more", "optional"),
-  lb_test_default_x_val = TC$choice_from_col_contents("lb_test_var") |> TC$flag("optional"),
-  lb_test_default_y_val = TC$choice_from_col_contents("lb_test_var") |> TC$flag("optional"),
-  lb_result_var = TC$col("lab_dataset_name", TC$or(TC$numeric())),
+  #lb_test_choices = TC$choice_from_col_contents("lb_test_var") |> TC$flag("one_or_more", "optional"),
+  #lb_test_default_x_val = TC$choice_from_col_contents("lb_test_var") |> TC$flag("optional"),
+  #lb_test_default_y_val = TC$choice_from_col_contents("lb_test_var") |> TC$flag("optional"),
+  at_choices = TC$choice_from_col_contents("lb_test_var") |> TC$flag("one_or_more"),
+  tbili_choice = TC$choice_from_col_contents("lb_test_var"),
+  alp_choice = TC$choice_from_col_contents("lb_test_var") |> TC$flag("optional"),
+  lb_date_var = TC$col("lab_dataset_name", TC$or(TC$date(), TC$datetime())),
+  lb_result_var = TC$col("lab_dataset_name", TC$numeric()),
   ref_range_upper_lim_var = TC$col("lab_dataset_name", TC$numeric()) |> TC$flag("optional"),
   receiver_id = TC$character() |> TC$flag("optional")
 ) |> TC$attach_docs(mod_edish_API_docs)
 
 check_mod_edish <- function(
     afmm, datasets, module_id, subject_level_dataset_name, lab_dataset_name, subjectid_var, arm_var, arm_default_vals, 
-    visit_var, baseline_visit_val, lb_test_var, lb_test_choices, lb_test_default_x_val, lb_test_default_y_val, 
-    lb_result_var, ref_range_upper_lim_var, receiver_id
+    visit_var, baseline_visit_val, lb_test_var, # lb_test_choices, lb_test_default_x_val, lb_test_default_y_val, 
+    at_choices, tbili_choice, alp_choice,
+    lb_date_var, lb_result_var, ref_range_upper_lim_var, receiver_id
   ) {
   warn <- CM$container()
   err <- CM$container()
@@ -488,8 +528,9 @@ check_mod_edish <- function(
   OK <- check_mod_edish_auto(
     afmm, datasets, 
     module_id, subject_level_dataset_name, lab_dataset_name, subjectid_var, arm_var, arm_default_vals, 
-    visit_var, baseline_visit_val, lb_test_var, lb_test_choices, lb_test_default_x_val, lb_test_default_y_val, 
-    lb_result_var, ref_range_upper_lim_var, receiver_id,
+    visit_var, baseline_visit_val, lb_test_var, # lb_test_choices, lb_test_default_x_val, lb_test_default_y_val, 
+    at_choices, tbili_choice, alp_choice,
+    lb_date_var, lb_result_var, ref_range_upper_lim_var, receiver_id,
     warn, err
   )
   
@@ -523,29 +564,29 @@ check_mod_edish <- function(
     )
   }
 
-  # NOTE: Ensures that `lb_test_default_{x,y}_val` are a subset of the available `lb_test_choices`
-  if (all(OK[c("lab_dataset_name", "lb_test_var", "lb_test_choices", "lb_test_default_x_val")])) {
-    if (OK["lb_test_default_x_val"]) {
-      CM$assert(
-        container = err,
-        cond = lb_test_default_x_val %in% lb_test_choices,
-        msg = sprintf(
-          'The value assigned to `lb_test_default_x_val` ("%s") should be among the ones provided by `lb_test_choices` (%s).',
-          lb_test_default_x_val, paste(sprintf('"%s"', lb_test_choices), collapse = ", ")
-        )
-      )
-    }
-    if (OK["lb_test_default_y_val"]) {
-      CM$assert(
-        container = err,
-        cond = lb_test_default_y_val %in% lb_test_choices,
-        msg = sprintf(
-          'The value assigned to `lb_test_default_y_val` ("%s") should be among the ones provided by `lb_test_choices` (%s).',
-          lb_test_default_y_val, paste(sprintf('"%s"', lb_test_choices), collapse = ", ")
-        )
-      )
-    }
-  }
+  # # NOTE: Ensures that `lb_test_default_{x,y}_val` are a subset of the available `lb_test_choices`
+  # if (all(OK[c("lab_dataset_name", "lb_test_var", "lb_test_choices", "lb_test_default_x_val")])) {
+  #   if (OK["lb_test_default_x_val"]) {
+  #     CM$assert(
+  #       container = err,
+  #       cond = lb_test_default_x_val %in% lb_test_choices,
+  #       msg = sprintf(
+  #         'The value assigned to `lb_test_default_x_val` ("%s") should be among the ones provided by `lb_test_choices` (%s).',
+  #         lb_test_default_x_val, paste(sprintf('"%s"', lb_test_choices), collapse = ", ")
+  #       )
+  #     )
+  #   }
+  #   if (OK["lb_test_default_y_val"]) {
+  #     CM$assert(
+  #       container = err,
+  #       cond = lb_test_default_y_val %in% lb_test_choices,
+  #       msg = sprintf(
+  #         'The value assigned to `lb_test_default_y_val` ("%s") should be among the ones provided by `lb_test_choices` (%s).',
+  #         lb_test_default_y_val, paste(sprintf('"%s"', lb_test_choices), collapse = ", ")
+  #       )
+  #     )
+  #   }
+  # }
   
   res <- list(warnings = warn[["messages"]], errors = err[["messages"]])
   return(res)

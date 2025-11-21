@@ -17,7 +17,8 @@ mock_edish_app <- function() {
       dataset_list = shiny::reactive({
         list("dm" = dm, "lb" = lb)
       }),
-      baseline_visit_val = "SCREENING 1"
+      baseline_visit_val = "SCREENING 1",
+      lb_date_var = "ADT"
     )
   }
 
@@ -40,7 +41,8 @@ mock_edish_mm <- function() {
       subject_level_dataset_name = "dm",
       lab_dataset_name = "lb",
       arm_default_vals = c("Xanomeline Low Dose", "Placebo"),
-      baseline_visit_val = "SCREENING 1"
+      baseline_visit_val = "SCREENING 1",
+      lb_date_var = "ADT"
     )
   )
 
