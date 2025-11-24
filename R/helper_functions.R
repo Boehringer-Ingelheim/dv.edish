@@ -237,7 +237,7 @@ derive_req_vars <- function(
     return(NULL)
   }
  
-  dataset_x <- identify_axis_data(dataset, arm_var, visit_var, lb_test_var,sel_x, lb_date_var, lb_result_var,
+  dataset_x <- identify_axis_data(dataset, arm_var, visit_var, lb_test_var, sel_x, lb_date_var, lb_result_var,
                                   ref_range_upper_lim_var, "{{sel_x}}")
   dataset_y <- identify_axis_data(dataset, arm_var, visit_var, lb_test_var, sel_y, lb_date_var, lb_result_var,
                                   ref_range_upper_lim_var, "{{sel_y}}")

@@ -1,3 +1,15 @@
+# dv.edish 1.3.0-9000
+
+- For each subject, plot peak TBILI against peak ALT/AST values (divided by ULN), rather than value pairs at each visit.
+- Apply log value to axes.
+- Show the time between peaks.
+- Show the sequence (peak ALT/AST on or before peak TBILI most concerning).
+- Mixing ULN for ALT/AST and baseline for TBILI (or vice versa) is not standard and generally does not make scientific
+  sense in DILI analysis, but the previous eDISH plot allowed control of ULN/baseline for each axis. Update to use only
+  one selector for ULN/baseline that applies to both axes.
+- Show value of ALP (Alkaline Phosphatase) at the time of peak ALT/AST value, flagged ≤ 2 x ULN or > 2 x ULN (or
+  baseline).
+
 # dv.edish 1.3.0
 
 - Add jumping feature.
