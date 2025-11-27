@@ -20,8 +20,8 @@ EDISH <- pack_of_constants(
   PLOT_TYPE_ID = "plot_type",
   PLOT_TYPE_CHOICES = c("\u00d7 ULN (eDISH)" = "ULN",
                         "\u00d7 Baseline (mDISH)" = "Baseline"),
-  PLOT_ID = "plot",
-  NO_PLOT = "noplot"
+  PLOT_ID = "plot"
+  #NO_PLOT = "noplot"
 )
 
 
@@ -37,13 +37,15 @@ EDISH <- pack_of_constants(
 #'
 #' @seealso [mod_edish()] and [edish_server()]
 #' @export
-edish_UI <- function(module_id) {
+edish_UI <- function(module_id,
+                     at_choices,
+                     tbili_choice) {
 
   ns <- shiny::NS(module_id)
 
   drop_menu <- shinyWidgets::dropMenu(
     tag = shiny::actionButton(
-      inputId = ns(EDISH$PLOT_OPTIONS_ID), 
+      inputId = ns(EDISH$PLOT_OPTIONS_ID),
       label = EDISH$PLOT_OPTIONS_LABEL,
       icon = shiny::icon("gear")
     ),
@@ -63,7 +65,7 @@ edish_UI <- function(module_id) {
     shiny::selectInput(
       inputId = ns(EDISH$X_AXIS_ID),
       label = EDISH$AXIS_LABEL,
-      choices = NULL
+      choices = at_choices
     ),
     shiny::numericInput(
       inputId = ns(EDISH$X_REF_ID),
@@ -81,17 +83,12 @@ edish_UI <- function(module_id) {
       max = 100,
       step = 0.1
     ),
-    # shiny::radioButtons(
-    #   inputId = ns(EDISH$X_PLOT_TYPE_ID),
-    #   label = NULL,
-    #   choices = EDISH$PLOT_TYPE_CHOICES
-    # ),
     shiny::hr(),
     shiny::h4(EDISH$Y_AXIS_HEADER),
     shiny::selectInput(
       inputId = ns(EDISH$Y_AXIS_ID),
       label = EDISH$AXIS_LABEL,
-      choices = NULL
+      choices = tbili_choice
     ),
     shiny::numericInput(
       inputId = ns(EDISH$Y_REF_ID),
@@ -109,19 +106,15 @@ edish_UI <- function(module_id) {
       max = 100,
       step = 0.1
     )
-    # shiny::radioButtons(
-    #   inputId = ns(EDISH$Y_PLOT_TYPE_ID),
-    #   label = NULL,
-    #   choices = EDISH$PLOT_TYPE_CHOICES
-    # )
   )
-    
+
   ui <- shiny::tagList(
     drop_menu,
-    plotly::plotlyOutput(outputId = ns(EDISH$PLOT_ID)),
-    shiny::plotOutput(outputId = ns(EDISH$NO_PLOT))
+    #plotly::plotlyOutput(outputId = ns(EDISH$PLOT_ID)),
+    ggiraph::girafeOutput(outputId = ns(EDISH$PLOT_ID), width = "100%", height = "600px")
+    #shiny::plotOutput(outputId = ns(EDISH$NO_PLOT))
   )
-  
+
   return(ui)
 }
 
@@ -135,7 +128,7 @@ edish_UI <- function(module_id) {
 #' @param dataset_list `[shiny::reactive(list(data.frame))]`
 #'
 #' A reactive list of named datasets.
-#' 
+#'
 #' @param on_sbj_click `[function() | NULL]`
 #'
 #' Function to invoke when a subject is clicked on the plot. If `NULL`, no action is taken.
@@ -166,11 +159,11 @@ edish_server <- function(
     lb_result_var = "LBSTRESN",
     ref_range_upper_lim_var = "LBSTNRHI",
     on_sbj_click = NULL) {
-  
+
   lb_test_choices <- c(at_choices, tbili_choice, alp_choice)
   lb_test_default_x_val <- at_choices[1]
   lb_test_default_y_val <- tbili_choice
-  
+
   # Check validity of arguments
   ac <- checkmate::makeAssertCollection()
   checkmate::assert_multi_class(dataset_list, c("reactive", "shinymeta_reactive"), add = ac)
@@ -208,7 +201,7 @@ edish_server <- function(
 
   # Initiate module server
   shiny::moduleServer(module_id, function(input, output, session) {
-    
+
     # Dataset validation
     v_dataset_list <- shiny::reactive({
       checkmate::assert_list(dataset_list(), types = "data.frame", null.ok = TRUE, names = "named")
@@ -216,19 +209,26 @@ edish_server <- function(
     })
 
     work_data <- shiny::reactive({
-      prepare_initial_data(
-        dataset_list = v_dataset_list(),
-        subjectid_var = subjectid_var,
-        arm_var = arm_var,
-        visit_var = visit_var,
-        baseline_visit_val = baseline_visit_val,
-        lb_test_var = lb_test_var,
-        lb_test_choices = lb_test_choices,
-        alp_choice = alp_choice,
-        lb_date_var = lb_date_var,
-        lb_result_var = lb_result_var,
-        ref_range_upper_lim_var = ref_range_upper_lim_var
-      )
+      plot_types <- c("ULN", "Baseline")
+
+      do.call(rbind, lapply(plot_types, function(pt) {
+        prepare_initial_data(
+          dataset_list = v_dataset_list(),
+          subjectid_var = subjectid_var,
+          arm_var = arm_var,
+          visit_var = visit_var,
+          baseline_visit_val = baseline_visit_val,
+          lb_test_var = lb_test_var,
+          at_choices = at_choices,
+          tbili_choice = tbili_choice,
+          plot_type = pt,
+          window_days = 30,
+          alp_choice = alp_choice,
+          lb_date_var = lb_date_var,
+          lb_result_var = lb_result_var,
+          ref_range_upper_lim_var = ref_range_upper_lim_var
+        )
+      }))
     })
 
     # Store default values as reactive values in order to restore them correctly after bookmarking
@@ -240,6 +240,7 @@ edish_server <- function(
 
     # To make bookmarking work also for r_values
     shiny::onRestore(function(state) {
+      browser()
       if (length(state$input) > 0) { # makes sure that the default_vars are displayed at app launch with SSO
         r_values$x_axis <- state$input$x_axis
         r_values$y_axis <- state$input$y_axis
@@ -248,63 +249,95 @@ edish_server <- function(
     })
 
     shiny::observeEvent(work_data(), {
-      choices_lb_test <- unique(stats::na.omit(work_data()[[lb_test_var]]))
-      choices_arm <- unique(stats::na.omit(work_data()[[arm_var]]))
+      #browser()
+      choices_arm <- unique(work_data()[[arm_var]])
       sel_arm <- if (is.null(r_values$arm_id)) choices_arm else r_values$arm_id
 
-      shiny::updateSelectInput(inputId = EDISH$X_AXIS_ID, choices = choices_lb_test, selected = r_values$x_axis)
-      shiny::updateSelectInput(inputId = EDISH$Y_AXIS_ID, choices = choices_lb_test, selected = r_values$y_axis)
+      # shiny::updateSelectInput(inputId = EDISH$X_AXIS_ID, choices = at_choices, selected = r_values$x_axis)
+      # shiny::updateSelectInput(inputId = EDISH$Y_AXIS_ID, choices = tbili_choice, selected = r_values$y_axis)
+      #shiny::updateSelectInput(inputId = EDISH$ARM_ID, choices = choices_arm)
       shiny::updateSelectInput(inputId = EDISH$ARM_ID, choices = choices_arm, selected = sel_arm)
     })
+
+    # shiny::observeEvent(work_data(), {
+    #   choices_lb_test <- unique(stats::na.omit(work_data()[[lb_test_var]]))
+    #   choices_arm <- unique(stats::na.omit(work_data()[[arm_var]]))
+    #   sel_arm <- if (is.null(r_values$arm_id)) choices_arm else r_values$arm_id
+    #
+    #   shiny::updateSelectInput(inputId = EDISH$X_AXIS_ID, choices = choices_lb_test, selected = r_values$x_axis)
+    #   shiny::updateSelectInput(inputId = EDISH$Y_AXIS_ID, choices = choices_lb_test, selected = r_values$y_axis)
+    #   shiny::updateSelectInput(inputId = EDISH$ARM_ID, choices = choices_arm, selected = sel_arm)
+    # })
 
     plot_data <- shiny::reactive({
       filtered_data <- filter_data(
         dataset = work_data(),
+        plot_type = input[[EDISH$PLOT_TYPE_ID]],
         arm_var = arm_var,
         sel_arm = input[[EDISH$ARM_ID]],
         lb_test_var = lb_test_var,
-        sel_lb_test = c(input[[EDISH$X_AXIS_ID]], input[[EDISH$Y_AXIS_ID]])
+        sel_lb_test = input[[EDISH$X_AXIS_ID]]
+        #sel_lb_test = c(input[[EDISH$X_AXIS_ID]], input[[EDISH$Y_AXIS_ID]])
       )
 
-      derive_req_vars(
-        dataset = filtered_data,
+    #   derive_req_vars(
+    #     dataset = filtered_data,
+    #     subjectid_var = subjectid_var,
+    #     arm_var = arm_var,
+    #     visit_var = visit_var,
+    #     lb_test_var = lb_test_var,
+    #     lb_date_var = lb_date_var,
+    #     lb_result_var = lb_result_var,
+    #     ref_range_upper_lim_var = ref_range_upper_lim_var,
+    #     sel_x = shiny::req(input[[EDISH$X_AXIS_ID]]),
+    #     sel_y = shiny::req(input[[EDISH$Y_AXIS_ID]])
+    #   )
+    })
+
+    # plot_active <- shiny::reactiveVal(FALSE)
+    # output[[EDISH$PLOT_ID]] <- plotly::renderPlotly({
+    #   plot <- generate_plot(
+    #     dataset = plot_data(),
+    #     subjectid_var = subjectid_var, arm_var = arm_var, visit_var = ".visit_at",
+    #     sel_x = input[[EDISH$X_AXIS_ID]], sel_y = input[[EDISH$Y_AXIS_ID]],
+    #     # x_plot_type = input[[EDISH$X_PLOT_TYPE_ID]],
+    #     # y_plot_type = input[[EDISH$Y_PLOT_TYPE_ID]],
+    #     plot_type = input[[EDISH$PLOT_TYPE_ID]],
+    #     x_ref_line_num = input[[EDISH$X_REF_ID]], y_ref_line_num = input[[EDISH$Y_REF_ID]],
+    #     x_rng_lower = input[[EDISH$X_RNG_ID]][1], x_rng_upper = input[[EDISH$X_RNG_ID]][2],
+    #     y_rng_lower = input[[EDISH$Y_RNG_ID]][1], y_rng_upper = input[[EDISH$Y_RNG_ID]][2],
+    #     source = session[["ns"]]("plot")
+    #   )
+    #   if (!is.null(plot)) plot_active(TRUE)
+    #   plot
+    # })
+
+    output[[EDISH$PLOT_ID]] <- ggiraph::renderGirafe({
+      shiny::validate(shiny::need(nrow(plot_data()) > 0, "No data available."))
+
+      generate_plot(
+        dataset = plot_data(),
         subjectid_var = subjectid_var,
         arm_var = arm_var,
-        visit_var = visit_var,
-        lb_test_var = lb_test_var,
-        lb_date_var = lb_date_var,
-        lb_result_var = lb_result_var,
-        ref_range_upper_lim_var = ref_range_upper_lim_var,
-        sel_x = shiny::req(input[[EDISH$X_AXIS_ID]]),
-        sel_y = shiny::req(input[[EDISH$Y_AXIS_ID]])
-      )
-    })
-    
-    plot_active <- shiny::reactiveVal(FALSE)
-    output[[EDISH$PLOT_ID]] <- plotly::renderPlotly({
-      plot <- generate_plot(
-        dataset = plot_data(),
-        subjectid_var = subjectid_var, arm_var = arm_var, visit_var = visit_var,
-        sel_x = input[[EDISH$X_AXIS_ID]], sel_y = input[[EDISH$Y_AXIS_ID]],
-        # x_plot_type = input[[EDISH$X_PLOT_TYPE_ID]],
-        # y_plot_type = input[[EDISH$Y_PLOT_TYPE_ID]],
+        sel_x = input[[EDISH$X_AXIS_ID]],
+        sel_y = input[[EDISH$Y_AXIS_ID]],
         plot_type = input[[EDISH$PLOT_TYPE_ID]],
-        x_ref_line_num = input[[EDISH$X_REF_ID]], y_ref_line_num = input[[EDISH$Y_REF_ID]],
-        x_rng_lower = input[[EDISH$X_RNG_ID]][1], x_rng_upper = input[[EDISH$X_RNG_ID]][2],
-        y_rng_lower = input[[EDISH$Y_RNG_ID]][1], y_rng_upper = input[[EDISH$Y_RNG_ID]][2],
-        source = session[["ns"]]("plot")
+        x_ref_line_num = input[[EDISH$X_REF_ID]],
+        y_ref_line_num = input[[EDISH$Y_REF_ID]],
+        x_rng_lower = input[[EDISH$X_RNG_ID]][1],
+        x_rng_upper = input[[EDISH$X_RNG_ID]][2],
+        y_rng_lower = input[[EDISH$Y_RNG_ID]][1],
+        y_rng_upper = input[[EDISH$Y_RNG_ID]][2]
       )
-      if (!is.null(plot)) plot_active(TRUE)
-      plot
     })
 
-    output[[EDISH$NO_PLOT]] <- shiny::renderPlot({
-      if (is.null(plot_data())) {
-        shiny::validate(shiny::need(!is.null(plot_data()), "No data available."))
-      }
-    })
-    
-    # Jumping feature 
+    # output[[EDISH$NO_PLOT]] <- shiny::renderPlot({
+    #   if (is.null(plot_data())) {
+    #     shiny::validate(shiny::need(!is.null(plot_data()), "No data available."))
+    #   }
+    # })
+
+    # Jumping feature
     mod_return_value <- NULL
     if (!is.null(on_sbj_click)) {
       return_value_content <- shiny::reactive({
@@ -313,7 +346,7 @@ edish_server <- function(
           event = "plotly_click",
           source = session[["ns"]](EDISH$PLOT_ID),
           priority = "event")
-        
+
         shiny::req(!is.null(click_event))
         on_sbj_click() # reactive side effect to be able to jump to another module
         click_event[["key"]]
@@ -322,9 +355,9 @@ edish_server <- function(
         subj_id = return_value_content
       )
     }
-    
+
     return(mod_return_value)
-    
+
   })
 }
 
@@ -382,7 +415,7 @@ edish_server <- function(
 #' @param receiver_id `[character(1) | NULL]`
 #'
 #' Character string defining the ID of the module to which to send a subject ID. The
-#' module must exist in the module list. The default is NULL which disables communication. 
+#' module must exist in the module list. The default is NULL which disables communication.
 #'
 #' @return A list containing the following elements to be used by the
 #' \pkg{dv.manager}:
@@ -421,13 +454,15 @@ mod_edish <- function(
 
   mod <- list(
     ui = function(module_id) {
-      edish_UI(module_id = module_id)
+      edish_UI(module_id = module_id,
+               at_choices = at_choices,
+               tbili_choice = tbili_choice)
     },
     server = function(afmm) {
       dataset_list <- shiny::reactive({
         afmm$filtered_dataset()[c(subject_level_dataset_name, lab_dataset_name)]
       })
-      
+
       on_sbj_click_fun <- NULL
       if (!is.null(receiver_id)) {
         on_sbj_click_fun <- function() {
@@ -517,31 +552,31 @@ mod_edish_API_spec <- TC$group(
 ) |> TC$attach_docs(mod_edish_API_docs)
 
 check_mod_edish <- function(
-    afmm, datasets, module_id, subject_level_dataset_name, lab_dataset_name, subjectid_var, arm_var, arm_default_vals, 
-    visit_var, baseline_visit_val, lb_test_var, # lb_test_choices, lb_test_default_x_val, lb_test_default_y_val, 
+    afmm, datasets, module_id, subject_level_dataset_name, lab_dataset_name, subjectid_var, arm_var, arm_default_vals,
+    visit_var, baseline_visit_val, lb_test_var, # lb_test_choices, lb_test_default_x_val, lb_test_default_y_val,
     at_choices, tbili_choice, alp_choice,
     lb_date_var, lb_result_var, ref_range_upper_lim_var, receiver_id
   ) {
   warn <- CM$container()
   err <- CM$container()
-  
+
   OK <- check_mod_edish_auto(
-    afmm, datasets, 
-    module_id, subject_level_dataset_name, lab_dataset_name, subjectid_var, arm_var, arm_default_vals, 
-    visit_var, baseline_visit_val, lb_test_var, # lb_test_choices, lb_test_default_x_val, lb_test_default_y_val, 
+    afmm, datasets,
+    module_id, subject_level_dataset_name, lab_dataset_name, subjectid_var, arm_var, arm_default_vals,
+    visit_var, baseline_visit_val, lb_test_var, # lb_test_choices, lb_test_default_x_val, lb_test_default_y_val,
     at_choices, tbili_choice, alp_choice,
     lb_date_var, lb_result_var, ref_range_upper_lim_var, receiver_id,
     warn, err
   )
-  
+
   # Check only if `arm_default_vals` is a character vector
   # Reason: Arbitrary values allowed in case multiple studies are included with different arm values
   CM$assert(
     container = err,
     cond = checkmate::test_character(
-      arm_default_vals, 
-      min.chars = 1, any.missing = FALSE, 
-      all.missing = FALSE, unique = TRUE, 
+      arm_default_vals,
+      min.chars = 1, any.missing = FALSE,
+      all.missing = FALSE, unique = TRUE,
       min.len = 1, null.ok = TRUE
     ),
     msg = sprintf(
@@ -549,13 +584,13 @@ check_mod_edish <- function(
       typeof(arm_default_vals)
     )
   )
- 
+
   # NOTE: Prevents dplyr from exploding inside `prepare_initial_data`
   var_parameters <- c("subjectid_var", "arm_var", "visit_var", "lb_test_var", "lb_result_var")
   if (all(OK[var_parameters])) {
     all_vars <- c(subjectid_var, arm_var, visit_var, lb_test_var, lb_result_var)
     CM$assert(
-      container = err, 
+      container = err,
       cond = !any(duplicated(all_vars)),
       msg = sprintf(
         "This modules expects the following variables to refer to unique columns:<br><pre>%s</pre>",
@@ -587,7 +622,7 @@ check_mod_edish <- function(
   #     )
   #   }
   # }
-  
+
   res <- list(warnings = warn[["messages"]], errors = err[["messages"]])
   return(res)
 }
