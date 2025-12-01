@@ -17,9 +17,6 @@ utils::globalVariables(".")
 #' @param visit_var `[character(1)]`
 #'
 #' Name of the variable containing the visit information.
-#' @param baseline_visit_val `[character(1)]`
-#'
-#' Character indicating which visit should be used as baseline visit.
 #' @param lb_test_var `[character(1)]`
 #'
 #' Name of the variable containing the laboratory test information.
@@ -41,21 +38,17 @@ utils::globalVariables(".")
 #'
 #' @importFrom rlang .data
 #' @keywords internal
-prepare_initial_data <- function(
-    dataset_list,
-    subjectid_var,
-    arm_var,
-    visit_var,
-    baseline_visit_val,
-    lb_test_var,
-    at_choices,
-    tbili_choice,
-    plot_type,
-    window_days,
-    alp_choice,
-    lb_date_var,
-    lb_result_var,
-    ref_range_upper_lim_var) {
+prepare_initial_data <- function(dataset_list,
+                                 subjectid_var,
+                                 arm_var,
+                                 visit_var,
+                                 lb_test_var,
+                                 at_choices,
+                                 tbili_choice,
+                                 alp_choice,
+                                 lb_date_var,
+                                 lb_result_var,
+                                 ref_range_upper_lim_var) {
 
   # Keep only the necessary variables
   sel_dataset_list <- lapply(dataset_list, function(x) {
@@ -71,44 +64,90 @@ prepare_initial_data <- function(
     x[intersect(vars, names(x))]
   })
 
-  # # Return if subject-level dataset has zero rows
-  # if (nrow(sel_dataset_list[[1]]) == 0) {
-  #   return(NULL)
-  # }
+  # Join subject-level dataset with lab dataset keeping only max value at each visit
+  combined_dataset <- Reduce(dplyr::full_join, sel_dataset_list) |>
+    dplyr::filter(.data[[lb_test_var]] %in% c(at_choices, tbili_choice, alp_choice)) |>
+    dplyr::group_by(.data[[subjectid_var]], .data[[arm_var]], .data[[lb_test_var]], .data[[visit_var]]) |>
+    dplyr::filter(!all(is.na(.data[[lb_result_var]]))) |>  # Filter out groups with all NA to avoid warning
+    dplyr::slice_max(.data[[lb_result_var]], n = 1, with_ties = FALSE) |>
+    dplyr::ungroup()
+
+  return(combined_dataset)
+}
+
+#' Derive required variables for plotting
+#'
+#' @param dataset `[data.frame]`
+#'
+#' A data frame containing the data from `prepare_initial_data()`.
+#' @param baseline_visit_val `[character(1)]`
+#'
+#' String indicating which visit should be used as baseline visit.
+#' @param norm_ref_type `[character(1)]`
+#'
+#' String indicating normalization reference type, either `ULN` or `Baseline`.
+#' @param window_days `[integer(1)]`
+#'
+#' Window of the number of days considered between peaks.
+#'
+#' @return A data frame with the following derived variables:
+#' - `.ref_val`: ULN or baseline as the reference value for normalization.
+#' - `.visit_at`: Visit of peak aminotransferase value.
+#' - `.date_at`: Date of peak aminotransferase value.
+#' - `.norm_at`: Normalized peak aminotransferase value.
+#' - `.visit_tbili`: Visit of peak total bilirubin value.
+#' - `.date_tbili`: Date of peak total bilirubin value.
+#' - `.norm_tbili`: Normalized peak total bilirubin value.
+#' - `.norm_alp`: Normalized alkaline phosphotase value at same visit as aminotransferase value.
+#' - `.offset_days`: Number of days from aminotransferase visit to total bilirubin visit.
+#' - `.norm_ref_type`: Normalization reference type, copied from `norm_ref_type` argument.
+#'
+#' @inheritParams prepare_initial_data
+#' @keywords internal
+derive_req_vars <- function(dataset,
+                            subjectid_var,
+                            arm_var,
+                            visit_var,
+                            baseline_visit_val,
+                            lb_test_var,
+                            at_choices,
+                            tbili_choice,
+                            norm_ref_type,
+                            alp_choice,
+                            lb_date_var,
+                            lb_result_var,
+                            ref_range_upper_lim_var,
+                            window_days) {
+
+  # If window not specified then ensure all data are included in peak comparisons
+  if (is.na(window_days)) window_days <- Inf
 
   #browser()
   ## !!! What if date is NA? Should such rows be dropped with warning?
   ## ! Need tests for this function
   ## ! Do not forget: POSIXct needs to be converted to Date
 
-  # Join subject-level dataset with lab dataset keeping only max value at each visit
-  combined_dataset <- Reduce(dplyr::full_join, sel_dataset_list) |>
-    dplyr::filter(.data[[lb_test_var]] %in% c(at_choices, tbili_choice, alp_choice)) |>
-    dplyr::group_by(.data[[subjectid_var]], .data[[arm_var]], .data[[lb_test_var]], .data[[visit_var]]) |>
-    dplyr::filter(!all(is.na(.data[[lb_result_var]]))) |>  # Filter out groups with all NA to avoid warning
-    #dplyr::filter(.data[[lb_result_var]] == max(.data[[lb_result_var]], na.rm = TRUE)) |>
-    dplyr::slice_max(.data[[lb_result_var]], n = 1, with_ties = FALSE) |>
-    dplyr::ungroup()
+  ref_dataset <- dataset
 
   # Set either ULN or baseline as the reference value for normalization
-  if (plot_type == "ULN") {
-    combined_dataset[[".ref_val"]] <- combined_dataset[[ref_range_upper_lim_var]]
+  if (norm_ref_type == "ULN") {
+    ref_dataset[[".ref_val"]] <- ref_dataset[[ref_range_upper_lim_var]]
   } else {
     # Process baseline data
-    base_data <- combined_dataset[combined_dataset[[visit_var]] == baseline_visit_val, ]
+    base_data <- ref_dataset[ref_dataset[[visit_var]] == baseline_visit_val, ]
     base_data[[".ref_val"]] <- base_data[[lb_result_var]]
     base_data <- base_data[, c(subjectid_var, arm_var, lb_test_var, ".ref_val")]
 
     # Merge on baseline values
-    combined_dataset <- combined_dataset |>
+    ref_dataset <- ref_dataset |>
       dplyr::left_join(base_data, by = c(subjectid_var, arm_var, lb_test_var))
   }
 
   # Normalize lab values
-  combined_dataset[[".norm_val"]] <- combined_dataset[[lb_result_var]] / combined_dataset[[".ref_val"]]
+  ref_dataset[[".norm_val"]] <- ref_dataset[[lb_result_var]] / ref_dataset[[".ref_val"]]
 
   # Get peak values of post-baseline aminotransferase (AT) rows
-  peak_at_data <- combined_dataset |>
+  peak_at_data <- ref_dataset |>
     dplyr::filter(.data[[lb_test_var]] %in% at_choices,
                   .data[[visit_var]] != baseline_visit_val) |>
     dplyr::group_by(.data[[subjectid_var]], .data[[arm_var]], .data[[lb_test_var]]) |>
@@ -121,7 +160,7 @@ prepare_initial_data <- function(
                   .norm_at = ".norm_val")
 
   # Get post-baseline total bilirubin (TBILI) rows
-  tbili_data <- combined_dataset |>
+  tbili_data <- ref_dataset |>
     dplyr::filter(.data[[lb_test_var]] == tbili_choice,
                   .data[[visit_var]] != baseline_visit_val) |>
     dplyr::select(subjectid_var, arm_var,
@@ -144,7 +183,7 @@ prepare_initial_data <- function(
     dplyr::ungroup()
 
   # Get alkaline phosphatase (ALP) values
-  alp_data <- combined_dataset |>
+  alp_data <- ref_dataset |>
     dplyr::filter(.data[[lb_test_var]] == alp_choice) |>
     dplyr::select(subjectid_var, arm_var, visit_var, .norm_alp = ".norm_val")
 
@@ -153,12 +192,10 @@ prepare_initial_data <- function(
     dplyr::left_join(alp_data, by = c(subjectid_var, arm_var, ".visit_at" = visit_var))
 
   # Set plot type
-  final_dataset[[".plot_type"]] <- plot_type
+  final_dataset[[".norm_ref_type"]] <- norm_ref_type
 
   return(final_dataset)
 }
-
-
 
 #' Filter data
 #'
@@ -179,10 +216,10 @@ prepare_initial_data <- function(
 #'
 #' @inheritParams prepare_initial_data
 #' @keywords internal
-filter_data <- function(dataset, plot_type, arm_var, sel_arm, lb_test_var, sel_lb_test) {
+filter_data <- function(dataset, norm_ref_type, arm_var, sel_arm, lb_test_var, sel_lb_test) {
   dataset <- dataset |>
     dplyr::filter(
-      .data[[".plot_type"]] == plot_type,
+      .data[[".norm_ref_type"]] == norm_ref_type,
       .data[[lb_test_var]] == sel_lb_test,
       .data[[arm_var]] %in% sel_arm
     )
@@ -468,19 +505,18 @@ filter_data <- function(dataset, plot_type, arm_var, sel_arm, lb_test_var, sel_l
 #'   return(plt_obj)
 #' }
 
-generate_plot <- function(
-    dataset,
-    subjectid_var,
-    arm_var,
-    sel_x,
-    sel_y,
-    plot_type,
-    x_ref_line_num,
-    y_ref_line_num,
-    x_rng_lower,
-    x_rng_upper,
-    y_rng_lower,
-    y_rng_upper) {
+generate_plot <- function(dataset,
+                          subjectid_var,
+                          arm_var,
+                          sel_x,
+                          sel_y,
+                          norm_ref_type,
+                          x_ref_line_num,
+                          y_ref_line_num,
+                          x_rng_lower,
+                          x_rng_upper,
+                          y_rng_lower,
+                          y_rng_upper) {
 
   dataset[["hover_date_x"]] <- gsub(
     "NA", "",
@@ -508,7 +544,7 @@ generate_plot <- function(
     "<br>---<br>", sel_x, ": ", sprintf("%.3f", dataset[[".norm_at"]]),
     "<br>  Visit: ", dataset[[".visit_at"]],
     "<br>  Date: ", dataset[["hover_date_x"]],
-    "<br>  ALP/", plot_type, ": ", dataset[["hover_alp"]],
+    "<br>  ALP/", norm_ref_type, ": ", dataset[["hover_alp"]],
     "<br>---<br>", sel_y, ": ", sprintf("%.3f", dataset[[".norm_tbili"]]),
     "<br>  Visit: ", dataset[[".visit_tbili"]],
     "<br>  Date: ", dataset[["hover_date_y"]],
@@ -556,8 +592,8 @@ generate_plot <- function(
                                     size = 2,
                                     alpha = 0.8,
                                     stroke = 0) +
-    ggplot2::labs(x = paste0(sel_x, "/", plot_type),
-                  y = paste0(sel_y, "/", plot_type),
+    ggplot2::labs(x = paste0(sel_x, "/", norm_ref_type),
+                  y = paste0(sel_y, "/", norm_ref_type),
                   color = "") +
     ggplot2::theme_minimal(base_family = "Arial",
                            base_size = 9)
