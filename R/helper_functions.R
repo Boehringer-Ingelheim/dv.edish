@@ -80,12 +80,15 @@ prepare_initial_data <- function(dataset_list,
 #' @param dataset `[data.frame]`
 #'
 #' A data frame containing the data from `prepare_initial_data()`.
+#'
 #' @param baseline_visit_val `[character(1)]`
 #'
 #' String indicating which visit should be used as baseline visit.
+#'
 #' @param norm_ref_type `[character(1)]`
 #'
-#' String indicating normalization reference type, either `ULN` or `Baseline`.
+#' String indicating normalization reference type, either `"ULN"` or `"Baseline"`.
+#'
 #' @param window_days `[integer(1)]`
 #'
 #' Window of the number of days considered between peaks.
@@ -184,12 +187,14 @@ derive_req_vars <- function(dataset,
 
   # Get alkaline phosphatase (ALP) values
   alp_data <- ref_dataset |>
-    dplyr::filter(.data[[lb_test_var]] == alp_choice) |>
+    dplyr::filter(if (!is.null(alp_choice)) .data[[lb_test_var]] == alp_choice
+                  else FALSE) |>
     dplyr::select(subjectid_var, arm_var, visit_var, .norm_alp = ".norm_val")
 
-  # Merge on ALP values occurring at same visit as AT values
+  # Merge on ALP values occurring at same visit as AT values, and calculate R ratio
   final_dataset <- peak_xy_data |>
-    dplyr::left_join(alp_data, by = c(subjectid_var, arm_var, ".visit_at" = visit_var))
+    dplyr::left_join(alp_data, by = c(subjectid_var, arm_var, ".visit_at" = visit_var)) |>
+    dplyr::mutate(.r_ratio = .data[[".norm_at"]] / .data[[".norm_alp"]])
 
   # Set plot type
   final_dataset[[".norm_ref_type"]] <- norm_ref_type
@@ -205,9 +210,11 @@ derive_req_vars <- function(dataset,
 #' @param dataset `[data.frame]`
 #'
 #' A data frame containing the columns specified by `lb_test_var` and `arm_var`.
+#'
 #' @param sel_arm `[character(1+)]`
 #'
 #' Character vector specifying a selection of arms/treatments.
+#'
 #' @param sel_lb_test `[character(1+)]`
 #'
 #' Character vector specifying a selection of laboratory tests.
@@ -226,285 +233,67 @@ filter_data <- function(dataset, norm_ref_type, arm_var, sel_arm, lb_test_var, s
   return(dataset)
 }
 
-#' #' Identify data related to a single axis
-#' #'
-#' #' @return A data frame.
-#' #'
-#' #' @inheritParams prepare_initial_data
-#' #' @keywords internal
-#' identify_axis_data <- function(dataset, arm_var, visit_var, lb_test_var, lb_test, lb_date_var, lb_result_var,
-#'                                ref_range_upper_lim_var, suffix) {
+#' Generate an eDISH plot
 #'
-#'   axis_data <- dataset |>
-#'     dplyr::filter(.data[[lb_test_var]] == lb_test) |>
-#'     dplyr::mutate(
-#'       !!paste0("r_ULN_", suffix) := .data[[lb_result_var]] / .data[[ref_range_upper_lim_var]],
-#'       !!paste0("r_Baseline_", suffix) := .data[[lb_result_var]] / .data[["BASE"]],
-#'       !!paste0("BASE_", suffix) := .data[["BASE"]],
-#'       !!paste0("BASEDT_", suffix) := .data[["BASEDT"]],
-#'       !!paste0("VISIT_", suffix) := .data[[visit_var]],
-#'       !!paste0("DATE_", suffix) := .data[[lb_date_var]],
-#'       !!paste0("LBTEST_", suffix) := lb_test
-#'     )
+#' @param dataset `[data.frame]`
 #'
-#'   drop_vars <- c(visit_var, lb_test_var, lb_date_var, lb_result_var, ref_range_upper_lim_var, "BASE", "BASEDT")
-#'   axis_data <- axis_data[, setdiff(names(axis_data), drop_vars)]
+#' A data frame containing the variables listed below as columns.
 #'
-#'   return(axis_data)
-#' }
-
-#' #' Derive required variables
-#' #'
-#' #' `derive_req_vars()` restructures the stated dataset to include variables containing
-#' #' the ratio of a lab result divided by ULN or the baseline value. The corresponding variable
-#' #' names are shaped as follows: "r_<ULN or Baseline>_<selected lab test>.
-#' #'
-#' #' @param dataset `[data.frame]`
-#' #'
-#' #' A data frame containing the variables listed below as columns.
-#' #' @param subjectid_var `[character(1)]`
-#' #'
-#' #' Name of the variable containing the unique subject IDs.
-#' #' @param arm_var `[character(1)]`
-#' #'
-#' #' Name of the variable containing the arm/treatment information.
-#' #' @param visit_var `[character(1)]`
-#' #'
-#' #' Name of the variable containing the visit information.
-#' #' @param lb_test_var `[character(1)]`
-#' #'
-#' #' Name of the variable containing the laboratory test information.
-#' #' @param lb_result_var `[character(1)]`
-#' #'
-#' #' Name of the variable containing results of the laboratory test.
-#' #' @param ref_range_upper_lim_var `[character(1)]`
-#' #'
-#' #' Name of the variable containing the reference range upper limits.
-#' #' @param sel_x `[character(1)]`
-#' #'
-#' #' Character specifying the laboratory test selected for the x-axis.
-#' #' @param sel_y `[character(1)]`
-#' #'
-#' #' Character specifying the laboratory test selected for the y-axis.
-#' #'
-#' #' @return The restructured dataset.
-#' #'
-#' #' @keywords internal
-#' derive_req_vars <- function(
-#'     dataset,
-#'     subjectid_var,
-#'     arm_var,
-#'     visit_var,
-#'     lb_test_var,
-#'     lb_date_var,
-#'     lb_result_var,
-#'     ref_range_upper_lim_var,
-#'     sel_x,
-#'     sel_y) {
+#' @param subjectid_var `[character(1)]`
 #'
-#'   # the following check is needed in case global or local filter is used to deselect all
-#'   if (is.null(dataset) || nrow(dataset) == 0) {
-#'     return(NULL)
-#'   }
+#' Name of the variable containing the unique subject IDs.
 #'
-#'   dataset_x <- identify_axis_data(dataset, arm_var, visit_var, lb_test_var, sel_x, lb_date_var, lb_result_var,
-#'                                   ref_range_upper_lim_var, "{{sel_x}}")
-#'   dataset_y <- identify_axis_data(dataset, arm_var, visit_var, lb_test_var, sel_y, lb_date_var, lb_result_var,
-#'                                   ref_range_upper_lim_var, "{{sel_y}}")
+#' @param arm_var `[character(1)]`
 #'
-#'   # Merge x-axis data with y-axis data dropping ALP/ULN and ALP/Baseline associated to y-axis
-#'   merged_data <- dataset_x |>
-#'     dplyr::full_join(dataset_y[, !names(dataset_y) %in% c("ALP_ULN", "ALP_Baseline")])
+#' Name of the variable containing the arm/treatment information.
 #'
-#'   # # Get the data frame in required structure (Pivot wider grouped by certain variables)
-#'   # dataset <- dataset %>%
-#'   #   dplyr::filter(.data[[lb_test_var]] %in% c(sel_x, sel_y)) %>%
-#'   #   dplyr::mutate(
-#'   #     r_ULN = .data[[lb_result_var]] / .data[[ref_range_upper_lim_var]],
-#'   #     r_Baseline = .data[[lb_result_var]] / .data[["BASE"]]
-#'   #   ) %>%
-#'   #   dplyr::select(dplyr::all_of(c(subjectid_var, arm_var, lb_test_var, visit_var, "r_ULN", "r_Baseline"))) %>%
-#'   #   dplyr::group_by(.data[[subjectid_var]], .data[[arm_var]], .data[[lb_test_var]], .data[[visit_var]]) %>%
-#'   #   dplyr::mutate(row = dplyr::row_number()) %>%
-#'   #   tidyr::pivot_wider(names_from = tidyr::all_of(lb_test_var), values_from = c("r_ULN", "r_Baseline")) %>%
-#'   #   dplyr::select(-dplyr::all_of("row")) %>%
-#'   #   dplyr::mutate(
-#'   #     "r_ULN_{{sel_x}}" = as.numeric(.data[[paste0("r_ULN_", sel_x)]]),
-#'   #     "r_ULN_{{sel_y}}" = as.numeric(.data[[paste0("r_ULN_", sel_y)]]),
-#'   #     "r_Baseline_{{sel_x}}" = as.numeric(.data[[paste0("r_Baseline_", sel_x)]]),
-#'   #     "r_Baseline_{{sel_y}}" = as.numeric(.data[[paste0("r_Baseline_", sel_y)]])
-#'   #   )
+#' @param visit_var `[character(1)]`
 #'
-#'   return(merged_data)
-#' }
-
-
-
-#' #' Generate plot
-#' #'
-#' #' `generate_plot()` generates an eDISH plot by means of the \pkg{plotly} package.
-#' #'
-#' #' @param dataset `[data.frame]`
-#' #'
-#' #' A data frame containing the variables listed below as columns.
-#' #' @param subjectid_var `[character(1)]`
-#' #'
-#' #' Name of the variable containing the unique subject IDs.
-#' #' @param arm_var `[character(1)]`
-#' #'
-#' #' Name of the variable containing the arm/treatment information.
-#' #' @param visit_var `[character(1)]`
-#' #'
-#' #' Name of the variable containing the visit information.
-#' #' @param sel_x `[character(1)]`
-#' #'
-#' #' Character specifying the laboratory test to be displayed on the x-axis.
-#' #' @param sel_y `[character(1)]`
-#' #'
-#' #' Character specifying the laboratory test to be displayed on the y-axis.
-#' #' @param x_plot_type `[character(1)]`
-#' #'
-#' #' Character specifying the plot type for the x-axis. This leads to
-#' #' using the `dataset`'s column "r_<x_plot_type>_<x_sel>" for the x-values.
-#' #' @param y_plot_type `[character(1)]`
-#' #'
-#' #' Character specifying the plot type for the y-axis. This leads to
-#' #' using the `dataset`'s column "r_<y_plot_type>_<y_sel>" for the y-values.
-#' #' @param x_ref_line_num `[numeric(1)]`
-#' #'
-#' #' Numeric specifying the reference line for the x-axis.
-#' #' @param y_ref_line_num `[numeric(1)]`
-#' #'
-#' #' Numeric specifying the reference line for the y-axis.
-#' #' @param x_rng_lower `[numeric(1)]`
-#' #'
-#' #' Numeric specifying the lower limit in the x-axis range.
-#' #' @param x_rng_upper `[numeric(1)]`
-#' #'
-#' #' Numeric specifying the upper limit in the x-axis range.
-#' #' @param y_rng_lower `[numeric(1)]`
-#' #'
-#' #' Numeric specifying the lower limit in the y-axis range.
-#' #' @param y_rng_upper `[numeric(1)]`
-#' #'
-#' #' Numeric specifying the upper limit in the y-axis range.
-#' #'
-#' #' @return A plotly object specifying the generated eDISH plot.
-#' #'
-#' #' @keywords internal
-#' generate_plot <- function(
-#'     dataset,
-#'     subjectid_var,
-#'     arm_var,
-#'     visit_var,
-#'     sel_x,
-#'     sel_y,
-#'     # x_plot_type,
-#'     # y_plot_type,
-#'     plot_type,
-#'     x_ref_line_num,
-#'     y_ref_line_num,
-#'     x_rng_lower,
-#'     x_rng_upper,
-#'     y_rng_lower,
-#'     y_rng_upper,
-#'     source = NULL) {
+#' Name of the variable containing the visit information.
 #'
-#'   if (is.null(dataset)) {
-#'     return(NULL)
-#'   }
+#' @param sel_x `[character(1)]`
 #'
-#'   # Prepare x-axis layout based on whether range has been specified
-#'   layout_xaxis <- list(title = paste0(sel_x, "/", plot_type), type = "log")
-#'   if (!is.null(x_rng_lower) && !is.null(x_rng_upper)) {
-#'     layout_xaxis <- c(layout_xaxis,
-#'                       list(range = c(x_rng_lower, x_rng_upper)))
-#'   }
+#' String specifying the laboratory test to be displayed on the x-axis.
 #'
-#'   # Prepare y-axis layout based on whether range has been specified
-#'   layout_yaxis <- list(title = paste0(sel_y, "/", plot_type), type = "log")
-#'   if (!is.null(y_rng_lower) && !is.null(y_rng_upper)) {
-#'     layout_yaxis <- c(layout_yaxis,
-#'                       list(range = c(y_rng_lower, y_rng_upper)))
-#'   }
+#' @param sel_y `[character(1)]`
 #'
-#'   #browser()
+#' String specifying the laboratory test to be displayed on the y-axis.
 #'
-#'   dataset[["hover_date_x"]] <- gsub(
-#'     "NA", "",
-#'     paste0(dataset[["DATE_{{sel_x}}"]],
-#'            ifelse(dataset[["DATE_{{sel_x}}"]] <= dataset[["DATE_{{sel_y}}"]],
-#'                   " (1st)", " (2nd)"))
-#'   )
+#' @param norm_ref_type `[character(1)]`
 #'
-#'   dataset[["hover_date_y"]] <- gsub(
-#'     "NA", "",
-#'     paste0(dataset[["DATE_{{sel_y}}"]],
-#'            ifelse(dataset[["DATE_{{sel_y}}"]] < dataset[["DATE_{{sel_x}}"]],
-#'                   " (1st)", " (2nd)"))
-#'   )
+#' String indicating normalization reference type, either `"ULN"` or `"Baseline"`.
 #'
-#'   dataset[["hover_alp"]] <- gsub(
-#'     "NA", "",
-#'     paste(sprintf("%.3f", dataset[[paste0("ALP_", plot_type)]]),
-#'           ifelse(dataset[[paste0("ALP_", plot_type)]] <= 2, " (<= 2)", " (> 2)"))
-#'   )
+#' @param x_ref_line_num `[numeric(1)]`
 #'
-#'   plt_obj <- dataset %>%
-#'     plotly::plot_ly(
-#'       type = "scatter",
-#'       mode = "markers",
-#'       color = .[[arm_var]],
-#'       key = .[[subjectid_var]],
-#'       source = source
-#'     ) %>%
-#'     plotly::add_trace(
-#'       x = ~ .data[[paste0("r_", plot_type, "_{{sel_x}}")]],
-#'       y = ~ .data[[paste0("r_", plot_type, "_{{sel_y}}")]],
-#'       hovertext = ~ paste0(
-#'         "Subject: ", .data[[subjectid_var]],
-#'         "<br>Arm: ", .data[[arm_var]],
-#'         "<br>---<br>", .data[["LBTEST_{{sel_x}}"]], ": ", sprintf("%.3f", .data[[paste0("r_", plot_type, "_{{sel_x}}")]]),
-#'         "<br>  Visit: ", .data[["VISIT_{{sel_x}}"]],
-#'         "<br>  Date: ", .data[["hover_date_x"]],
-#'         "<br>  ALP/", plot_type, ": ", .data[["hover_alp"]],
-#'         "<br>---<br>", .data[["LBTEST_{{sel_y}}"]], ": ", sprintf("%.3f", .data[[paste0("r_", plot_type, "_{{sel_y}}")]]),
-#'         "<br>  Visit: ", .data[["VISIT_{{sel_y}}"]],
-#'         "<br>  Date: ", .data[["hover_date_y"]],
-#'         "<br>---<br>Time between peaks: ", abs(.data[["DATE_{{sel_y}}"]] - .data[["DATE_{{sel_x}}"]]), " days"
-#'       ),
-#'       hoverinfo = "text"
-#'     ) %>%
-#'     plotly::layout(
-#'       xaxis = layout_xaxis,
-#'       yaxis = layout_yaxis,
-#'       shapes = list(
-#'         list( # vline
-#'           type = "line",
-#'           y0 = 0,
-#'           y1 = 1,
-#'           yref = "paper",
-#'           x0 = x_ref_line_num,
-#'           x1 = x_ref_line_num,
-#'           line = list(color = "gray", dash = "dot")
-#'         ),
-#'         list( # hline
-#'           type = "line",
-#'           x0 = 0,
-#'           x1 = 1,
-#'           xref = "paper",
-#'           y0 = y_ref_line_num,
-#'           y1 = y_ref_line_num,
-#'           line = list(color = "gray", dash = "dot")
-#'         )
-#'       )
-#'     )
+#' Numeric specifying the reference line for the x-axis.
 #'
-#'   plotly::event_register(plt_obj, "plotly_click")
+#' @param y_ref_line_num `[numeric(1)]`
 #'
-#'   return(plt_obj)
-#' }
-
+#' Numeric specifying the reference line for the y-axis.
+#'
+#' @param x_rng_lower `[numeric(1)]`
+#'
+#' Numeric specifying the lower limit in the x-axis range.
+#'
+#' @param x_rng_upper `[numeric(1)]`
+#'
+#' Numeric specifying the upper limit in the x-axis range.
+#'
+#' @param y_rng_lower `[numeric(1)]`
+#'
+#' Numeric specifying the lower limit in the y-axis range.
+#'
+#' @param y_rng_upper `[numeric(1)]`
+#'
+#' Numeric specifying the upper limit in the y-axis range.
+#'
+#' @param alp_flag `[logical(1)]`
+#'
+#' Logical indicating if ALP data was requested.
+#'
+#' @return An object specifying the generated eDISH plot.
+#'
+#' @keywords internal
 generate_plot <- function(dataset,
                           subjectid_var,
                           arm_var,
@@ -516,7 +305,8 @@ generate_plot <- function(dataset,
                           x_rng_lower,
                           x_rng_upper,
                           y_rng_lower,
-                          y_rng_upper) {
+                          y_rng_upper,
+                          alp_flag) {
 
   dataset[["hover_date_x"]] <- gsub(
     "NA", "",
@@ -532,11 +322,24 @@ generate_plot <- function(dataset,
                   " (1st)", " (2nd)"))
   )
 
-  dataset[["hover_alp"]] <- gsub(
-    "NA", "",
-    paste(sprintf("%.3f", dataset[[".norm_alp"]]),
-          ifelse(dataset[[".norm_alp"]] <= 2, " (<= 2)", " (> 2)"))
-  )
+  if (alp_flag) {
+    if (norm_ref_type == "ULN") {
+      dataset[["hover_alp"]] <- sprintf("<br>  ALP/ULN %s (%.3f) %s (%.2f)",
+                                        ifelse(dataset[[".norm_alp"]] <= 2, "≤ 2", "> 2"),
+                                        dataset[[".norm_alp"]],
+                                        ifelse(dataset[[".r_ratio"]] <= 2, "R ≤ 2",
+                                               ifelse(dataset[[".r_ratio"]] >= 5, "R ≥ 5", "2 < R < 5")),
+                                        dataset[[".r_ratio"]])
+    } else {
+      dataset[["hover_alp"]] <- sprintf("<br>  ALP/ULN %s (%.3f)",
+                                        ifelse(dataset[[".norm_alp"]] <= 2, "≤ 2", "> 2"),
+                                        dataset[[".norm_alp"]])
+    }
+    dataset[["hover_alp"]] <- sub("(NA \\(NA\\) ?)+", "missing data", dataset[["hover_alp"]])
+  } else {
+    dataset[["hover_alp"]] <- ""
+  }
+  #browser()
 
   dataset[["tooltip"]] <- paste0(
     "Subject: ", dataset[[subjectid_var]],
@@ -544,7 +347,8 @@ generate_plot <- function(dataset,
     "<br>---<br>", sel_x, ": ", sprintf("%.3f", dataset[[".norm_at"]]),
     "<br>  Visit: ", dataset[[".visit_at"]],
     "<br>  Date: ", dataset[["hover_date_x"]],
-    "<br>  ALP/", norm_ref_type, ": ", dataset[["hover_alp"]],
+    dataset[["hover_alp"]],
+    #ifelse(rep(alp_flag, nrow(dataset)), paste0("<br>  ALP/", norm_ref_type, ": ", dataset[["hover_alp"]]), ""),
     "<br>---<br>", sel_y, ": ", sprintf("%.3f", dataset[[".norm_tbili"]]),
     "<br>  Visit: ", dataset[[".visit_tbili"]],
     "<br>  Date: ", dataset[["hover_date_y"]],
@@ -556,15 +360,13 @@ generate_plot <- function(dataset,
   major_breaks <- unlist(lapply(exponents, function(k) (1:9) * 10^k))
 
   if (!is.null(x_rng_lower) && !is.null(x_rng_upper)) {
-    #if (!is.null(x_rng_lower) && !is.null(x_rng_upper) && !is.na(x_rng_lower) && !is.na(x_rng_upper)) {
-    x_limits <- c(x_rng_lower, x_rng_upper)
+    x_limits <- c(max(x_rng_lower, 1e-3), x_rng_upper)
   } else {
     x_limits <- NULL
   }
 
   if (!is.null(y_rng_lower) && !is.null(y_rng_upper)) {
-    #if (!is.null(y_rng_lower) && !is.null(y_rng_upper) && !is.na(y_rng_lower) && !is.na(y_rng_upper)) {
-    y_limits <- c(y_rng_lower, y_rng_upper)
+    y_limits <- c(max(y_rng_lower, 1e-3), y_rng_upper)
   } else {
     y_limits <- NULL
   }

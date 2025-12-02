@@ -7,7 +7,7 @@ EDISH <- pack_of_constants(
   X_AXIS_HEADER = "Specify x-axis",
   Y_AXIS_HEADER = "Specify y-axis",
   X_AXIS_ID = "x_axis",
-  Y_AXIS_ID = "y_axis",
+  #Y_AXIS_ID = "y_axis",
   AXIS_LABEL = "Parameter:",
   X_REF_ID = "x_ref",
   Y_REF_ID = "y_ref",
@@ -15,15 +15,12 @@ EDISH <- pack_of_constants(
   X_RNG_ID = "x_rng",
   Y_RNG_ID = "y_rng",
   RNG_LABEL = "Range:",
-  #X_PLOT_TYPE_ID = "x_plot_type",
-  #Y_PLOT_TYPE_ID = "y_plot_type",
   PLOT_TYPE_ID = "plot_type",
   PLOT_TYPE_CHOICES = c("\u00d7 ULN (eDISH)" = "ULN",
                         "\u00d7 Baseline (mDISH)" = "Baseline"),
   PLOT_ID = "plot",
   WINDOW_DAYS_ID = "window_days",
   WINDOW_DAYS_LABEL = "Max. days between peaks"
-  #NO_PLOT = "noplot"
 )
 
 
@@ -37,11 +34,16 @@ EDISH <- pack_of_constants(
 #'
 #' @return A shiny \code{uiOutput} element.
 #'
+#' @inheritParams mod_edish
+#'
 #' @seealso [mod_edish()] and [edish_server()]
 #' @export
 edish_UI <- function(module_id,
+                     arm_default_vals,
                      at_choices,
-                     tbili_choice) {
+                     at_default_val,
+                     tbili_choice,
+                     window_days) {
 
   ns <- shiny::NS(module_id)
 
@@ -59,7 +61,8 @@ edish_UI <- function(module_id,
     shiny::selectInput(
       inputId = ns(EDISH$ARM_ID),
       label = EDISH$ARM_LABEL,
-      choices = NULL,
+      choices = arm_default_vals,
+      selected = arm_default_vals,
       multiple = TRUE
     ),
     shiny::hr(),
@@ -67,7 +70,8 @@ edish_UI <- function(module_id,
     shiny::selectInput(
       inputId = ns(EDISH$X_AXIS_ID),
       label = EDISH$AXIS_LABEL,
-      choices = NULL # at_choices
+      choices = at_choices,
+      selected = at_default_val
     ),
     shiny::numericInput(
       inputId = ns(EDISH$X_REF_ID),
@@ -87,11 +91,11 @@ edish_UI <- function(module_id,
     ),
     shiny::hr(),
     shiny::h4(EDISH$Y_AXIS_HEADER),
-    shiny::selectInput(
-      inputId = ns(EDISH$Y_AXIS_ID),
-      label = EDISH$AXIS_LABEL,
-      choices = NULL # tbili_choice
-    ),
+    # shiny::selectInput(
+    #   inputId = ns(EDISH$Y_AXIS_ID),
+    #   label = EDISH$AXIS_LABEL,
+    #   choices = NULL
+    # ),
     shiny::numericInput(
       inputId = ns(EDISH$Y_REF_ID),
       label = EDISH$REF_LABEL,
@@ -112,7 +116,7 @@ edish_UI <- function(module_id,
     shiny::numericInput(
       inputId = ns(EDISH$WINDOW_DAYS_ID),
       label = EDISH$WINDOW_DAYS_LABEL,
-      value = NA,
+      value = window_days,
       min = 0,
       max = 100,
       step = 1
@@ -121,9 +125,7 @@ edish_UI <- function(module_id,
 
   ui <- shiny::tagList(
     drop_menu,
-    #plotly::plotlyOutput(outputId = ns(EDISH$PLOT_ID)),
     ggiraph::girafeOutput(outputId = ns(EDISH$PLOT_ID), width = "100%", height = "600px")
-    #shiny::plotOutput(outputId = ns(EDISH$NO_PLOT))
   )
 
   return(ui)
@@ -136,6 +138,7 @@ edish_UI <- function(module_id,
 #' @param module_id `[character(1)]`
 #'
 #' A unique ID string to create a namespace. Must match the ID of `edish_UI()`.
+#'
 #' @param dataset_list `[shiny::reactive(list(data.frame))]`
 #'
 #' A reactive list of named datasets.
@@ -143,7 +146,11 @@ edish_UI <- function(module_id,
 #' @param on_sbj_click `[function() | NULL]`
 #'
 #' Function to invoke when a subject is clicked on the plot. If `NULL`, no action is taken.
+#'
 #' @inheritParams mod_edish
+#'
+#' @return A reactive value containing the list of subjects in the clicked point, if applicable.
+#'
 #' @seealso [mod_edish()] and [edish_UI()]
 #' @export
 edish_server <- function(
@@ -155,14 +162,6 @@ edish_server <- function(
     visit_var = "VISIT",
     baseline_visit_val = "VISIT 01",
     lb_test_var = "LBTEST",
-    # lb_test_choices = c(
-    #   "Alkaline Phosphatase",
-    #   "Alanine Aminotransferase",
-    #   "Aspartate Aminotransferase",
-    #   "Bilirubin"
-    # ),
-    # lb_test_default_x_val = "Aspartate Aminotransferase",
-    # lb_test_default_y_val = "Bilirubin",
     at_choices = NULL,
     at_default_val = NULL,
     tbili_choice = NULL,
@@ -173,39 +172,21 @@ edish_server <- function(
     window_days = NULL,
     on_sbj_click = NULL) {
 
-  lb_test_choices <- c(at_choices, tbili_choice, alp_choice)
-  lb_test_default_x_val <- at_choices[1]
-  lb_test_default_y_val <- tbili_choice
-
   # Check validity of arguments
   ac <- checkmate::makeAssertCollection()
   checkmate::assert_multi_class(dataset_list, c("reactive", "shinymeta_reactive"), add = ac)
   checkmate::assert_string(subjectid_var, min.chars = 1, add = ac)
   checkmate::assert_string(arm_var, min.chars = 1, add = ac)
-  checkmate::assert_character(
-    arm_default_vals,
-    min.chars = 1,
-    any.missing = FALSE,
-    all.missing = FALSE,
-    unique = TRUE,
-    min.len = 1,
-    null.ok = TRUE,
-    add = ac
-  )
+  checkmate::assert_character(arm_default_vals, min.chars = 1, any.missing = FALSE, all.missing = FALSE,
+                              unique = TRUE, min.len = 1, null.ok = TRUE, add = ac)
   checkmate::assert_string(visit_var, min.chars = 1, add = ac)
   checkmate::assert_string(baseline_visit_val, min.chars = 1, add = ac)
   checkmate::assert_string(lb_test_var, min.chars = 1, add = ac)
-  checkmate::assert_character(
-    lb_test_choices,
-    min.chars = 1,
-    any.missing = FALSE,
-    all.missing = FALSE,
-    unique = TRUE,
-    min.len = 1,
-    add = ac
-  )
-  checkmate::assert_string(lb_test_default_x_val, min.chars = 1, add = ac)
-  checkmate::assert_string(lb_test_default_y_val, min.chars = 1, add = ac)
+  checkmate::assert_character(at_choices, min.chars = 1, any.missing = FALSE, all.missing = FALSE,
+                              unique = TRUE, min.len = 1, add = ac)
+  checkmate::assert_string(tbili_choice, min.chars = 1, add = ac)
+  checkmate::assert_string(alp_choice, min.chars = 1, null.ok = TRUE, add = ac)
+  checkmate::assert_string(at_default_val, min.chars = 1, null.ok = TRUE, add = ac)
   checkmate::assert_string(lb_date_var, min.chars = 1, add = ac)
   checkmate::assert_string(lb_result_var, min.chars = 1, add = ac)
   checkmate::assert_string(ref_range_upper_lim_var, min.chars = 1, add = ac)
@@ -221,9 +202,24 @@ edish_server <- function(
       dataset_list()
     })
 
+    # initialized <- reactiveVal(FALSE)
+    #
+    # # One-off initialization
+    # session$onFlushed(function() {
+    #   message("Initialising (session$onFlushed)")
+    #
+    #   shiny::updateSelectInput(session, EDISH$ARM_ID, choices = arm_default_vals, selected = arm_default_vals)
+    #   shiny::updateSelectInput(session, EDISH$X_AXIS_ID, choices = at_choices, selected = at_default_val)
+    #   shiny::updateSelectInput(session, EDISH$Y_AXIS_ID, choices = tbili_choice, selected = tbili_choice)
+    #   shiny::updateNumericInput(session, EDISH$WINDOW_DAYS_ID, value = window_days)
+    #
+    #   initialized(TRUE)
+    # }, once = TRUE)
+
     # Ensure window is a positive integer
-    shiny::observeEvent(input[[EDISH$WINDOW_DAYS_ID]], {
+    shiny::observeEvent(input[[EDISH$WINDOW_DAYS_ID]], ignoreInit = TRUE, {
       window_val <- input[[EDISH$WINDOW_DAYS_ID]]
+      message("Ensure window is a positive integer")
 
       if (!is.null(window_val) && !is.na(window_val)) {
         new_val <- abs(as.integer(window_val))
@@ -235,6 +231,9 @@ edish_server <- function(
     })
 
     work_data <- shiny::reactive({
+      # req(initialized())
+      # req(input[[EDISH$WINDOW_DAYS_ID]])
+      message("Creating work_data()")
 
       init_data <- prepare_initial_data(
         dataset_list = v_dataset_list(),
@@ -272,41 +271,37 @@ edish_server <- function(
       }))
     })
 
-    # Store default values as reactive values in order to restore them correctly after bookmarking
-    r_values <- shiny::reactiveValues(
-      x_axis = at_default_val,
-      y_axis = tbili_choice,
-      arm_id = arm_default_vals
-    )
+    # Storage for restored values from a bookmarked state
+    r_values <- shiny::reactiveValues()
 
-    # To make bookmarking work also for r_values
+    # Store arm selections from restored bookmarked state, to be applied after work data has been created
     shiny::onRestore(function(state) {
-      browser()
-      if (length(state$input) > 0) { # makes sure that the default_vars are displayed at app launch with SSO
-        r_values$x_axis <- state$input$x_axis
-        r_values$y_axis <- state$input$y_axis
-        r_values$arm_id <- state$input$arm_id
+      if (length(state$input) > 0) {
+        r_values[[EDISH$ARM_ID]] <- state$input[[EDISH$ARM_ID]]
       }
     })
 
+    # Update arm choices based on work data; if appropriate, apply selections from restored bookmarked state
     shiny::observeEvent(work_data(), {
-      choices_arm <- unique(work_data()[[arm_var]])
-      sel_arm <- if (is.null(r_values$arm_id)) choices_arm else r_values$arm_id
+      message("observeEvent(work_data(), {...})")
+      #req(input[[EDISH$ARM_ID]])
+      #browser()
+      #choices_arm <- unique(work_data()[[arm_var]])
+      choices_arm <- levels(work_data()[[arm_var]])
+      if (is.null(r_values[[EDISH$ARM_ID]])) {
+        sel_arm <- input[[EDISH$ARM_ID]]
+      } else {
+        sel_arm <- r_values[[EDISH$ARM_ID]]
+        r_values[[EDISH$ARM_ID]] <- NULL
+      }
 
-      shiny::updateSelectInput(inputId = EDISH$X_AXIS_ID, choices = at_choices, selected = r_values$x_axis)
-      shiny::updateSelectInput(inputId = EDISH$Y_AXIS_ID, choices = tbili_choice, selected = r_values$y_axis)
       shiny::updateSelectInput(inputId = EDISH$ARM_ID, choices = choices_arm, selected = sel_arm)
     })
 
-    # shiny::observeEvent(work_data(), {
-    #   choices_lb_test <- unique(stats::na.omit(work_data()[[lb_test_var]]))
-    #   choices_arm <- unique(stats::na.omit(work_data()[[arm_var]]))
-    #   sel_arm <- if (is.null(r_values$arm_id)) choices_arm else r_values$arm_id
-    #
-    #   shiny::updateSelectInput(inputId = EDISH$X_AXIS_ID, choices = choices_lb_test, selected = r_values$x_axis)
-    #   shiny::updateSelectInput(inputId = EDISH$Y_AXIS_ID, choices = choices_lb_test, selected = r_values$y_axis)
-    #   shiny::updateSelectInput(inputId = EDISH$ARM_ID, choices = choices_arm, selected = sel_arm)
-    # })
+    observeEvent(input[[EDISH$ARM_ID]], {
+      message("ARM updated:")
+      print(input[[EDISH$ARM_ID]])
+    })
 
     plot_data <- shiny::reactive({
       filtered_data <- filter_data(
@@ -316,27 +311,8 @@ edish_server <- function(
         sel_arm = input[[EDISH$ARM_ID]],
         lb_test_var = lb_test_var,
         sel_lb_test = input[[EDISH$X_AXIS_ID]]
-        #sel_lb_test = c(input[[EDISH$X_AXIS_ID]], input[[EDISH$Y_AXIS_ID]])
       )
     })
-
-    # plot_active <- shiny::reactiveVal(FALSE)
-    # output[[EDISH$PLOT_ID]] <- plotly::renderPlotly({
-    #   plot <- generate_plot(
-    #     dataset = plot_data(),
-    #     subjectid_var = subjectid_var, arm_var = arm_var, visit_var = ".visit_at",
-    #     sel_x = input[[EDISH$X_AXIS_ID]], sel_y = input[[EDISH$Y_AXIS_ID]],
-    #     # x_plot_type = input[[EDISH$X_PLOT_TYPE_ID]],
-    #     # y_plot_type = input[[EDISH$Y_PLOT_TYPE_ID]],
-    #     plot_type = input[[EDISH$PLOT_TYPE_ID]],
-    #     x_ref_line_num = input[[EDISH$X_REF_ID]], y_ref_line_num = input[[EDISH$Y_REF_ID]],
-    #     x_rng_lower = input[[EDISH$X_RNG_ID]][1], x_rng_upper = input[[EDISH$X_RNG_ID]][2],
-    #     y_rng_lower = input[[EDISH$Y_RNG_ID]][1], y_rng_upper = input[[EDISH$Y_RNG_ID]][2],
-    #     source = session[["ns"]]("plot")
-    #   )
-    #   if (!is.null(plot)) plot_active(TRUE)
-    #   plot
-    # })
 
     output[[EDISH$PLOT_ID]] <- ggiraph::renderGirafe({
       shiny::validate(shiny::need(nrow(plot_data()) > 0, "No data available."))
@@ -346,14 +322,15 @@ edish_server <- function(
         subjectid_var = subjectid_var,
         arm_var = arm_var,
         sel_x = input[[EDISH$X_AXIS_ID]],
-        sel_y = input[[EDISH$Y_AXIS_ID]],
+        sel_y = tbili_choice,                               # input[[EDISH$Y_AXIS_ID]],
         norm_ref_type = input[[EDISH$PLOT_TYPE_ID]],
         x_ref_line_num = input[[EDISH$X_REF_ID]],
         y_ref_line_num = input[[EDISH$Y_REF_ID]],
         x_rng_lower = input[[EDISH$X_RNG_ID]][1],
         x_rng_upper = input[[EDISH$X_RNG_ID]][2],
         y_rng_lower = input[[EDISH$Y_RNG_ID]][1],
-        y_rng_upper = input[[EDISH$Y_RNG_ID]][2]
+        y_rng_upper = input[[EDISH$Y_RNG_ID]][2],
+        alp_flag = !is.null(alp_choice)
       )
     })
 
@@ -388,52 +365,66 @@ edish_server <- function(
 #' @param module_id `[character(1)]`
 #'
 #' A unique module ID.
+#'
 #' @param subject_level_dataset_name,lab_dataset_name `[character(1)]`
 #'
 #' Name(s) of the dataset(s) that will be displayed.
+#'
 #' @param subjectid_var `[character(1)]`
 #'
 #' Name of the variable containing the unique subject IDs. Defaults to `"USUBJID"`.
+#'
 #' @param arm_var `[character(1)]`
 #'
 #' Name of the variable containing the arm/treatment information. Defaults to `"ACTARM"`.
+#'
 #' @param arm_default_vals `[character(1+)]`
 #'
 #' Vector specifying the default value(s) for the arm selector. Defaults to `NULL`.
+#'
 #' @param visit_var `[character(1)]`
 #'
 #' Name of the variable containing the visit information. Defaults to `"VISIT"`.
+#'
 #' @param baseline_visit_val `[character(1)]`
 #'
 #' Character indicating which visit should be used as baseline visit. Defaults to `"VISIT 01"`.
+#'
 #' @param lb_test_var `[character(1)]`
 #'
 #' Name of the variable containing the laboratory test information. Defaults to `"LBTEST"`.
+#'
 #' @param lb_test_choices `[character(1+)]`
 #'
 #' Character vector specifying the possible choices of the laboratory test. Defaults to
 #' `c("Alkaline Phosphatase", "Alanine Aminotransferase", "Aspartate Aminotransferase", "Bilirubin")`
+#'
 #' @param lb_test_default_x_val `[character(1)]`
 #'
 #' Character specifying the default laboratory test choice for the plot's x-axis.
 #' Defaults to `"Aspartate Aminotransferase"`.
+#'
 #' @param lb_test_default_y_val `[character(1)]`
 #'
 #' Character specifying the default laboratory test choice for the plot's y-axis.
 #' Defaults to `"Bilirubin"`.
+#'
 #' @param lb_result_var `[character(1)]`
 #'
 #' Name of the variable containing results of the laboratory test. Defaults to `"LBSTRESN"`.
 #' In case of multiple values in `lb_result_var` per `subjectid_var`, `visit_var`, and
 #' `lb_test_var`, only the maximum value will be used. Note that a NA value in the considered values
 #' will cause a value of NA to be returned as maximum value.
+#'
 #' @param ref_range_upper_lim_var `[character(1)]`
 #'
 #' Name of the variable containing the reference range upper limits.
 #' Defaults to `"LBSTNRHI"`.
+#'
 #' @param window_days `[integer(1)]`
 #'
 #' Window of the number of days considered between peaks.
+#'
 #' @param receiver_id `[character(1) | NULL]`
 #'
 #' Character string defining the ID of the module to which to send a subject ID. The
@@ -471,8 +462,11 @@ mod_edish <- function(
   mod <- list(
     ui = function(module_id) {
       edish_UI(module_id = module_id,
+               arm_default_vals = arm_default_vals,
                at_choices = at_choices,
-               tbili_choice = tbili_choice)
+               at_default_val = at_default_val,
+               tbili_choice = tbili_choice,
+               window_days = window_days)
     },
     server = function(afmm) {
       dataset_list <- shiny::reactive({
