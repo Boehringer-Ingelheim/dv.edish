@@ -72,6 +72,9 @@ prepare_initial_data <- function(dataset_list,
     dplyr::slice_max(.data[[lb_result_var]], n = 1, with_ties = FALSE) |>
     dplyr::ungroup()
 
+  # Ensure lab date variable is converted to "Date" class
+  combined_dataset[[lb_date_var]] <- as.Date(combined_dataset[[lb_date_var]])
+
   return(combined_dataset)
 }
 

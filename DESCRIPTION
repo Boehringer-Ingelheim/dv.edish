@@ -18,7 +18,6 @@ Imports:
     dv.manager (>= 2.1.4),
     ggiraph,
     ggplot2,
-    magrittr (>= 2.0.3),
     rlang (>= 1.1.2),
     shiny (>= 1.8.0),
     shinyWidgets,

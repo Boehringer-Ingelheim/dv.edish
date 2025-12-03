@@ -42,13 +42,15 @@ mock_edish_mm <- function() {
       lab_dataset_name = "lb",
       arm_default_vals = c("Xanomeline Low Dose", "Placebo"),
       baseline_visit_val = "SCREENING 1",
-      lb_date_var = "ADT"
+      lb_date_var = "ADT",
+      window_days = 30
     )
   )
 
   dv.manager::run_app(
     data = list("demo" = list("dm" = dm, "lb" = lb)),
     module_list = module_list,
+    filter_type = "datasets",
     filter_data = "dm"
   )
 }
