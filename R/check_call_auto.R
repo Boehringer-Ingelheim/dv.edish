@@ -5,8 +5,8 @@
 # dv.edish::mod_edish
 check_mod_edish_auto <- function(afmm, datasets, module_id, subject_level_dataset_name, lab_dataset_name,
     subjectid_var, arm_var, arm_default_vals, visit_var, baseline_visit_val, lb_test_var, at_choices,
-    at_default_val, tbili_choice, alp_choice, lb_date_var, lb_result_var, ref_range_upper_lim_var, window_days,
-    receiver_id, warn, err) {
+    at_default_val, tbili_choice, alp_choice, lb_date_var, lb_result_var, ref_range_upper_lim_var, default_by_visit,
+    window_days, receiver_id, warn, err) {
     OK <- logical(0)
     used_dataset_names <- new.env(parent = emptyenv())
     OK[["module_id"]] <- CM$check_module_id("module_id", module_id, warn, err)
@@ -65,6 +65,9 @@ check_mod_edish_auto <- function(afmm, datasets, module_id, subject_level_datase
     OK[["ref_range_upper_lim_var"]] <- OK[["lab_dataset_name"]] && CM$check_dataset_colum_name("ref_range_upper_lim_var",
         ref_range_upper_lim_var, subkind, flags, lab_dataset_name, datasets[[lab_dataset_name]], warn,
         err)
+    "NOTE: default_by_visit (logical) has no associated automated checks"
+    "      The expectation is that it either does not require them or that"
+    "      the caller of this function has written manual checks near the call site."
     "NOTE: window_days (numeric) has no associated automated checks"
     "      The expectation is that it either does not require them or that"
     "      the caller of this function has written manual checks near the call site."

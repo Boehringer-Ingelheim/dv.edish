@@ -92,6 +92,10 @@ prepare_initial_data <- function(dataset_list,
 #'
 #' String indicating normalization reference type, either `"ULN"` or `"Baseline"`.
 #'
+#' @param by_visit `[logical(1)]`
+#'
+#' A flag to indicate whether to plot aminotransferase values for each visit.
+#'
 #' @param window_days `[integer(1)]`
 #'
 #' Window of the number of days considered between peaks.
@@ -123,15 +127,11 @@ derive_req_vars <- function(dataset,
                             lb_date_var,
                             lb_result_var,
                             ref_range_upper_lim_var,
+                            by_visit,
                             window_days) {
 
-  # If window not specified then ensure all data are included in peak comparisons
-  if (is.na(window_days)) window_days <- Inf
-
-  #browser()
-  ## !!! What if date is NA? Should such rows be dropped with warning?
-  ## ! Need tests for this function
-  ## ! Do not forget: POSIXct needs to be converted to Date
+  ## ??? What if date is NA? Should such rows be dropped with warning?
+  ## !!! Need tests for this function
 
   ref_dataset <- dataset
 
@@ -152,16 +152,22 @@ derive_req_vars <- function(dataset,
   # Normalize lab values
   ref_dataset[[".norm_val"]] <- ref_dataset[[lb_result_var]] / ref_dataset[[".ref_val"]]
 
+  # Initialise base group variables for calculating peak values
+  base_group_vars <- c(subjectid_var, arm_var, lb_test_var)
+
   # Get peak values of post-baseline aminotransferase (AT) rows
   peak_at_data <- ref_dataset |>
     dplyr::filter(.data[[lb_test_var]] %in% at_choices,
                   .data[[visit_var]] != baseline_visit_val) |>
-    dplyr::group_by(.data[[subjectid_var]], .data[[arm_var]], .data[[lb_test_var]]) |>
+    dplyr::group_by(dplyr::across(dplyr::all_of(
+      if (by_visit) c(base_group_vars, visit_var)
+      else base_group_vars
+    ))) |>
     dplyr::slice_max(.data[[lb_result_var]], with_ties = TRUE) |>
     dplyr::slice_min(.data[[lb_date_var]], n = 1, with_ties = FALSE) |>
     dplyr::ungroup() |>
     dplyr::select(subjectid_var, arm_var, lb_test_var,
-                  .visit_at = "VISIT",
+                  .visit_at = dplyr::all_of(visit_var),
                   .date_at = dplyr::all_of(lb_date_var),
                   .norm_at = ".norm_val")
 
@@ -170,20 +176,29 @@ derive_req_vars <- function(dataset,
     dplyr::filter(.data[[lb_test_var]] == tbili_choice,
                   .data[[visit_var]] != baseline_visit_val) |>
     dplyr::select(subjectid_var, arm_var,
-                  .visit_tbili = "VISIT",
+                  .visit_tbili = dplyr::all_of(visit_var),
                   .date_tbili = dplyr::all_of(lb_date_var),
                   .norm_tbili = ".norm_val")
 
-  # Merge TBILI rows with peak AT values, keeping only those with offset days within window
+  # Merge TBILI rows with peak AT values,
   xy_data <- peak_at_data |>
     dplyr::left_join(tbili_data, by = c(subjectid_var, arm_var)) |>
-    dplyr::filter(!is.na(.data[[".norm_tbili"]])) |>
-    dplyr::mutate(.offset_days = .data[[".date_tbili"]] - .data[[".date_at"]]) |>
-    dplyr::filter(abs(.data[[".offset_days"]]) <= window_days)
+    dplyr::filter(!is.na(.data[[".norm_tbili"]]))
+
+  # If window specified then keep only those rows with offset days within window
+  if (!is.na(window_days)) {
+    xy_data[[".offset_days"]] <- xy_data[[".date_tbili"]] - xy_data[[".date_at"]]
+    xy_data <- xy_data[abs(xy_data[[".offset_days"]]) <= window_days, ]
+  } else {
+    xy_data[[".offset_days"]] <- NA
+  }
 
   # Get peak TBILI values
   peak_xy_data <- xy_data |>
-    dplyr::group_by(.data[[subjectid_var]], .data[[arm_var]], .data[[lb_test_var]]) |>
+    dplyr::group_by(dplyr::across(dplyr::all_of(
+      if (by_visit) c(base_group_vars, ".visit_at")
+      else base_group_vars
+    ))) |>
     dplyr::slice_max(.data[[".norm_tbili"]], with_ties = TRUE) |>
     dplyr::slice_min(.data[[".date_tbili"]], n = 1, with_ties = FALSE) |>
     dplyr::ungroup()
@@ -342,7 +357,10 @@ generate_plot <- function(dataset,
   } else {
     dataset[["hover_alp"]] <- ""
   }
-  #browser()
+
+  dataset[["hover_offset"]] <- ifelse(!is.na(dataset[[".offset_days"]]),
+                                      paste(dataset[[".offset_days"]], "days"),
+                                      "missing dates")
 
   dataset[["tooltip"]] <- paste0(
     "Subject: ", dataset[[subjectid_var]],
@@ -351,15 +369,14 @@ generate_plot <- function(dataset,
     "<br>  Visit: ", dataset[[".visit_at"]],
     "<br>  Date: ", dataset[["hover_date_x"]],
     dataset[["hover_alp"]],
-    #ifelse(rep(alp_flag, nrow(dataset)), paste0("<br>  ALP/", norm_ref_type, ": ", dataset[["hover_alp"]]), ""),
     "<br>---<br>", sel_y, ": ", sprintf("%.3f", dataset[[".norm_tbili"]]),
     "<br>  Visit: ", dataset[[".visit_tbili"]],
     "<br>  Date: ", dataset[["hover_date_y"]],
-    "<br>---<br>Time between peaks: ", dataset[[".offset_days"]], " days"
+    "<br>---<br>Time between peaks: ", dataset[["hover_offset"]]
   )
 
   # Define log axis breaks
-  exponents <-  -1:2   # adjust according to your axis range
+  exponents <- -1:2
   major_breaks <- unlist(lapply(exponents, function(k) (1:9) * 10^k))
 
   if (!is.null(x_rng_lower) && !is.null(x_rng_upper)) {

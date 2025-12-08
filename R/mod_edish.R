@@ -15,12 +15,15 @@ EDISH <- pack_of_constants(
   X_RNG_ID = "x_rng",
   Y_RNG_ID = "y_rng",
   RNG_LABEL = "Range:",
+  BY_VISIT_ID = "by_visit",
+  BY_VISIT_LABEL = "By visit",
+  BY_VISIT_INFO = "Aminotransferase values will be plotted for each visit",
   PLOT_TYPE_ID = "plot_type",
   PLOT_TYPE_CHOICES = c("\u00d7 ULN (eDISH)" = "ULN",
                         "\u00d7 Baseline (mDISH)" = "Baseline"),
   PLOT_ID = "plot",
   WINDOW_DAYS_ID = "window_days",
-  WINDOW_DAYS_LABEL = "Max. days between peaks"
+  WINDOW_DAYS_LABEL = "Max. days between peaks:"
 )
 
 
@@ -43,6 +46,7 @@ edish_UI <- function(module_id,
                      at_choices,
                      at_default_val,
                      tbili_choice,
+                     default_by_visit,
                      window_days) {
 
   ns <- shiny::NS(module_id)
@@ -88,6 +92,13 @@ edish_UI <- function(module_id,
       min = 0,
       max = 100,
       step = 0.1
+    ),
+    shiny::checkboxInput(
+      ns(EDISH$BY_VISIT_ID),
+      label = shiny::span(EDISH$BY_VISIT_LABEL,
+                          shiny::icon("circle-info",
+                                      title = EDISH$BY_VISIT_INFO)),
+      value = default_by_visit
     ),
     shiny::hr(),
     shiny::h4(EDISH$Y_AXIS_HEADER),
@@ -266,6 +277,7 @@ edish_server <- function(
           lb_date_var = lb_date_var,
           lb_result_var = lb_result_var,
           ref_range_upper_lim_var = ref_range_upper_lim_var,
+          by_visit = input[[EDISH$BY_VISIT_ID]],
           window_days = input[[EDISH$WINDOW_DAYS_ID]]
         )
       }))
@@ -284,9 +296,6 @@ edish_server <- function(
     # Update arm choices based on work data; if appropriate, apply selections from restored bookmarked state
     shiny::observeEvent(work_data(), {
       message("observeEvent(work_data(), {...})")
-      #req(input[[EDISH$ARM_ID]])
-      #browser()
-      #choices_arm <- unique(work_data()[[arm_var]])
       choices_arm <- levels(work_data()[[arm_var]])
       if (is.null(r_values[[EDISH$ARM_ID]])) {
         sel_arm <- input[[EDISH$ARM_ID]]
@@ -296,11 +305,6 @@ edish_server <- function(
       }
 
       shiny::updateSelectInput(inputId = EDISH$ARM_ID, choices = choices_arm, selected = sel_arm)
-    })
-
-    observeEvent(input[[EDISH$ARM_ID]], {
-      message("ARM updated:")
-      print(input[[EDISH$ARM_ID]])
     })
 
     plot_data <- shiny::reactive({
@@ -334,19 +338,16 @@ edish_server <- function(
       )
     })
 
+    observeEvent(input[[paste0(EDISH$PLOT_ID, "_selected")]], {
+      message("Clicked subject: ", input[[paste0(EDISH$PLOT_ID, "_selected")]])
+    })
+
     # Jumping feature
     mod_return_value <- NULL
     if (!is.null(on_sbj_click)) {
       return_value_content <- shiny::reactive({
-        shiny::req(plot_active())
-        click_event <- plotly::event_data(
-          event = "plotly_click",
-          source = session[["ns"]](EDISH$PLOT_ID),
-          priority = "event")
-
-        shiny::req(!is.null(click_event))
         on_sbj_click() # reactive side effect to be able to jump to another module
-        click_event[["key"]]
+        input[[paste0(EDISH$PLOT_ID, "_selected")]]
       })
       mod_return_value <- list(
         subj_id = return_value_content
@@ -421,6 +422,10 @@ edish_server <- function(
 #' Name of the variable containing the reference range upper limits.
 #' Defaults to `"LBSTNRHI"`.
 #'
+#' @param default_by_visit `[logical(1)]`
+#'
+#' A flag to indicate the default of whether or not to plot aminotransferase values for each visit.
+#'
 #' @param window_days `[integer(1)]`
 #'
 #' Window of the number of days considered between peaks.
@@ -456,6 +461,7 @@ mod_edish <- function(
     lb_date_var = NULL,
     lb_result_var = "LBSTRESN",
     ref_range_upper_lim_var = "LBSTNRHI",
+    default_by_visit = FALSE,
     window_days = NA,
     receiver_id = NULL) {
 
@@ -466,6 +472,7 @@ mod_edish <- function(
                at_choices = at_choices,
                at_default_val = at_default_val,
                tbili_choice = tbili_choice,
+               default_by_visit = default_by_visit,
                window_days = window_days)
     },
     server = function(afmm) {
@@ -533,6 +540,7 @@ mod_edish_API_docs <- list(
   lb_date_var = list(""),
   lb_result_var = list(""),
   ref_range_upper_lim_var = list(""),
+  default_by_visit = list(""),
   window_days = list(""),
   receiver_id = list("")
 )
@@ -554,6 +562,7 @@ mod_edish_API_spec <- TC$group(
   lb_date_var = TC$col("lab_dataset_name", TC$or(TC$date(), TC$datetime())),
   lb_result_var = TC$col("lab_dataset_name", TC$numeric()),
   ref_range_upper_lim_var = TC$col("lab_dataset_name", TC$numeric()) |> TC$flag("optional"),
+  default_by_visit = TC$logical(),
   window_days = TC$numeric() |> TC$flag("optional"),
   receiver_id = TC$character() |> TC$flag("optional")
 ) |> TC$attach_docs(mod_edish_API_docs)
@@ -562,7 +571,7 @@ check_mod_edish <- function(
     afmm, datasets, module_id, subject_level_dataset_name, lab_dataset_name, subjectid_var, arm_var, arm_default_vals,
     visit_var, baseline_visit_val, lb_test_var,
     at_choices, at_default_val, tbili_choice, alp_choice,
-    lb_date_var, lb_result_var, ref_range_upper_lim_var, window_days, receiver_id
+    lb_date_var, lb_result_var, ref_range_upper_lim_var, default_by_visit, window_days, receiver_id
   ) {
   warn <- CM$container()
   err <- CM$container()
@@ -572,7 +581,7 @@ check_mod_edish <- function(
     module_id, subject_level_dataset_name, lab_dataset_name, subjectid_var, arm_var, arm_default_vals,
     visit_var, baseline_visit_val, lb_test_var, # lb_test_choices, lb_test_default_x_val, lb_test_default_y_val,
     at_choices, at_default_val, tbili_choice, alp_choice,
-    lb_date_var, lb_result_var, ref_range_upper_lim_var, window_days, receiver_id,
+    lb_date_var, lb_result_var, ref_range_upper_lim_var, window_days, default_by_visit, receiver_id,
     warn, err
   )
 
