@@ -414,8 +414,8 @@ generate_plot <- function(dataset,
                                     size = 2,
                                     alpha = 0.8,
                                     stroke = 0) +
-    ggplot2::labs(x = paste0(sel_x, "/", norm_ref_type),
-                  y = paste0(sel_y, "/", norm_ref_type),
+    ggplot2::labs(x = paste0(sel_x, " (\u00d7 ", norm_ref_type, ")"),
+                  y = paste0(sel_y, " (\u00d7 ", norm_ref_type, ")"),
                   color = "") +
     ggplot2::theme_minimal(base_family = "Liberation Sans",
                            base_size = 9)
