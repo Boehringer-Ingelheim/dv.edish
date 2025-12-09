@@ -417,10 +417,11 @@ generate_plot <- function(dataset,
     ggplot2::labs(x = paste0(sel_x, "/", norm_ref_type),
                   y = paste0(sel_y, "/", norm_ref_type),
                   color = "") +
-    ggplot2::theme_minimal(base_family = "Arial",
+    ggplot2::theme_minimal(base_family = "Liberation Sans",
                            base_size = 9)
 
   plt_obj <- ggiraph::girafe(ggobj = plt_obj,
+                             fonts = list(sans = "Liberation Sans"),
                              width_svg = 8,
                              height_svg = 5.33,
                              options = list(

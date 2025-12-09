@@ -136,6 +136,7 @@ edish_UI <- function(module_id,
 
   ui <- shiny::tagList(
     drop_menu,
+    gdtools::liberationsansHtmlDependency(),
     ggiraph::girafeOutput(outputId = ns(EDISH$PLOT_ID), width = "100%", height = "600px")
   )
 
@@ -212,6 +213,9 @@ edish_server <- function(
       checkmate::assert_list(dataset_list(), types = "data.frame", null.ok = TRUE, names = "named")
       dataset_list()
     })
+
+    # Ensure font "Liberation Sans" is registered, so it can be used by {{ggiraph}}
+    gdtools::register_liberationsans()
 
     # initialized <- reactiveVal(FALSE)
     #
