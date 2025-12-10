@@ -35,7 +35,7 @@ Suggests:
 VignetteBuilder: 
     knitr
 Remotes: 
-    boehringer-ingelheim/dv.manager@main
+    boehringer-ingelheim/dv.manager@main,
     boehringer-ingelheim/dv.papo@main
 Config/testthat/edition: 3
 Encoding: UTF-8
