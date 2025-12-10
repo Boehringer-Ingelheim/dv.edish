@@ -7,7 +7,6 @@ EDISH <- pack_of_constants(
   X_AXIS_HEADER = "Specify x-axis",
   Y_AXIS_HEADER = "Specify y-axis",
   X_AXIS_ID = "x_axis",
-  #Y_AXIS_ID = "y_axis",
   AXIS_LABEL = "Parameter:",
   X_REF_ID = "x_ref",
   Y_REF_ID = "y_ref",
@@ -102,11 +101,6 @@ edish_UI <- function(module_id,
     ),
     shiny::hr(),
     shiny::h4(EDISH$Y_AXIS_HEADER),
-    # shiny::selectInput(
-    #   inputId = ns(EDISH$Y_AXIS_ID),
-    #   label = EDISH$AXIS_LABEL,
-    #   choices = NULL
-    # ),
     shiny::numericInput(
       inputId = ns(EDISH$Y_REF_ID),
       label = EDISH$REF_LABEL,
@@ -217,24 +211,9 @@ edish_server <- function(
     # Ensure font "Liberation Sans" is registered, so it can be used by {{ggiraph}}
     gdtools::register_liberationsans()
 
-    # initialized <- reactiveVal(FALSE)
-    #
-    # # One-off initialization
-    # session$onFlushed(function() {
-    #   message("Initialising (session$onFlushed)")
-    #
-    #   shiny::updateSelectInput(session, EDISH$ARM_ID, choices = arm_default_vals, selected = arm_default_vals)
-    #   shiny::updateSelectInput(session, EDISH$X_AXIS_ID, choices = at_choices, selected = at_default_val)
-    #   shiny::updateSelectInput(session, EDISH$Y_AXIS_ID, choices = tbili_choice, selected = tbili_choice)
-    #   shiny::updateNumericInput(session, EDISH$WINDOW_DAYS_ID, value = window_days)
-    #
-    #   initialized(TRUE)
-    # }, once = TRUE)
-
     # Ensure window is a positive integer
     shiny::observeEvent(input[[EDISH$WINDOW_DAYS_ID]], ignoreInit = TRUE, {
       window_val <- input[[EDISH$WINDOW_DAYS_ID]]
-      message("Ensure window is a positive integer")
 
       if (!is.null(window_val) && !is.na(window_val)) {
         new_val <- abs(as.integer(window_val))
@@ -246,9 +225,6 @@ edish_server <- function(
     })
 
     work_data <- shiny::reactive({
-      # req(initialized())
-      # req(input[[EDISH$WINDOW_DAYS_ID]])
-      message("Creating work_data()")
 
       init_data <- prepare_initial_data(
         dataset_list = v_dataset_list(),
@@ -299,7 +275,6 @@ edish_server <- function(
 
     # Update arm choices based on work data; if appropriate, apply selections from restored bookmarked state
     shiny::observeEvent(work_data(), {
-      message("observeEvent(work_data(), {...})")
       choices_arm <- levels(work_data()[[arm_var]])
       if (is.null(r_values[[EDISH$ARM_ID]])) {
         sel_arm <- input[[EDISH$ARM_ID]]
@@ -330,7 +305,7 @@ edish_server <- function(
         subjectid_var = subjectid_var,
         arm_var = arm_var,
         sel_x = input[[EDISH$X_AXIS_ID]],
-        sel_y = tbili_choice,                               # input[[EDISH$Y_AXIS_ID]],
+        sel_y = tbili_choice,
         norm_ref_type = input[[EDISH$PLOT_TYPE_ID]],
         x_ref_line_num = input[[EDISH$X_REF_ID]],
         y_ref_line_num = input[[EDISH$Y_REF_ID]],
@@ -340,10 +315,6 @@ edish_server <- function(
         y_rng_upper = input[[EDISH$Y_RNG_ID]][2],
         alp_flag = !is.null(alp_choice)
       )
-    })
-
-    observeEvent(input[[paste0(EDISH$PLOT_ID, "_selected")]], {
-      message("Clicked subject: ", input[[paste0(EDISH$PLOT_ID, "_selected")]])
     })
 
     # Jumping feature
