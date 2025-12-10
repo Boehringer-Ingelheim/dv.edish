@@ -46,7 +46,7 @@ res <- derive_req_vars(
 )
 
 # Tests
-test_that("the function returns a single dataset with the expected variables" %>%
+test_that("the function returns a single dataset with the expected variables" |>
   vdoc[["add_spec"]](specs$plot_specs$data), {
   expect_s3_class(res, "data.frame")
 
@@ -57,7 +57,7 @@ test_that("the function returns a single dataset with the expected variables" %>
   expect_contains(sort(actual), sort(expected))
 })
 
-test_that("the kept variables are taken over correctly" %>%
+test_that("the kept variables are taken over correctly" |>
   vdoc[["add_spec"]](specs$plot_specs$data), {
   kept_vars <- c("USUBJID", "ARM", "VISIT")
   actual <- tibble::as_tibble(res[, kept_vars])
@@ -66,7 +66,7 @@ test_that("the kept variables are taken over correctly" %>%
   expect_identical(actual, expected)
 })
 
-test_that("the new variables contain the correct normalized values" %>%
+test_that("the new variables contain the correct normalized values" |>
   vdoc[["add_spec"]](specs$plot_specs$normalization), {
   plot_type_choices <- c("ULN", "Baseline")
   test_choices <- c(sel_x, sel_y)

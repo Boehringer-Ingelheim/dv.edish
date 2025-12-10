@@ -72,7 +72,7 @@ plt_obj <- generate_plot(
 )
 
 # Tests
-test_that("the resulting plot object includes the correct data" %>%
+test_that("the resulting plot object includes the correct data" |>
   vdoc[["add_spec"]](specs$plot_specs$data), {
   # correct dataset
   actual <- plt_obj$x$visdat[[1]]()
@@ -92,7 +92,7 @@ test_that("the resulting plot object includes the correct data" %>%
   expect_identical(actual_y, expected_y)
 })
 
-test_that("the resulting plot object includes the correct axis labels" %>%
+test_that("the resulting plot object includes the correct axis labels" |>
   vdoc[["add_spec"]](specs$plot_specs$axis_labels), {
   actual_x <- plt_obj$x$layoutAttrs[[1]]$xaxis$title
   actual_y <- plt_obj$x$layoutAttrs[[1]]$yaxis$title
@@ -102,7 +102,7 @@ test_that("the resulting plot object includes the correct axis labels" %>%
   expect_identical(actual_y, expected_y)
 })
 
-test_that("the resulting plot object includes the correct reference lines" %>%
+test_that("the resulting plot object includes the correct reference lines" |>
   vdoc[["add_spec"]](specs$plot_specs$ref_lines), {
   actual_x_type <- plt_obj$x$layoutAttrs[[1]]$shapes[[1]]$type
   actual_x0 <- plt_obj$x$layoutAttrs[[1]]$shapes[[1]]$x0
@@ -118,26 +118,26 @@ test_that("the resulting plot object includes the correct reference lines" %>%
   expect_identical(actual_y1, y_ref_line_num)
 })
 
-test_that("the resulting plot object includes the correct axis range" %>%
+test_that("the resulting plot object includes the correct axis range" |>
   vdoc[["add_spec"]](specs$plot_specs$axis_ranges), {
   actual_x <- plt_obj$x$layoutAttrs[[1]]$xaxis$range
   actual_y <- plt_obj$x$layoutAttrs[[1]]$yaxis$range
-  
+
   expected_x <- c(x_rng_lower, x_rng_upper)
   expected_y <- c(y_rng_lower, y_rng_upper)
-  
+
   expect_identical(actual_x, expected_x)
   expect_identical(actual_y, expected_y)
 })
 
-test_that("the resulting plot object includes the correct coloring" %>%
+test_that("the resulting plot object includes the correct coloring" |>
   vdoc[["add_spec"]](specs$plot_specs$arm_coloring), {
   actual <- plt_obj$x$attrs[[1]]$color
   expected <- dataset$ARM
   expect_identical(actual, expected)
 })
 
-test_that("the resulting plot object includes the correct hovertext (snapshot test)" %>%
+test_that("the resulting plot object includes the correct hovertext (snapshot test)" |>
   vdoc[["add_spec"]](specs$plot_specs$hovering), {
   actual <- as.character(plt_obj$x$attrs[[2]]$hovertext)[2]
   expect_snapshot(actual, cran = TRUE)

@@ -6,7 +6,7 @@ app <- shinytest2::AppDriver$new(
 app_url <- app$get_url()
 
 # Tests
-test_that("the default values are correct at app launch" %>%
+test_that("the default values are correct at app launch" |>
   vdoc[["add_spec"]](c(specs$input_menu_specs$default_vals$arm, specs$input_menu_specs$default_vals$param)), {
   app <- shinytest2::AppDriver$new(
     app_dir = app_url, name = "test_defaults"
@@ -28,7 +28,7 @@ test_that("the default values are correct at app launch" %>%
   app$stop()
 })
 
-test_that("the app displays the correct plot at app launch (snapshot test)" %>%
+test_that("the app displays the correct plot at app launch (snapshot test)" |>
   vdoc[["add_spec"]](specs$plot_specs$data), {
   app <- shinytest2::AppDriver$new(
     app_dir = app_url, name = "test_snapshot"
@@ -50,13 +50,13 @@ test_that("default settings are visible after Single-Sign-On redirect", {
 
 
 # Test bookmarking
-test_that("the app's state is restored when bookmarking" %>%
+test_that("the app's state is restored when bookmarking" |>
   vdoc[["add_spec"]](specs$framework_specs$bookmarking), {
   # Initialize test app
   app_bmk <- shinytest2::AppDriver$new(
     app_dir = "./apps/bookmarking_app", name = "test_bookmarking"
   )
-    
+
   app_bmk$wait_for_idle()
 
   # Update values
@@ -77,7 +77,7 @@ test_that("the app's state is restored when bookmarking" %>%
   app_bmk$set_inputs(!!"._bookmark_" := "click") # nolint
 
   # Initialize bookmarked app
-  bmk_url <- app_bmk$get_value(export = "url")  
+  bmk_url <- app_bmk$get_value(export = "url")
 
   bmk_url_with_range <- paste0(bmk_url, range_url_part)
   app_rst <- shinytest2::AppDriver$new(app_dir = bmk_url_with_range, name = "test_restoring")

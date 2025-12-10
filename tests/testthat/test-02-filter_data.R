@@ -10,7 +10,7 @@ arm_vals <- unique(dataset[[arm_var]])
 lb_test_vals <- unique(dataset[[lb_test_var]])
 
 # Tests
-test_that("the resulting dataset contains only data corresponding to the desired lab tests" %>%
+test_that("the resulting dataset contains only data corresponding to the desired lab tests" |>
   vdoc[["add_spec"]](specs$plot_specs$param), {
   # No lab test
   res <- filter_data(
@@ -62,7 +62,7 @@ test_that("the resulting dataset contains only data corresponding to the desired
 })
 
 
-test_that("the resulting dataset contains only data corresponding to the desired arms" %>%
+test_that("the resulting dataset contains only data corresponding to the desired arms" |>
   vdoc[["add_spec"]](specs$plot_specs$arm), {
   # No arm
   res <- filter_data(
@@ -114,7 +114,7 @@ test_that("the resulting dataset contains only data corresponding to the desired
 })
 
 
-test_that("the resulting dataset contains only data corresponding to the desired arms and lab tests" %>%
+test_that("the resulting dataset contains only data corresponding to the desired arms and lab tests" |>
   vdoc[["add_spec"]](c(specs$plot_specs$arm, specs$plot_specs$param)), {
   res <- filter_data(
     dataset = dataset,

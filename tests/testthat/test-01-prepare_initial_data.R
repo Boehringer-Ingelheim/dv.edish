@@ -31,7 +31,7 @@ res <- prepare_initial_data(
 )
 
 # Tests
-test_that("the function returns a single dataset with the expected variables" %>%
+test_that("the function returns a single dataset with the expected variables" |>
   vdoc[["add_spec"]](specs$plot_specs$data), {
   expect_s3_class(res, "data.frame")
 
@@ -40,7 +40,7 @@ test_that("the function returns a single dataset with the expected variables" %>
   expect_identical(actual, expected)
 })
 
-test_that("the kept variables are taken over correctly" %>%
+test_that("the kept variables are taken over correctly" |>
   vdoc[["add_spec"]](c(specs$plot_specs$arm, specs$plot_specs$param, specs$plot_specs$normalization)), {
   remaining_vars <- c("USUBJID", "ARM", "VISIT", "LBTEST", "LBSTRESN", "LBSTNRHI")
   actual <- res[remaining_vars]
@@ -48,7 +48,7 @@ test_that("the kept variables are taken over correctly" %>%
   expect_identical(actual, expected)
 })
 
-test_that("the new BASE variable contains the correct baseline values" %>%
+test_that("the new BASE variable contains the correct baseline values" |>
   vdoc[["add_spec"]](specs$plot_specs$normalization), {
   actual <- res[res$VISIT == baseline_visit_val, c("USUBJID", "LBTEST", "LBSTRESN")]
   colnames(actual) <- NULL
@@ -60,13 +60,13 @@ test_that("the new BASE variable contains the correct baseline values" %>%
   expect_identical(actual, expected)
 })
 
-test_that("the maximum values are used in case of multiple values" %>%
+test_that("the maximum values are used in case of multiple values" |>
   vdoc[["add_spec"]](specs$plot_specs$multiple_vals), {
   # Add additional row to the lb dataset
   add_usubjid <- lb$USUBJID[1]
   add_lbtest <- lb$LBTEST[1]
   add_visit <- lb$VISIT[1]
-  lb <- lb %>%
+  lb <- lb |>
     dplyr::add_row(USUBJID = add_usubjid, LBTEST = add_lbtest, VISIT = add_visit, LBSTRESN = 20, LBSTNRHI = 22)
 
   # Invoke the function
@@ -80,7 +80,7 @@ test_that("the maximum values are used in case of multiple values" %>%
     lb_test_choices = lb_test_choices,
     lb_result_var = "LBSTRESN",
     ref_range_upper_lim_var = "LBSTNRHI"
-  ) %>% dplyr::filter(USUBJID == add_usubjid, LBTEST == add_lbtest, VISIT == add_visit)
+  ) |> dplyr::filter(USUBJID == add_usubjid, LBTEST == add_lbtest, VISIT == add_visit)
 
   # Test if only maximum value remains
   expect_identical(res_extra_row$LBSTRESN, 20)
