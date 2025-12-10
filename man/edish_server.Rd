@@ -13,12 +13,14 @@ edish_server(
   visit_var = "VISIT",
   baseline_visit_val = "VISIT 01",
   lb_test_var = "LBTEST",
-  lb_test_choices = c("Alkaline Phosphatase", "Alanine Aminotransferase",
-    "Aspartate Aminotransferase", "Bilirubin"),
-  lb_test_default_x_val = "Aspartate Aminotransferase",
-  lb_test_default_y_val = "Bilirubin",
+  at_choices = NULL,
+  at_default_val = NULL,
+  tbili_choice = NULL,
+  alp_choice = NULL,
+  lb_date_var = NULL,
   lb_result_var = "LBSTRESN",
   ref_range_upper_lim_var = "LBSTNRHI",
+  window_days = NULL,
   on_sbj_click = NULL
 )
 }
@@ -55,21 +57,6 @@ Character indicating which visit should be used as baseline visit. Defaults to \
 
 Name of the variable containing the laboratory test information. Defaults to \code{"LBTEST"}.}
 
-\item{lb_test_choices}{\verb{[character(1+)]}
-
-Character vector specifying the possible choices of the laboratory test. Defaults to
-\code{c("Alkaline Phosphatase", "Alanine Aminotransferase", "Aspartate Aminotransferase", "Bilirubin")}}
-
-\item{lb_test_default_x_val}{\verb{[character(1)]}
-
-Character specifying the default laboratory test choice for the plot's x-axis.
-Defaults to \code{"Aspartate Aminotransferase"}.}
-
-\item{lb_test_default_y_val}{\verb{[character(1)]}
-
-Character specifying the default laboratory test choice for the plot's y-axis.
-Defaults to \code{"Bilirubin"}.}
-
 \item{lb_result_var}{\verb{[character(1)]}
 
 Name of the variable containing results of the laboratory test. Defaults to \code{"LBSTRESN"}.
@@ -82,9 +69,16 @@ will cause a value of NA to be returned as maximum value.}
 Name of the variable containing the reference range upper limits.
 Defaults to \code{"LBSTNRHI"}.}
 
+\item{window_days}{\verb{[integer(1)]}
+
+Window of the number of days considered between peaks.}
+
 \item{on_sbj_click}{\verb{[function() | NULL]}
 
 Function to invoke when a subject is clicked on the plot. If \code{NULL}, no action is taken.}
+}
+\value{
+A reactive value containing the list of subjects in the clicked point, if applicable.
 }
 \description{
 \code{edish_server()} contains the server of the \code{dv.edish} module.

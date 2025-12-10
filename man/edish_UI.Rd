@@ -4,12 +4,32 @@
 \alias{edish_UI}
 \title{User Interface of the \code{dv.edish} module}
 \usage{
-edish_UI(module_id)
+edish_UI(
+  module_id,
+  arm_default_vals,
+  at_choices,
+  at_default_val,
+  tbili_choice,
+  default_by_visit,
+  window_days
+)
 }
 \arguments{
 \item{module_id}{\verb{[character(1)]}
 
 A unique ID string to create a namespace. Must match the ID of \code{edish_server()}.}
+
+\item{arm_default_vals}{\verb{[character(1+)]}
+
+Vector specifying the default value(s) for the arm selector. Defaults to \code{NULL}.}
+
+\item{default_by_visit}{\verb{[logical(1)]}
+
+A flag to indicate the default of whether or not to plot aminotransferase values for each visit.}
+
+\item{window_days}{\verb{[integer(1)]}
+
+Window of the number of days considered between peaks.}
 }
 \value{
 A shiny \code{uiOutput} element.

@@ -4,12 +4,12 @@
 \alias{filter_data}
 \title{Filter data}
 \usage{
-filter_data(dataset, arm_var, sel_arm, lb_test_var, sel_lb_test)
+filter_data(dataset, norm_ref_type, arm_var, sel_arm, lb_test_var, sel_lb_test)
 }
 \arguments{
 \item{dataset}{\verb{[data.frame]}
 
-A dataframe containing the columns specified by \code{lb_test_var} and \code{arm_var}.}
+A data frame containing the columns specified by \code{lb_test_var} and \code{arm_var}.}
 
 \item{arm_var}{\verb{[character(1)]}
 
@@ -28,7 +28,7 @@ Name of the variable containing the laboratory test information.}
 Character vector specifying a selection of laboratory tests.}
 }
 \value{
-The filtered dataset.
+A data frame.
 }
 \description{
 \code{filter_data()} filters \code{dataset} to only contain the values of \code{sel_lb_test}

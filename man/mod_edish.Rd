@@ -14,12 +14,15 @@ mod_edish(
   visit_var = "VISIT",
   baseline_visit_val = "VISIT 01",
   lb_test_var = "LBTEST",
-  lb_test_choices = c("Alkaline Phosphatase", "Alanine Aminotransferase",
-    "Aspartate Aminotransferase", "Bilirubin"),
-  lb_test_default_x_val = "Aspartate Aminotransferase",
-  lb_test_default_y_val = "Bilirubin",
+  at_choices = c("Alanine Aminotransferase", "Aspartate Aminotransferase"),
+  at_default_val = "Aspartate Aminotransferase",
+  tbili_choice = "Bilirubin",
+  alp_choice = "Alkaline Phosphatase",
+  lb_date_var = NULL,
   lb_result_var = "LBSTRESN",
   ref_range_upper_lim_var = "LBSTNRHI",
+  default_by_visit = FALSE,
+  window_days = NA,
   receiver_id = NULL
 )
 }
@@ -56,6 +59,31 @@ Character indicating which visit should be used as baseline visit. Defaults to \
 
 Name of the variable containing the laboratory test information. Defaults to \code{"LBTEST"}.}
 
+\item{lb_result_var}{\verb{[character(1)]}
+
+Name of the variable containing results of the laboratory test. Defaults to \code{"LBSTRESN"}.
+In case of multiple values in \code{lb_result_var} per \code{subjectid_var}, \code{visit_var}, and
+\code{lb_test_var}, only the maximum value will be used. Note that a NA value in the considered values
+will cause a value of NA to be returned as maximum value.}
+
+\item{ref_range_upper_lim_var}{\verb{[character(1)]}
+
+Name of the variable containing the reference range upper limits.
+Defaults to \code{"LBSTNRHI"}.}
+
+\item{default_by_visit}{\verb{[logical(1)]}
+
+A flag to indicate the default of whether or not to plot aminotransferase values for each visit.}
+
+\item{window_days}{\verb{[integer(1)]}
+
+Window of the number of days considered between peaks.}
+
+\item{receiver_id}{\verb{[character(1) | NULL]}
+
+Character string defining the ID of the module to which to send a subject ID. The
+module must exist in the module list. The default is NULL which disables communication.}
+
 \item{lb_test_choices}{\verb{[character(1+)]}
 
 Character vector specifying the possible choices of the laboratory test. Defaults to
@@ -70,23 +98,6 @@ Defaults to \code{"Aspartate Aminotransferase"}.}
 
 Character specifying the default laboratory test choice for the plot's y-axis.
 Defaults to \code{"Bilirubin"}.}
-
-\item{lb_result_var}{\verb{[character(1)]}
-
-Name of the variable containing results of the laboratory test. Defaults to \code{"LBSTRESN"}.
-In case of multiple values in \code{lb_result_var} per \code{subjectid_var}, \code{visit_var}, and
-\code{lb_test_var}, only the maximum value will be used. Note that a NA value in the considered values
-will cause a value of NA to be returned as maximum value.}
-
-\item{ref_range_upper_lim_var}{\verb{[character(1)]}
-
-Name of the variable containing the reference range upper limits.
-Defaults to \code{"LBSTNRHI"}.}
-
-\item{receiver_id}{\verb{[character(1) | NULL]}
-
-Character string defining the ID of the module to which to send a subject ID. The
-module must exist in the module list. The default is NULL which disables communication.}
 }
 \value{
 A list containing the following elements to be used by the

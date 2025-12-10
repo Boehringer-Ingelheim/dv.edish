@@ -9,9 +9,11 @@ prepare_initial_data(
   subjectid_var,
   arm_var,
   visit_var,
-  baseline_visit_val,
   lb_test_var,
-  lb_test_choices,
+  at_choices,
+  tbili_choice,
+  alp_choice,
+  lb_date_var,
   lb_result_var,
   ref_range_upper_lim_var
 )
@@ -35,17 +37,9 @@ Name of the variable containing the arm/treatment information.}
 
 Name of the variable containing the visit information.}
 
-\item{baseline_visit_val}{\verb{[character(1)]}
-
-Character indicating which visit should be used as baseline visit.}
-
 \item{lb_test_var}{\verb{[character(1)]}
 
 Name of the variable containing the laboratory test information.}
-
-\item{lb_test_choices}{\verb{[character(1+)]}
-
-Character vector specifying the possible choices of the laboratory test.}
 
 \item{lb_result_var}{\verb{[character(1)]}
 
@@ -54,14 +48,17 @@ Name of the variable containing results of the laboratory test.}
 \item{ref_range_upper_lim_var}{\verb{[character(1)]}
 
 Name of the variable containing the reference range upper limits.}
+
+\item{lb_test_choices}{\verb{[character(1+)]}
+
+Character vector specifying the possible choices of the laboratory test.}
 }
 \value{
-A single dataframe including columns defined by \code{subjectid_var},
+A single data frame including columns defined by \code{subjectid_var},
 \code{arm_var}, \code{visit_var}, \code{lb_test_var}, \code{lb_result_var}, and \code{ref_range_upper_lim_var},
 as well as the column "BASE" containing the corresponding baseline values.
 In case of multiple values in \code{lb_result_var} per \code{subjectid_var}, \code{visit_var}, and
-\code{lb_test_var}, only the maximum value will be used. Note that a NA value in the considered values
-will cause a value of NA to be returned as maximum value.
+\code{lb_test_var}, only the maximum value will be used. Note that NA values will not be considered.
 }
 \description{
 \code{prepare_initial_data()} prepares data initially by restructuring
