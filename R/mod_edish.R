@@ -349,7 +349,7 @@ edish_server <- function(
     # Jumping feature
     mod_return_value <- NULL
     if (!is.null(on_sbj_click)) {
-      return_value_content <- shiny::reactive({
+      return_value_content <- shiny::eventReactive(input[[paste0(EDISH$PLOT_ID, "_selected")]], {
         on_sbj_click() # reactive side effect to be able to jump to another module
         input[[paste0(EDISH$PLOT_ID, "_selected")]]
       })
