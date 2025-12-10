@@ -39,7 +39,26 @@ Name of the variable containing the visit information.}
 
 \item{lb_test_var}{\verb{[character(1)]}
 
-Name of the variable containing the laboratory test information.}
+Name of the variable containing the laboratory test parameter.}
+
+\item{at_choices}{\verb{[character(1+)]}
+
+Character vector specifying the possible choices of the aminotransferase
+laboratory test parameter for the x-axis.}
+
+\item{tbili_choice}{\verb{[character(1)]}
+
+Character vector specifying the choice of the total bilirubin laboratory
+test parameter for the y-axis.}
+
+\item{alp_choice}{\verb{[character(1) | NULL]}
+
+Character vector specifying the choice of the alkaline phosphatase
+laboratory test parameter.}
+
+\item{lb_date_var}{\verb{[character(1)]}
+
+Name of the variable (\code{Date} or \code{POSIXt} class) containing the laboratory test date.}
 
 \item{lb_result_var}{\verb{[character(1)]}
 
@@ -48,20 +67,16 @@ Name of the variable containing results of the laboratory test.}
 \item{ref_range_upper_lim_var}{\verb{[character(1)]}
 
 Name of the variable containing the reference range upper limits.}
-
-\item{lb_test_choices}{\verb{[character(1+)]}
-
-Character vector specifying the possible choices of the laboratory test.}
 }
 \value{
-A single data frame including columns defined by \code{subjectid_var},
-\code{arm_var}, \code{visit_var}, \code{lb_test_var}, \code{lb_result_var}, and \code{ref_range_upper_lim_var},
-as well as the column "BASE" containing the corresponding baseline values.
-In case of multiple values in \code{lb_result_var} per \code{subjectid_var}, \code{visit_var}, and
-\code{lb_test_var}, only the maximum value will be used. Note that NA values will not be considered.
+A data frame with the variables specified by the function arguments,
+\code{subjectid_var}, \code{arm_var}, \code{visit_var}, \code{lb_test_var}, \code{lb_date_var},
+\code{lb_result_var} and \code{ref_range_upper_lim_var}. Only rows for laboratory test
+parameters specified by \code{at_choices}, \code{tbili_choice} and \code{alp_choice} are
+kept.
 }
 \description{
-\code{prepare_initial_data()} prepares data initially by restructuring
-and joining DM and LB dataset into one.
+Join DM and LB datasets into one, and filter on specified laboratory test
+parameters, and maximum values for each subject/arm/test/visit group.
 }
 \keyword{internal}

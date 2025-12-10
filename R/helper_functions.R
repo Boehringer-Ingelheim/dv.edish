@@ -1,42 +1,61 @@
-utils::globalVariables(".")
-
 #' Prepare initial data
 #'
-#' `prepare_initial_data()` prepares data initially by restructuring
-#' and joining DM and LB dataset into one.
+#' Join DM and LB datasets into one, and filter on specified laboratory test
+#' parameters, and maximum values for each subject/arm/test/visit group.
 #'
 #' @param dataset_list `[list(data.frame))]`
 #'
 #' A list of datasets, containing a Demographics and a Lab Value dataset.
+#'
 #' @param subjectid_var `[character(1)]`
 #'
 #' Name of the variable containing the unique subject IDs.
+#'
 #' @param arm_var `[character(1)]`
 #'
 #' Name of the variable containing the arm/treatment information.
+#'
 #' @param visit_var `[character(1)]`
 #'
 #' Name of the variable containing the visit information.
+#'
 #' @param lb_test_var `[character(1)]`
 #'
-#' Name of the variable containing the laboratory test information.
-#' @param lb_test_choices `[character(1+)]`
+#' Name of the variable containing the laboratory test parameter.
 #'
-#' Character vector specifying the possible choices of the laboratory test.
+#' @param at_choices `[character(1+)]`
+#'
+#' Character vector specifying the possible choices of the aminotransferase
+#' laboratory test parameter for the x-axis.
+#'
+#' @param tbili_choice `[character(1)]`
+#'
+#' Character vector specifying the choice of the total bilirubin laboratory
+#' test parameter for the y-axis.
+#'
+#' @param alp_choice `[character(1) | NULL]`
+#'
+#' Character vector specifying the choice of the alkaline phosphatase
+#' laboratory test parameter.
+#'
+#' @param lb_date_var `[character(1)]`
+#'
+#' Name of the variable (`Date` or `POSIXt` class) containing the laboratory test date.
+#'
 #' @param lb_result_var `[character(1)]`
 #'
 #' Name of the variable containing results of the laboratory test.
+#'
 #' @param ref_range_upper_lim_var `[character(1)]`
 #'
 #' Name of the variable containing the reference range upper limits.
 #'
-#' @return A single data frame including columns defined by `subjectid_var`,
-#' `arm_var`, `visit_var`, `lb_test_var`, `lb_result_var`, and `ref_range_upper_lim_var`,
-#' as well as the column "BASE" containing the corresponding baseline values.
-#' In case of multiple values in `lb_result_var` per `subjectid_var`, `visit_var`, and
-#' `lb_test_var`, only the maximum value will be used. Note that NA values will not be considered.
+#' @return A data frame with the variables specified by the function arguments,
+#' `subjectid_var`, `arm_var`, `visit_var`, `lb_test_var`, `lb_date_var`,
+#' `lb_result_var` and `ref_range_upper_lim_var`. Only rows for laboratory test
+#' parameters specified by `at_choices`, `tbili_choice` and `alp_choice` are
+#' kept.
 #'
-#' @importFrom rlang .data
 #' @keywords internal
 prepare_initial_data <- function(dataset_list,
                                  subjectid_var,
@@ -220,10 +239,10 @@ derive_req_vars <- function(dataset,
   return(final_dataset)
 }
 
-#' Filter data
+#' Filter data prior to plotting
 #'
-#' `filter_data()` filters `dataset` to only contain the values of `sel_lb_test`
-#' in the `lb_test_var` column and the values of `sel_arm` in the `arm_var` column.
+#' Filter data on selected normalization reference type, arms/treatments and
+#' aminotransferase laboratory test.
 #'
 #' @param dataset `[data.frame]`
 #'
@@ -233,21 +252,32 @@ derive_req_vars <- function(dataset,
 #'
 #' Character vector specifying a selection of arms/treatments.
 #'
-#' @param sel_lb_test `[character(1+)]`
+#' @param sel_lb_test `[character(1)]`
 #'
-#' Character vector specifying a selection of laboratory tests.
+#' Character vector specifying a selected aminotransferase laboratory test.
 #'
 #' @return A data frame.
 #'
 #' @inheritParams prepare_initial_data
+#' @inheritParams derive_req_vars
+#'
 #' @keywords internal
 filter_data <- function(dataset, norm_ref_type, arm_var, sel_arm, lb_test_var, sel_lb_test) {
+
+  ac <- checkmate::makeAssertCollection()
+  checkmate::assert_string(norm_ref_type, min.chars = 1, add = ac)
+  checkmate::assert_string(arm_var, min.chars = 1, add = ac)
+  checkmate::assert_character(sel_arm, min.chars = 1, any.missing = FALSE, all.missing = FALSE,
+                              unique = TRUE, min.len = 1, null.ok = TRUE, add = ac)
+  checkmate::assert_string(lb_test_var, min.chars = 1, add = ac)
+  checkmate::assert_string(sel_lb_test, min.chars = 1, add = ac)
+  checkmate::reportAssertions(ac)
+
   dataset <- dataset |>
-    dplyr::filter(
-      .data[[".norm_ref_type"]] == norm_ref_type,
-      .data[[lb_test_var]] == sel_lb_test,
-      .data[[arm_var]] %in% sel_arm
-    )
+    dplyr::filter(.data[[".norm_ref_type"]] == norm_ref_type,
+                  .data[[lb_test_var]] == sel_lb_test,
+                  .data[[arm_var]] %in% sel_arm)
+
   return(dataset)
 }
 

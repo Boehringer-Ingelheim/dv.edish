@@ -370,20 +370,25 @@ edish_server <- function(
 #'
 #' Name of the variable containing the laboratory test information. Defaults to `"LBTEST"`.
 #'
-#' @param lb_test_choices `[character(1+)]`
+#' @param at_choices `[character(1+)]`
 #'
-#' Character vector specifying the possible choices of the laboratory test. Defaults to
-#' `c("Alkaline Phosphatase", "Alanine Aminotransferase", "Aspartate Aminotransferase", "Bilirubin")`
+#' Character vector specifying the possible choices of the x-axis aminotransferase laboratory test.
 #'
-#' @param lb_test_default_x_val `[character(1)]`
+#' @param at_default_val `[character(1)]`
 #'
-#' Character specifying the default laboratory test choice for the plot's x-axis.
-#' Defaults to `"Aspartate Aminotransferase"`.
+#' Character specifying the default x-axis aminotransferase laboratory test choice.
 #'
-#' @param lb_test_default_y_val `[character(1)]`
+#' @param tbili_choice `[character(1)]`
 #'
-#' Character specifying the default laboratory test choice for the plot's y-axis.
-#' Defaults to `"Bilirubin"`.
+#' Character vector specifying the y-axis total bilirubin laboratory test choice.
+#'
+#' @param alp_choice `[character(1) | NULL]`
+#'
+#' Character vector specifying the alkaline phosphatase laboratory test choice.
+#'
+#' @param lb_date_var `[character(1)]`
+#'
+#' Name of the variable (`Date` or `POSIXt` class) containing the laboratory test date.
 #'
 #' @param lb_result_var `[character(1)]`
 #'
@@ -401,7 +406,7 @@ edish_server <- function(
 #'
 #' A flag to indicate the default of whether or not to plot aminotransferase values for each visit.
 #'
-#' @param window_days `[integer(1)]`
+#' @param window_days `[integer(1) | NULL]`
 #'
 #' Window of the number of days considered between peaks.
 #'

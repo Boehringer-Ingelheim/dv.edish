@@ -23,11 +23,23 @@ A unique ID string to create a namespace. Must match the ID of \code{edish_serve
 
 Vector specifying the default value(s) for the arm selector. Defaults to \code{NULL}.}
 
+\item{at_choices}{\verb{[character(1+)]}
+
+Character vector specifying the possible choices of the x-axis aminotransferase laboratory test.}
+
+\item{at_default_val}{\verb{[character(1)]}
+
+Character specifying the default x-axis aminotransferase laboratory test choice.}
+
+\item{tbili_choice}{\verb{[character(1)]}
+
+Character vector specifying the y-axis total bilirubin laboratory test choice.}
+
 \item{default_by_visit}{\verb{[logical(1)]}
 
 A flag to indicate the default of whether or not to plot aminotransferase values for each visit.}
 
-\item{window_days}{\verb{[integer(1)]}
+\item{window_days}{\verb{[integer(1) | NULL]}
 
 Window of the number of days considered between peaks.}
 }

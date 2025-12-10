@@ -57,6 +57,26 @@ Character indicating which visit should be used as baseline visit. Defaults to \
 
 Name of the variable containing the laboratory test information. Defaults to \code{"LBTEST"}.}
 
+\item{at_choices}{\verb{[character(1+)]}
+
+Character vector specifying the possible choices of the x-axis aminotransferase laboratory test.}
+
+\item{at_default_val}{\verb{[character(1)]}
+
+Character specifying the default x-axis aminotransferase laboratory test choice.}
+
+\item{tbili_choice}{\verb{[character(1)]}
+
+Character vector specifying the y-axis total bilirubin laboratory test choice.}
+
+\item{alp_choice}{\verb{[character(1) | NULL]}
+
+Character vector specifying the alkaline phosphatase laboratory test choice.}
+
+\item{lb_date_var}{\verb{[character(1)]}
+
+Name of the variable (\code{Date} or \code{POSIXt} class) containing the laboratory test date.}
+
 \item{lb_result_var}{\verb{[character(1)]}
 
 Name of the variable containing results of the laboratory test. Defaults to \code{"LBSTRESN"}.
@@ -69,7 +89,7 @@ will cause a value of NA to be returned as maximum value.}
 Name of the variable containing the reference range upper limits.
 Defaults to \code{"LBSTNRHI"}.}
 
-\item{window_days}{\verb{[integer(1)]}
+\item{window_days}{\verb{[integer(1) | NULL]}
 
 Window of the number of days considered between peaks.}
 

@@ -59,6 +59,26 @@ Character indicating which visit should be used as baseline visit. Defaults to \
 
 Name of the variable containing the laboratory test information. Defaults to \code{"LBTEST"}.}
 
+\item{at_choices}{\verb{[character(1+)]}
+
+Character vector specifying the possible choices of the x-axis aminotransferase laboratory test.}
+
+\item{at_default_val}{\verb{[character(1)]}
+
+Character specifying the default x-axis aminotransferase laboratory test choice.}
+
+\item{tbili_choice}{\verb{[character(1)]}
+
+Character vector specifying the y-axis total bilirubin laboratory test choice.}
+
+\item{alp_choice}{\verb{[character(1) | NULL]}
+
+Character vector specifying the alkaline phosphatase laboratory test choice.}
+
+\item{lb_date_var}{\verb{[character(1)]}
+
+Name of the variable (\code{Date} or \code{POSIXt} class) containing the laboratory test date.}
+
 \item{lb_result_var}{\verb{[character(1)]}
 
 Name of the variable containing results of the laboratory test. Defaults to \code{"LBSTRESN"}.
@@ -75,7 +95,7 @@ Defaults to \code{"LBSTNRHI"}.}
 
 A flag to indicate the default of whether or not to plot aminotransferase values for each visit.}
 
-\item{window_days}{\verb{[integer(1)]}
+\item{window_days}{\verb{[integer(1) | NULL]}
 
 Window of the number of days considered between peaks.}
 
@@ -83,21 +103,6 @@ Window of the number of days considered between peaks.}
 
 Character string defining the ID of the module to which to send a subject ID. The
 module must exist in the module list. The default is NULL which disables communication.}
-
-\item{lb_test_choices}{\verb{[character(1+)]}
-
-Character vector specifying the possible choices of the laboratory test. Defaults to
-\code{c("Alkaline Phosphatase", "Alanine Aminotransferase", "Aspartate Aminotransferase", "Bilirubin")}}
-
-\item{lb_test_default_x_val}{\verb{[character(1)]}
-
-Character specifying the default laboratory test choice for the plot's x-axis.
-Defaults to \code{"Aspartate Aminotransferase"}.}
-
-\item{lb_test_default_y_val}{\verb{[character(1)]}
-
-Character specifying the default laboratory test choice for the plot's y-axis.
-Defaults to \code{"Bilirubin"}.}
 }
 \value{
 A list containing the following elements to be used by the

@@ -45,11 +45,30 @@ String indicating which visit should be used as baseline visit.}
 
 \item{lb_test_var}{\verb{[character(1)]}
 
-Name of the variable containing the laboratory test information.}
+Name of the variable containing the laboratory test parameter.}
+
+\item{at_choices}{\verb{[character(1+)]}
+
+Character vector specifying the possible choices of the aminotransferase
+laboratory test parameter for the x-axis.}
+
+\item{tbili_choice}{\verb{[character(1)]}
+
+Character vector specifying the choice of the total bilirubin laboratory
+test parameter for the y-axis.}
 
 \item{norm_ref_type}{\verb{[character(1)]}
 
 String indicating normalization reference type, either \code{"ULN"} or \code{"Baseline"}.}
+
+\item{alp_choice}{\verb{[character(1) | NULL]}
+
+Character vector specifying the choice of the alkaline phosphatase
+laboratory test parameter.}
+
+\item{lb_date_var}{\verb{[character(1)]}
+
+Name of the variable (\code{Date} or \code{POSIXt} class) containing the laboratory test date.}
 
 \item{lb_result_var}{\verb{[character(1)]}
 

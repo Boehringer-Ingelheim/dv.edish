@@ -2,7 +2,7 @@
 % Please edit documentation in R/helper_functions.R
 \name{filter_data}
 \alias{filter_data}
-\title{Filter data}
+\title{Filter data prior to plotting}
 \usage{
 filter_data(dataset, norm_ref_type, arm_var, sel_arm, lb_test_var, sel_lb_test)
 }
@@ -10,6 +10,10 @@ filter_data(dataset, norm_ref_type, arm_var, sel_arm, lb_test_var, sel_lb_test)
 \item{dataset}{\verb{[data.frame]}
 
 A data frame containing the columns specified by \code{lb_test_var} and \code{arm_var}.}
+
+\item{norm_ref_type}{\verb{[character(1)]}
+
+String indicating normalization reference type, either \code{"ULN"} or \code{"Baseline"}.}
 
 \item{arm_var}{\verb{[character(1)]}
 
@@ -21,17 +25,17 @@ Character vector specifying a selection of arms/treatments.}
 
 \item{lb_test_var}{\verb{[character(1)]}
 
-Name of the variable containing the laboratory test information.}
+Name of the variable containing the laboratory test parameter.}
 
-\item{sel_lb_test}{\verb{[character(1+)]}
+\item{sel_lb_test}{\verb{[character(1)]}
 
-Character vector specifying a selection of laboratory tests.}
+Character vector specifying a selected aminotransferase laboratory test.}
 }
 \value{
 A data frame.
 }
 \description{
-\code{filter_data()} filters \code{dataset} to only contain the values of \code{sel_lb_test}
-in the \code{lb_test_var} column and the values of \code{sel_arm} in the \code{arm_var} column.
+Filter data on selected normalization reference type, arms/treatments and
+aminotransferase laboratory test.
 }
 \keyword{internal}
