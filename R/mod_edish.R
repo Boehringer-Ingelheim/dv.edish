@@ -164,27 +164,24 @@ edish_server <- function(
     dataset_list,
     subjectid_var = "USUBJID",
     arm_var = "ACTARM",
-    arm_default_vals = NULL,
     visit_var = "VISIT",
     baseline_visit_val = "VISIT 01",
     lb_test_var = "LBTEST",
     at_choices = NULL,
-    at_default_val = NULL,
     tbili_choice = NULL,
     alp_choice = NULL,
     lb_date_var = NULL,
     lb_result_var = "LBSTRESN",
     ref_range_upper_lim_var = "LBSTNRHI",
-    window_days = NULL,
     on_sbj_click = NULL) {
+
+  ##### THESE CHECKS DO NOT GET REPORTED TO THE CONSOLE!!!!
 
   # Check validity of arguments
   ac <- checkmate::makeAssertCollection()
   checkmate::assert_multi_class(dataset_list, c("reactive", "shinymeta_reactive"), add = ac)
   checkmate::assert_string(subjectid_var, min.chars = 1, add = ac)
   checkmate::assert_string(arm_var, min.chars = 1, add = ac)
-  checkmate::assert_character(arm_default_vals, min.chars = 1, any.missing = FALSE, all.missing = FALSE,
-                              unique = TRUE, min.len = 1, null.ok = TRUE, add = ac)
   checkmate::assert_string(visit_var, min.chars = 1, add = ac)
   checkmate::assert_string(baseline_visit_val, min.chars = 1, add = ac)
   checkmate::assert_string(lb_test_var, min.chars = 1, add = ac)
@@ -192,12 +189,10 @@ edish_server <- function(
                               unique = TRUE, min.len = 1, add = ac)
   checkmate::assert_string(tbili_choice, min.chars = 1, add = ac)
   checkmate::assert_string(alp_choice, min.chars = 1, null.ok = TRUE, add = ac)
-  checkmate::assert_string(at_default_val, min.chars = 1, null.ok = TRUE, add = ac)
   checkmate::assert_string(lb_date_var, min.chars = 1, add = ac)
   checkmate::assert_string(lb_result_var, min.chars = 1, add = ac)
   checkmate::assert_string(ref_range_upper_lim_var, min.chars = 1, add = ac)
   checkmate::reportAssertions(ac)
-
 
   # Initiate module server
   shiny::moduleServer(module_id, function(input, output, session) {
@@ -225,6 +220,9 @@ edish_server <- function(
     })
 
     work_data <- shiny::reactive({
+
+      # Wait for processing that converts window days from float to integer
+      shiny::req(checkmate::test_integer(input[[EDISH$WINDOW_DAYS_ID]]))
 
       init_data <- prepare_initial_data(
         dataset_list = v_dataset_list(),
@@ -300,7 +298,7 @@ edish_server <- function(
     output[[EDISH$PLOT_ID]] <- ggiraph::renderGirafe({
       shiny::validate(shiny::need(nrow(plot_data()) > 0, "No data available."))
 
-      generate_plot(
+      plt_obj <- generate_plot(
         dataset = plot_data(),
         subjectid_var = subjectid_var,
         arm_var = arm_var,
@@ -314,6 +312,17 @@ edish_server <- function(
         y_rng_lower = input[[EDISH$Y_RNG_ID]][1],
         y_rng_upper = input[[EDISH$Y_RNG_ID]][2],
         alp_flag = !is.null(alp_choice)
+      )
+
+      ggiraph::girafe(
+        ggobj = plt_obj,
+        width_svg = 8,
+        height_svg = 5.33,
+        options = list(
+          ggiraph::opts_sizing(rescale = TRUE),
+          ggiraph::opts_hover(css = "stroke: blue; stroke-width: 1px; fill-opacity: 0.8;"),
+          ggiraph::opts_selection(type = "single", css = "stroke: black; stroke-width: 1px;")
+        )
       )
     })
 
@@ -354,7 +363,7 @@ edish_server <- function(
 #'
 #' Name of the variable containing the arm/treatment information. Defaults to `"ACTARM"`.
 #'
-#' @param arm_default_vals `[character(1+)]`
+#' @param arm_default_vals `[character(1+) | NULL]`
 #'
 #' Vector specifying the default value(s) for the arm selector. Defaults to `NULL`.
 #'
@@ -442,7 +451,7 @@ mod_edish <- function(
     lb_result_var = "LBSTRESN",
     ref_range_upper_lim_var = "LBSTNRHI",
     default_by_visit = FALSE,
-    window_days = NA,
+    window_days = NULL,
     receiver_id = NULL) {
 
   mod <- list(
@@ -479,18 +488,15 @@ mod_edish <- function(
         dataset_list = dataset_list,
         subjectid_var = subjectid_var,
         arm_var = arm_var,
-        arm_default_vals = arm_default_vals,
         visit_var = visit_var,
         baseline_visit_val = baseline_visit_val,
         lb_test_var = lb_test_var,
         at_choices = at_choices,
-        at_default_val = at_default_val,
         tbili_choice = tbili_choice,
         alp_choice = alp_choice,
         lb_date_var = lb_date_var,
         lb_result_var = lb_result_var,
         ref_range_upper_lim_var = ref_range_upper_lim_var,
-        window_days = window_days,
         on_sbj_click = on_sbj_click_fun
       )
     },
@@ -542,8 +548,8 @@ mod_edish_API_spec <- TC$group(
   lb_date_var = TC$col("lab_dataset_name", TC$or(TC$date(), TC$datetime())),
   lb_result_var = TC$col("lab_dataset_name", TC$numeric()),
   ref_range_upper_lim_var = TC$col("lab_dataset_name", TC$numeric()) |> TC$flag("optional"),
-  default_by_visit = TC$logical(),
-  window_days = TC$numeric() |> TC$flag("optional"),
+  default_by_visit = TC$logical() |> TC$flag("manual_check"),
+  window_days = TC$integer() |> TC$flag("optional", "manual_check"),
   receiver_id = TC$character() |> TC$flag("optional")
 ) |> TC$attach_docs(mod_edish_API_docs)
 
@@ -559,7 +565,7 @@ check_mod_edish <- function(
   OK <- check_mod_edish_auto(
     afmm, datasets,
     module_id, subject_level_dataset_name, lab_dataset_name, subjectid_var, arm_var, arm_default_vals,
-    visit_var, baseline_visit_val, lb_test_var, # lb_test_choices, lb_test_default_x_val, lb_test_default_y_val,
+    visit_var, baseline_visit_val, lb_test_var,
     at_choices, at_default_val, tbili_choice, alp_choice,
     lb_date_var, lb_result_var, ref_range_upper_lim_var, window_days, default_by_visit, receiver_id,
     warn, err
@@ -576,8 +582,27 @@ check_mod_edish <- function(
       min.len = 1, null.ok = TRUE
     ),
     msg = sprintf(
-      "The values assigned to `arm_default_vals` are of type %s, but should be of type character.",
+      "The values assigned to `arm_default_vals` are of type %s, but must be of type character.",
       typeof(arm_default_vals)
+    )
+  )
+
+  # Check that `default_by_visit` is a logical scalar
+  CM$assert(
+    container = err,
+    cond = checkmate::test_logical(default_by_visit, len = 1, any.missing = FALSE, null.ok = FALSE),
+    msg = sprintf(
+      "The value assigned to `default_by_visit` must be a non-missing logical, either TRUE or FALSE."
+    )
+  )
+
+  # Check that `window_days` is an integer scalar
+  CM$assert(
+    container = err,
+    cond = checkmate::test_integerish(window_days, len = 1, any.missing = TRUE, null.ok = TRUE),
+    msg = sprintf(
+      "The value assigned to `window_days` is of type %s, but should be of type integer.",
+      typeof(window_days)
     )
   )
 

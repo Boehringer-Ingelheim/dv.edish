@@ -69,6 +69,20 @@ prepare_initial_data <- function(dataset_list,
                                  lb_result_var,
                                  ref_range_upper_lim_var) {
 
+  ac <- checkmate::makeAssertCollection()
+  checkmate::assert_string(subjectid_var, min.chars = 1, add = ac)
+  checkmate::assert_string(arm_var, min.chars = 1, add = ac)
+  checkmate::assert_string(visit_var, min.chars = 1, add = ac)
+  checkmate::assert_string(lb_test_var, min.chars = 1, add = ac)
+  checkmate::assert_character(at_choices, min.chars = 1, any.missing = FALSE, all.missing = FALSE,
+                              unique = TRUE, min.len = 1, null.ok = FALSE, add = ac)
+  checkmate::assert_string(tbili_choice, min.chars = 1, add = ac)
+  checkmate::assert_string(alp_choice, min.chars = 1, null.ok = TRUE, add = ac)
+  checkmate::assert_string(lb_date_var, min.chars = 1, add = ac)
+  checkmate::assert_string(lb_result_var, min.chars = 1, add = ac)
+  checkmate::assert_string(ref_range_upper_lim_var, min.chars = 1, add = ac)
+  checkmate::reportAssertions(ac)
+
   # Keep only the necessary variables
   sel_dataset_list <- lapply(dataset_list, function(x) {
     vars <- c(
@@ -115,7 +129,7 @@ prepare_initial_data <- function(dataset_list,
 #'
 #' A flag to indicate whether to plot aminotransferase values for each visit.
 #'
-#' @param window_days `[integer(1)]`
+#' @param window_days `[integer(1) | NULL]`
 #'
 #' Window of the number of days considered between peaks.
 #'
@@ -149,8 +163,26 @@ derive_req_vars <- function(dataset,
                             by_visit,
                             window_days) {
 
-  ## ??? What if date is NA? Should such rows be dropped with warning?
-  ## !!! Need tests for this function
+  ac <- checkmate::makeAssertCollection()
+  checkmate::assert_string(subjectid_var, min.chars = 1, add = ac)
+  checkmate::assert_string(arm_var, min.chars = 1, add = ac)
+  checkmate::assert_string(visit_var, min.chars = 1, add = ac)
+  checkmate::assert_string(baseline_visit_val, min.chars = 1, add = ac)
+  checkmate::assert_string(lb_test_var, min.chars = 1, add = ac)
+  checkmate::assert_character(at_choices, min.chars = 1, any.missing = FALSE, all.missing = FALSE,
+                              unique = TRUE, min.len = 1, null.ok = FALSE, add = ac)
+  checkmate::assert_string(tbili_choice, min.chars = 1, add = ac)
+  checkmate::assert_string(norm_ref_type, min.chars = 1, add = ac)
+  checkmate::assert_string(alp_choice, min.chars = 1, null.ok = TRUE, add = ac)
+  checkmate::assert_string(lb_date_var, min.chars = 1, add = ac)
+  checkmate::assert_string(lb_result_var, min.chars = 1, add = ac)
+  checkmate::assert_string(ref_range_upper_lim_var, min.chars = 1, add = ac)
+  checkmate::assert_logical(by_visit, len = 1, any.missing = FALSE, add = ac)
+  checkmate::assert_integer(window_days, len = 1, any.missing = TRUE, null.ok = TRUE, add = ac)
+  checkmate::reportAssertions(ac)
+
+  # If window days not specified, then set as missing (NA)
+  if (is.null(window_days)) window_days <- NA
 
   ref_dataset <- dataset
 
@@ -204,12 +236,12 @@ derive_req_vars <- function(dataset,
     dplyr::left_join(tbili_data, by = c(subjectid_var, arm_var)) |>
     dplyr::filter(!is.na(.data[[".norm_tbili"]]))
 
+  # Calculate offset days
+  xy_data[[".offset_days"]] <- as.integer(xy_data[[".date_tbili"]] - xy_data[[".date_at"]])
+
   # If window specified then keep only those rows with offset days within window
   if (!is.na(window_days)) {
-    xy_data[[".offset_days"]] <- xy_data[[".date_tbili"]] - xy_data[[".date_at"]]
     xy_data <- xy_data[abs(xy_data[[".offset_days"]]) <= window_days, ]
-  } else {
-    xy_data[[".offset_days"]] <- NA
   }
 
   # Get peak TBILI values
@@ -319,19 +351,19 @@ filter_data <- function(dataset, norm_ref_type, arm_var, sel_arm, lb_test_var, s
 #'
 #' Numeric specifying the reference line for the y-axis.
 #'
-#' @param x_rng_lower `[numeric(1)]`
+#' @param x_rng_lower `[numeric(1) | NULL]`
 #'
 #' Numeric specifying the lower limit in the x-axis range.
 #'
-#' @param x_rng_upper `[numeric(1)]`
+#' @param x_rng_upper `[numeric(1) | NULL]`
 #'
 #' Numeric specifying the upper limit in the x-axis range.
 #'
-#' @param y_rng_lower `[numeric(1)]`
+#' @param y_rng_lower `[numeric(1) | NULL]`
 #'
 #' Numeric specifying the lower limit in the y-axis range.
 #'
-#' @param y_rng_upper `[numeric(1)]`
+#' @param y_rng_upper `[numeric(1) | NULL]`
 #'
 #' Numeric specifying the upper limit in the y-axis range.
 #'
@@ -356,53 +388,49 @@ generate_plot <- function(dataset,
                           y_rng_upper,
                           alp_flag) {
 
-  dataset[["hover_date_x"]] <- gsub(
-    "NA", "",
-    paste0(dataset[[".date_at"]],
-           ifelse(dataset[[".date_at"]] <= dataset[[".date_tbili"]],
-                  " (1st)", " (2nd)"))
-  )
+  hover_date_x <- gsub("NA", "",
+                       paste0(dataset[[".date_at"]],
+                              ifelse(dataset[[".date_at"]] <= dataset[[".date_tbili"]],
+                                     " (1st)", " (2nd)")))
 
-  dataset[["hover_date_y"]] <- gsub(
-    "NA", "",
-    paste0(dataset[[".date_tbili"]],
-           ifelse(dataset[[".date_tbili"]] < dataset[[".date_at"]],
-                  " (1st)", " (2nd)"))
-  )
+  hover_date_y <- gsub("NA", "",
+                       paste0(dataset[[".date_tbili"]],
+                              ifelse(dataset[[".date_tbili"]] < dataset[[".date_at"]],
+                                     " (1st)", " (2nd)")))
 
   if (alp_flag) {
     if (norm_ref_type == "ULN") {
-      dataset[["hover_alp"]] <- sprintf("<br>  ALP/ULN %s (%.3f) %s (%.2f)",
-                                        ifelse(dataset[[".norm_alp"]] <= 2, "≤ 2", "> 2"),
-                                        dataset[[".norm_alp"]],
-                                        ifelse(dataset[[".r_ratio"]] <= 2, "R ≤ 2",
-                                               ifelse(dataset[[".r_ratio"]] >= 5, "R ≥ 5", "2 < R < 5")),
-                                        dataset[[".r_ratio"]])
+      hover_alp <- sprintf("<br>  ALP/ULN %s (%.3f) %s (%.2f)",
+                           ifelse(dataset[[".norm_alp"]] <= 2, "≤ 2", "> 2"),
+                           dataset[[".norm_alp"]],
+                           ifelse(dataset[[".r_ratio"]] <= 2, "R ≤ 2",
+                                  ifelse(dataset[[".r_ratio"]] >= 5, "R ≥ 5", "2 < R < 5")),
+                           dataset[[".r_ratio"]])
     } else {
-      dataset[["hover_alp"]] <- sprintf("<br>  ALP/ULN %s (%.3f)",
-                                        ifelse(dataset[[".norm_alp"]] <= 2, "≤ 2", "> 2"),
-                                        dataset[[".norm_alp"]])
+      hover_alp <- sprintf("<br>  ALP/ULN %s (%.3f)",
+                           ifelse(dataset[[".norm_alp"]] <= 2, "≤ 2", "> 2"),
+                           dataset[[".norm_alp"]])
     }
-    dataset[["hover_alp"]] <- sub("(NA \\(NA\\) ?)+", "missing data", dataset[["hover_alp"]])
+    hover_alp <- sub("(NA \\(NA\\) ?)+", "missing data", hover_alp)
   } else {
-    dataset[["hover_alp"]] <- ""
+    hover_alp <- ""
   }
 
-  dataset[["hover_offset"]] <- ifelse(!is.na(dataset[[".offset_days"]]),
-                                      paste(dataset[[".offset_days"]], "days"),
-                                      "missing dates")
+  hover_offset <- ifelse(!is.na(dataset[[".offset_days"]]),
+                         paste(dataset[[".offset_days"]], "days"),
+                         "missing dates")
 
   dataset[["tooltip"]] <- paste0(
     "Subject: ", dataset[[subjectid_var]],
     "<br>Arm: ", dataset[[arm_var]],
     "<br>---<br>", sel_x, ": ", sprintf("%.3f", dataset[[".norm_at"]]),
     "<br>  Visit: ", dataset[[".visit_at"]],
-    "<br>  Date: ", dataset[["hover_date_x"]],
-    dataset[["hover_alp"]],
+    "<br>  Date: ", hover_date_x,
+    hover_alp,
     "<br>---<br>", sel_y, ": ", sprintf("%.3f", dataset[[".norm_tbili"]]),
     "<br>  Visit: ", dataset[[".visit_tbili"]],
-    "<br>  Date: ", dataset[["hover_date_y"]],
-    "<br>---<br>Time between peaks: ", dataset[["hover_offset"]]
+    "<br>  Date: ", hover_date_y,
+    "<br>---<br>Time between peaks: ", hover_offset
   )
 
   # Define log axis breaks
@@ -424,8 +452,7 @@ generate_plot <- function(dataset,
   plt_obj <- dataset |>
     ggplot2::ggplot(ggplot2::aes(x = .data[[".norm_at"]],
                                  y = .data[[".norm_tbili"]],
-                                 color = .data[[arm_var]],
-                                 tooltip = .data[["tooltip"]])) +
+                                 color = .data[[arm_var]])) +
     ggplot2::scale_x_log10(breaks = major_breaks,
                            minor_breaks = NULL,
                            labels = function(x) sub("\\.0$", "", x),
@@ -440,25 +467,16 @@ generate_plot <- function(dataset,
     ggplot2::geom_hline(yintercept = y_ref_line_num,
                         color = "black",
                         linetype = "dotted") +
-    ggiraph::geom_point_interactive(ggplot2::aes(data_id = .data[[subjectid_var]]),
-                                    size = 2,
-                                    alpha = 0.8,
-                                    stroke = 0) +
     ggplot2::labs(x = paste0(sel_x, " (\u00d7 ", norm_ref_type, ")"),
                   y = paste0(sel_y, " (\u00d7 ", norm_ref_type, ")"),
                   color = "") +
     ggplot2::theme_minimal(base_family = "Liberation Sans",
-                           base_size = 9)
-
-  plt_obj <- ggiraph::girafe(ggobj = plt_obj,
-                             fonts = list(sans = "Liberation Sans"),
-                             width_svg = 8,
-                             height_svg = 5.33,
-                             options = list(
-                               ggiraph::opts_sizing(rescale = TRUE),
-                               ggiraph::opts_hover(css = "stroke: blue; stroke-width: 1px; fill-opacity: 0.8;"),
-                               ggiraph::opts_selection(type = "single", css = "stroke: black; stroke-width: 1px;")
-                             ))
+                           base_size = 9) +
+    ggiraph::geom_point_interactive(ggplot2::aes(tooltip = .data[["tooltip"]],
+                                                 data_id = .data[[subjectid_var]]),
+                                    size = 2,
+                                    alpha = 0.8,
+                                    stroke = 0)
 
   return(plt_obj)
 }

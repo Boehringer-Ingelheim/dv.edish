@@ -65,11 +65,11 @@ check_mod_edish_auto <- function(afmm, datasets, module_id, subject_level_datase
     OK[["ref_range_upper_lim_var"]] <- OK[["lab_dataset_name"]] && CM$check_dataset_colum_name("ref_range_upper_lim_var",
         ref_range_upper_lim_var, subkind, flags, lab_dataset_name, datasets[[lab_dataset_name]], warn,
         err)
-    "NOTE: default_by_visit (logical) has no associated automated checks"
-    "      The expectation is that it either does not require them or that"
+    "NOTE: default_by_visit (logical) tagged as \"manual_check\""
+    "      The expectation is that it either does not require automated checks or that"
     "      the caller of this function has written manual checks near the call site."
-    "NOTE: window_days (numeric) has no associated automated checks"
-    "      The expectation is that it either does not require them or that"
+    "NOTE: window_days (integer) tagged as \"manual_check\""
+    "      The expectation is that it either does not require automated checks or that"
     "      the caller of this function has written manual checks near the call site."
     "NOTE: receiver_id (character) has no associated automated checks"
     "      The expectation is that it either does not require them or that"

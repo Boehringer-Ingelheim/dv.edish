@@ -43,7 +43,8 @@ mock_edish_mm <- function() {
       arm_default_vals = c("Xanomeline Low Dose", "Placebo"),
       baseline_visit_val = "SCREENING 1",
       lb_date_var = "ADT",
-      window_days = 30,
+      default_by_visit = FALSE,
+      window_days = 30L,
       receiver_id = "papo"
     ),
     "Patient Profile" = dv.papo::mod_patient_profile(
