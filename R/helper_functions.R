@@ -233,7 +233,7 @@ derive_req_vars <- function(dataset,
 
   # Merge TBILI rows with peak AT values,
   xy_data <- peak_at_data |>
-    dplyr::left_join(tbili_data, by = c(subjectid_var, arm_var)) |>
+    dplyr::left_join(tbili_data, by = c(subjectid_var, arm_var), relationship = "many-to-many") |>
     dplyr::filter(!is.na(.data[[".norm_tbili"]]))
 
   # Calculate offset days
