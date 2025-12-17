@@ -217,7 +217,7 @@ derive_req_vars <- function(dataset,
     dplyr::slice_max(.data[[lb_result_var]], with_ties = TRUE) |>
     dplyr::slice_min(.data[[lb_date_var]], n = 1, with_ties = FALSE) |>
     dplyr::ungroup() |>
-    dplyr::select(subjectid_var, arm_var, lb_test_var,
+    dplyr::select(dplyr::all_of(c(subjectid_var, arm_var, lb_test_var)),
                   .visit_at = dplyr::all_of(visit_var),
                   .date_at = dplyr::all_of(lb_date_var),
                   .norm_at = ".norm_val")
@@ -226,7 +226,7 @@ derive_req_vars <- function(dataset,
   tbili_data <- ref_dataset |>
     dplyr::filter(.data[[lb_test_var]] == tbili_choice,
                   .data[[visit_var]] != baseline_visit_val) |>
-    dplyr::select(subjectid_var, arm_var,
+    dplyr::select(dplyr::all_of(c(subjectid_var, arm_var)),
                   .visit_tbili = dplyr::all_of(visit_var),
                   .date_tbili = dplyr::all_of(lb_date_var),
                   .norm_tbili = ".norm_val")
