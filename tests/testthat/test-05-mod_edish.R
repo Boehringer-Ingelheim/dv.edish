@@ -12,7 +12,8 @@ test_that("the default values are correct at app launch" |>
   vdoc[["add_spec"]](c(specs$input_menu_specs$default_vals$arm, specs$input_menu_specs$default_vals$param)), {
 
   app <- shinytest2::AppDriver$new(
-    app_dir = app_url, name = "test_defaults"
+    app_dir = app_url,
+    name = "test_defaults"
   )
   app$wait_for_idle()
 
