@@ -14,6 +14,8 @@ plot_specs <- specs_list(
   arm = "The plot displays data only of subjects corresponding to the selected arm(s).",
   arm_coloring = "The plot shows data coloring according to arm information.",
   param = "The plot displays data according to the parameter selection.",
+  window = "The plot displays data according to the window selection.",
+  by_visit = "The plot displays data by visit.",
   normalization = "The plot displays data normalized according to the selected method.",
   axis_labels = "The plot's axis are labelled according to the parameter selection and normalization method.",
   ref_lines = "The plot displays the specified reference lines.",

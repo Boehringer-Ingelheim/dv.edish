@@ -53,19 +53,19 @@ Numeric specifying the reference line for the x-axis.}
 
 Numeric specifying the reference line for the y-axis.}
 
-\item{x_rng_lower}{\verb{[numeric(1)]}
+\item{x_rng_lower}{\verb{[numeric(1) | NULL]}
 
 Numeric specifying the lower limit in the x-axis range.}
 
-\item{x_rng_upper}{\verb{[numeric(1)]}
+\item{x_rng_upper}{\verb{[numeric(1) | NULL]}
 
 Numeric specifying the upper limit in the x-axis range.}
 
-\item{y_rng_lower}{\verb{[numeric(1)]}
+\item{y_rng_lower}{\verb{[numeric(1) | NULL]}
 
 Numeric specifying the lower limit in the y-axis range.}
 
-\item{y_rng_upper}{\verb{[numeric(1)]}
+\item{y_rng_upper}{\verb{[numeric(1) | NULL]}
 
 Numeric specifying the upper limit in the y-axis range.}
 

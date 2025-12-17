@@ -9,18 +9,15 @@ edish_server(
   dataset_list,
   subjectid_var = "USUBJID",
   arm_var = "ACTARM",
-  arm_default_vals = NULL,
   visit_var = "VISIT",
   baseline_visit_val = "VISIT 01",
   lb_test_var = "LBTEST",
   at_choices = NULL,
-  at_default_val = NULL,
   tbili_choice = NULL,
   alp_choice = NULL,
   lb_date_var = NULL,
   lb_result_var = "LBSTRESN",
   ref_range_upper_lim_var = "LBSTNRHI",
-  window_days = NULL,
   on_sbj_click = NULL
 )
 }
@@ -41,10 +38,6 @@ Name of the variable containing the unique subject IDs. Defaults to \code{"USUBJ
 
 Name of the variable containing the arm/treatment information. Defaults to \code{"ACTARM"}.}
 
-\item{arm_default_vals}{\verb{[character(1+)]}
-
-Vector specifying the default value(s) for the arm selector. Defaults to \code{NULL}.}
-
 \item{visit_var}{\verb{[character(1)]}
 
 Name of the variable containing the visit information. Defaults to \code{"VISIT"}.}
@@ -60,10 +53,6 @@ Name of the variable containing the laboratory test information. Defaults to \co
 \item{at_choices}{\verb{[character(1+)]}
 
 Character vector specifying the possible choices of the x-axis aminotransferase laboratory test.}
-
-\item{at_default_val}{\verb{[character(1)]}
-
-Character specifying the default x-axis aminotransferase laboratory test choice.}
 
 \item{tbili_choice}{\verb{[character(1)]}
 
@@ -88,10 +77,6 @@ will cause a value of NA to be returned as maximum value.}
 
 Name of the variable containing the reference range upper limits.
 Defaults to \code{"LBSTNRHI"}.}
-
-\item{window_days}{\verb{[integer(1) | NULL]}
-
-Window of the number of days considered between peaks.}
 
 \item{on_sbj_click}{\verb{[function() | NULL]}
 

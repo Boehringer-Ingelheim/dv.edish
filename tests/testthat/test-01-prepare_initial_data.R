@@ -1,6 +1,6 @@
 set.seed(20251210)
 
-# Prepare data to pass to function ----
+# Specify function arguments for tests ----
 
 usubjid <- c("01", "02")
 arm <- c("arm1", "arm2")

@@ -22,7 +22,7 @@ mod_edish(
   lb_result_var = "LBSTRESN",
   ref_range_upper_lim_var = "LBSTNRHI",
   default_by_visit = FALSE,
-  window_days = NA,
+  window_days = NULL,
   receiver_id = NULL
 )
 }
@@ -43,7 +43,7 @@ Name of the variable containing the unique subject IDs. Defaults to \code{"USUBJ
 
 Name of the variable containing the arm/treatment information. Defaults to \code{"ACTARM"}.}
 
-\item{arm_default_vals}{\verb{[character(1+)]}
+\item{arm_default_vals}{\verb{[character(1+) | NULL]}
 
 Vector specifying the default value(s) for the arm selector. Defaults to \code{NULL}.}
 

@@ -82,7 +82,7 @@ Name of the variable containing the reference range upper limits.}
 
 A flag to indicate whether to plot aminotransferase values for each visit.}
 
-\item{window_days}{\verb{[integer(1)]}
+\item{window_days}{\verb{[integer(1) | NULL]}
 
 Window of the number of days considered between peaks.}
 }

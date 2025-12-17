@@ -1,85 +1,183 @@
-# Specify function arguments for tests
-usubjid <- c("01", "02")
-arm <- c("arm1", "arm2")
-visit <- c("visit 1", "visit 2", "visit 3")
-lbtest <- c("test 1", "test 2", "test 3")
+# Data ----
 
-lb <- tidyr::expand_grid(
-  "USUBJID" = usubjid,
-  "LBTEST" = lbtest,
-  "VISIT" = visit
-)
-lb$LBSTRESN <- runif(nrow(lb), min = 0, max = 10)
-lb$LBSTNRHI <- runif(nrow(lb), min = 5, max = 15)
+lb <- tibble::tribble(
+  ~USUBJID, ~LBTEST, ~VISIT, ~ARM,        ~LBDT, ~LBSTRESN, ~LBSTNRHI,
+  "01",       "alt",  "BL1", "a1", "2025-01-24",       3.1,         5,
+  "01",       "alt",   "V1", "a1", "2025-02-14",       9.2,         5,   # max ALT at V1
+  "01",       "alt",   "V2", "a1", "2025-03-04",       4.3,         5,
+  "01",     "tbili",  "BL1", "a1", "2025-01-24",       1.1,         9,
+  "01",     "tbili",   "V1", "a1", "2025-02-14",       8.9,         9,
+  "01",     "tbili",   "V2", "a1", "2025-03-04",      17.3,         9,   # max TBILI at V2
+  "01",       "alp",  "BL1", "a1", "2025-01-24",       3.4,         3,
+  "01",       "alp",   "V1", "a1", "2025-02-14",       2.3,         3,
+  "01",       "alp",   "V2", "a1", "2025-03-04",       1.2,         3,
+  "02",       "alt",  "BL1", "a2", "2025-07-24",       3.1,         5,
+  "02",       "alt",   "V1", "a2", "2025-08-14",       4.2,         5,
+  "02",       "alt",   "V2", "a2", "2025-09-04",       9.3,         5,   # max ALT at V2
+  "02",       "ast",  "BL1", "a2", "2025-07-24",       6.2,         5,
+  "02",       "ast",   "V1", "a2", "2025-08-14",       6.2,         5,   # max AST at V1
+  "02",       "ast",   "V2", "a2", "2025-09-04",       6.2,         5,
+  "02",     "tbili",  "BL1", "a2", "2025-07-24",       1.1,         9,
+  "02",     "tbili",   "V1", "a2", "2025-08-14",       17.9,        9,   # max TBILI at V1
+  "02",     "tbili",   "V2", "a2", "2025-09-04",       8.3,         9
+) |>
+  dplyr::mutate(LBDT = as.Date(.data$LBDT)) |>
+  as.data.frame()
 
-dm <- data.frame("USUBJID" = usubjid, "ARM" = arm)
+# Tests ----
 
-baseline_visit_val <- visit[1]
-lb_test_choices <- lbtest
-
-dataset <- prepare_initial_data(
-  dataset_list = list(dm, lb),
-  subjectid_var = "USUBJID",
-  arm_var = "ARM",
-  visit_var = "VISIT",
-  baseline_visit_val = baseline_visit_val,
-  lb_test_var = "LBTEST",
-  lb_test_choices = lb_test_choices,
-  lb_result_var = "LBSTRESN",
-  ref_range_upper_lim_var = "LBSTNRHI"
-)
-
-sel_x <- "test 2"
-sel_y <- "test 1"
-
-# Invoke the function
-res <- derive_req_vars(
-  dataset = dataset,
-  subjectid_var = "USUBJID",
-  arm_var = "ARM",
-  visit_var = "VISIT",
-  lb_test_var = "LBTEST",
-  lb_result_var = "LBSTRESN",
-  ref_range_upper_lim_var = "LBSTNRHI",
-  sel_x = sel_x,
-  sel_y = sel_y
-)
-
-# Tests
-test_that("the function returns a single dataset with the expected variables" |>
-  vdoc[["add_spec"]](specs$plot_specs$data), {
-  expect_s3_class(res, "data.frame")
-
-  actual <- names(res)
-  kept_vars <- c("USUBJID", "ARM", "VISIT")
-  new_vars <- as.vector(t(outer(c("r_ULN_", "r_Baseline_"), c(sel_x, sel_y), paste0)))
-  expected <- c(kept_vars, new_vars)
-  expect_contains(sort(actual), sort(expected))
-})
-
-test_that("the kept variables are taken over correctly" |>
-  vdoc[["add_spec"]](specs$plot_specs$data), {
-  kept_vars <- c("USUBJID", "ARM", "VISIT")
-  actual <- tibble::as_tibble(res[, kept_vars])
-  expected <- unique(dataset[, kept_vars])
-  rownames(expected) <- NULL
-  expect_identical(actual, expected)
-})
-
-test_that("the new variables contain the correct normalized values" |>
+test_that("normalization using ULN reference type" |>
   vdoc[["add_spec"]](specs$plot_specs$normalization), {
-  plot_type_choices <- c("ULN", "Baseline")
-  test_choices <- c(sel_x, sel_y)
-  combo <- tidyr::expand_grid(plot_type_choices, test_choices)
 
-  mapply(function(plot_type, test_sel) {
-    combo_name <- paste0("r_", plot_type, "_", test_sel)
-    filtered_dataset <- dataset[dataset$LBTEST == test_sel, ]
-    divisor <- ifelse(plot_type == "ULN", "LBSTNRHI", "BASE")
-    expected <- filtered_dataset$LBSTRESN / filtered_dataset[[divisor]]
-    actual <- res[[combo_name]]
-    expect_identical(actual, expected)
+  observed <- derive_req_vars(dataset = lb,
+                              subjectid_var = "USUBJID",
+                              arm_var = "ARM",
+                              visit_var = "VISIT",
+                              baseline_visit_val = "BL1",
+                              lb_test_var = "LBTEST",
+                              at_choices = c("alt", "ast"),
+                              tbili_choice = "tbili",
+                              norm_ref_type = "ULN",
+                              alp_choice = "alp",
+                              lb_date_var = "LBDT",
+                              lb_result_var = "LBSTRESN",
+                              ref_range_upper_lim_var = "LBSTNRHI",
+                              by_visit = FALSE,
+                              window_days = NULL)
 
-    return(NULL)
-  }, combo$plot_type_choices, combo$test_choices)
+  expected <- data.frame(
+    USUBJID = c("01", "02", "02"),
+    ARM = c("a1", "a2", "a2"),
+    LBTEST = c("alt", "alt", "ast"),
+    .visit_at = c("V1", "V2", "V1"),
+    .date_at = as.Date(c("2025-02-14", "2025-09-04", "2025-08-14")),
+    .norm_at = c(1.84, 1.86, 1.24),
+    .visit_tbili = c("V2", "V1", "V1"),
+    .date_tbili = as.Date(c("2025-03-04", "2025-08-14", "2025-08-14")),
+    .norm_tbili = c(1.92222222222222, 1.98888888888889, 1.98888888888889),
+    .offset_days = c(18L, -21L, 0L),
+    .norm_alp = c(0.766666666666667, NA, NA),
+    .r_ratio = c(2.4, NA, NA),
+    .norm_ref_type = "ULN"
+  ) |> tibble::as_tibble()
+
+  testthat::expect_equal(observed, expected)
+})
+
+test_that("normalization using Baseline reference type" |>
+  vdoc[["add_spec"]](specs$plot_specs$normalization), {
+
+  observed <- derive_req_vars(dataset = lb,
+                              subjectid_var = "USUBJID",
+                              arm_var = "ARM",
+                              visit_var = "VISIT",
+                              baseline_visit_val = "BL1",
+                              lb_test_var = "LBTEST",
+                              at_choices = c("alt", "ast"),
+                              tbili_choice = "tbili",
+                              norm_ref_type = "Baseline",
+                              alp_choice = "alp",
+                              lb_date_var = "LBDT",
+                              lb_result_var = "LBSTRESN",
+                              ref_range_upper_lim_var = "LBSTNRHI",
+                              by_visit = FALSE,
+                              window_days = NULL)
+
+  expected <- data.frame(
+    USUBJID = c("01", "02", "02"),
+    ARM = c("a1", "a2", "a2"),
+    LBTEST = c("alt", "alt", "ast"),
+    .visit_at = c("V1", "V2", "V1"),
+    .date_at = as.Date(c("2025-02-14", "2025-09-04", "2025-08-14")),
+    .norm_at = c(2.96774193548387, 3, 1),
+    .visit_tbili = c("V2", "V1", "V1"),
+    .date_tbili = as.Date(c("2025-03-04", "2025-08-14", "2025-08-14")),
+    .norm_tbili = c(15.7272727272727, 16.2727272727273, 16.2727272727273),
+    .offset_days = c(18L, -21L, 0L),
+    .norm_alp = c(0.676470588235294, NA, NA),
+    .r_ratio = c(4.38709677419355, NA, NA),
+    .norm_ref_type = "Baseline"
+  ) |> tibble::as_tibble()
+
+  testthat::expect_equal(observed, expected)
+})
+
+test_that("window selection" |>
+  vdoc[["add_spec"]](specs$plot_specs$window), {
+
+  observed <- derive_req_vars(dataset = lb,
+                              subjectid_var = "USUBJID",
+                              arm_var = "ARM",
+                              visit_var = "VISIT",
+                              baseline_visit_val = "BL1",
+                              lb_test_var = "LBTEST",
+                              at_choices = c("alt", "ast"),
+                              tbili_choice = "tbili",
+                              norm_ref_type = "ULN",
+                              alp_choice = "alp",
+                              lb_date_var = "LBDT",
+                              lb_result_var = "LBSTRESN",
+                              ref_range_upper_lim_var = "LBSTNRHI",
+                              by_visit = FALSE,
+                              window_days = 10L)
+
+  expected <- data.frame(
+    USUBJID = c("01", "02", "02"),
+    ARM = c("a1", "a2", "a2"),
+    LBTEST = c("alt", "alt", "ast"),
+    .visit_at = c("V1", "V2", "V1"),
+    .date_at = as.Date(c("2025-02-14", "2025-09-04", "2025-08-14")),
+    .norm_at = c(1.84, 1.86, 1.24),
+    .visit_tbili = c("V1", "V2", "V1"),
+    .date_tbili = as.Date(c("2025-02-14", "2025-09-04", "2025-08-14")),
+    .norm_tbili = c(0.988888888888889, 0.922222222222222, 1.98888888888889),
+    .offset_days = c(0L, 0L, 0L),
+    .norm_alp = c(0.766666666666667, NA, NA),
+    .r_ratio = c(2.4, NA, NA),
+    .norm_ref_type = "ULN"
+  ) |> tibble::as_tibble()
+
+  testthat::expect_equal(observed, expected)
+})
+
+test_that("display by visit" |>
+  vdoc[["add_spec"]](specs$plot_specs$by_visit), {
+
+  observed <- derive_req_vars(dataset = lb,
+                              subjectid_var = "USUBJID",
+                              arm_var = "ARM",
+                              visit_var = "VISIT",
+                              baseline_visit_val = "BL1",
+                              lb_test_var = "LBTEST",
+                              at_choices = c("alt", "ast"),
+                              tbili_choice = "tbili",
+                              norm_ref_type = "ULN",
+                              alp_choice = "alp",
+                              lb_date_var = "LBDT",
+                              lb_result_var = "LBSTRESN",
+                              ref_range_upper_lim_var = "LBSTNRHI",
+                              by_visit = TRUE,
+                              window_days = NULL)
+
+  expected <- data.frame(
+    USUBJID = c("01", "01", "02", "02", "02", "02"),
+    ARM = c("a1", "a1", "a2", "a2", "a2", "a2"),
+    LBTEST = c("alt", "alt", "alt", "alt", "ast", "ast"),
+    .visit_at = c("V1", "V2", "V1", "V2", "V1", "V2"),
+    .date_at = as.Date(c("2025-02-14","2025-03-04",
+                         "2025-08-14","2025-09-04","2025-08-14","2025-09-04")),
+    .norm_at = c(1.84, 0.86, 0.84, 1.86, 1.24, 1.24),
+    .visit_tbili = c("V2", "V2", "V1", "V1", "V1", "V1"),
+    .date_tbili = as.Date(c("2025-03-04","2025-03-04",
+                            "2025-08-14","2025-08-14","2025-08-14","2025-08-14")),
+    .norm_tbili = c(1.92222222222222,
+                    1.92222222222222,1.98888888888889,1.98888888888889,1.98888888888889,
+                    1.98888888888889),
+    .offset_days = c(18L, 0L, 0L, -21L, 0L, -21L),
+    .norm_alp = c(0.766666666666667, 0.4, NA, NA, NA, NA),
+    .r_ratio = c(2.4, 2.15, NA, NA, NA, NA),
+    .norm_ref_type = "ULN"
+  ) |> tibble::as_tibble()
+
+  testthat::expect_equal(observed, expected)
 })

@@ -19,7 +19,7 @@ edish_UI(
 
 A unique ID string to create a namespace. Must match the ID of \code{edish_server()}.}
 
-\item{arm_default_vals}{\verb{[character(1+)]}
+\item{arm_default_vals}{\verb{[character(1+) | NULL]}
 
 Vector specifying the default value(s) for the arm selector. Defaults to \code{NULL}.}
 
