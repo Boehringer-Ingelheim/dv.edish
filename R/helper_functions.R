@@ -258,7 +258,7 @@ derive_req_vars <- function(dataset,
   alp_data <- ref_dataset |>
     dplyr::filter(if (!is.null(alp_choice)) .data[[lb_test_var]] == alp_choice
                   else FALSE) |>
-    dplyr::select(subjectid_var, arm_var, visit_var, .norm_alp = ".norm_val")
+    dplyr::select(dplyr::all_of(c(subjectid_var, arm_var, visit_var)), .norm_alp = ".norm_val")
 
   # Merge on ALP values occurring at same visit as AT values, and calculate R ratio
   final_dataset <- peak_xy_data |>
