@@ -132,7 +132,6 @@ edish_UI <- function(module_id,
         style = "padding-left: 5px; padding-right: 10px"
       )
     ),
-    #shiny::hr(),
     shiny::hr(),
     shiny::numericInput(
       inputId = ns(EDISH$WINDOW_DAYS_ID),
