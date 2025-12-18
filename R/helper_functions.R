@@ -407,7 +407,7 @@ generate_plot <- function(dataset,
                                   ifelse(dataset[[".r_ratio"]] >= 5, "R ≥ 5", "2 < R < 5")),
                            dataset[[".r_ratio"]])
     } else {
-      hover_alp <- sprintf("<br>  ALP/ULN %s (%.3f)",
+      hover_alp <- sprintf("<br>  ALP/Baseline %s (%.3f)",
                            ifelse(dataset[[".norm_alp"]] <= 2, "≤ 2", "> 2"),
                            dataset[[".norm_alp"]])
     }

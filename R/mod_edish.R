@@ -3,7 +3,7 @@ EDISH <- pack_of_constants(
   PLOT_OPTIONS_ID = "plot_options",
   PLOT_OPTIONS_LABEL = "Plot Options",
   ARM_ID = "arm_id",
-  ARM_LABEL = "Select arm:",
+  ARM_LABEL = "Select arms:",
   X_AXIS_HEADER = "Specify x-axis",
   Y_AXIS_HEADER = "Specify y-axis",
   X_AXIS_ID = "x_axis",
@@ -69,54 +69,70 @@ edish_UI <- function(module_id,
       multiple = TRUE
     ),
     shiny::hr(),
-    shiny::h4(EDISH$X_AXIS_HEADER),
-    shiny::selectInput(
-      inputId = ns(EDISH$X_AXIS_ID),
-      label = EDISH$AXIS_LABEL,
-      choices = at_choices,
-      selected = at_default_val
+    shiny::fluidRow(
+      shiny::column(
+        6,
+        shiny::div(
+          shiny::h4(EDISH$X_AXIS_HEADER),
+          shiny::selectInput(
+            inputId = ns(EDISH$X_AXIS_ID),
+            label = EDISH$AXIS_LABEL,
+            choices = at_choices,
+            selected = at_default_val
+          ),
+          shiny::numericInput(
+            inputId = ns(EDISH$X_REF_ID),
+            label = EDISH$REF_LABEL,
+            value = 3,
+            min = 0,
+            max = 100,
+            step = 0.5
+          ),
+          shinyWidgets::numericRangeInput(
+            inputId = ns(EDISH$X_RNG_ID),
+            label = EDISH$RNG_LABEL,
+            value = c(NA, NA),
+            min = 0,
+            max = 100,
+            step = 0.1
+          ),
+          shiny::checkboxInput(
+            ns(EDISH$BY_VISIT_ID),
+            label = shiny::span(EDISH$BY_VISIT_LABEL,
+                                shiny::icon("circle-info",
+                                            title = EDISH$BY_VISIT_INFO)),
+            value = default_by_visit
+          ),
+          style = "border: 1px solid grey; padding-left: 15px; padding-right: 15px"
+        ),
+        style = "padding-left: 10px; padding-right: 5px"
+      ),
+      shiny::column(
+        6,
+        shiny::div(
+          shiny::h4(EDISH$Y_AXIS_HEADER),
+          shiny::numericInput(
+            inputId = ns(EDISH$Y_REF_ID),
+            label = EDISH$REF_LABEL,
+            value = 2,
+            min = 0,
+            max = 100,
+            step = 0.5
+          ),
+          shinyWidgets::numericRangeInput(
+            inputId = ns(EDISH$Y_RNG_ID),
+            label = EDISH$RNG_LABEL,
+            value = c(NA, NA),
+            min = 0,
+            max = 100,
+            step = 0.1
+          ),
+          style = "border: 1px solid grey; padding-left: 15px; padding-right: 15px"
+        ),
+        style = "padding-left: 5px; padding-right: 10px"
+      )
     ),
-    shiny::numericInput(
-      inputId = ns(EDISH$X_REF_ID),
-      label = EDISH$REF_LABEL,
-      value = 3,
-      min = 0,
-      max = 100,
-      step = 0.5
-    ),
-    shinyWidgets::numericRangeInput(
-      inputId = ns(EDISH$X_RNG_ID),
-      label = EDISH$RNG_LABEL,
-      value = c(NA, NA),
-      min = 0,
-      max = 100,
-      step = 0.1
-    ),
-    shiny::checkboxInput(
-      ns(EDISH$BY_VISIT_ID),
-      label = shiny::span(EDISH$BY_VISIT_LABEL,
-                          shiny::icon("circle-info",
-                                      title = EDISH$BY_VISIT_INFO)),
-      value = default_by_visit
-    ),
-    shiny::hr(),
-    shiny::h4(EDISH$Y_AXIS_HEADER),
-    shiny::numericInput(
-      inputId = ns(EDISH$Y_REF_ID),
-      label = EDISH$REF_LABEL,
-      value = 2,
-      min = 0,
-      max = 100,
-      step = 0.5
-    ),
-    shinyWidgets::numericRangeInput(
-      inputId = ns(EDISH$Y_RNG_ID),
-      label = EDISH$RNG_LABEL,
-      value = c(NA, NA),
-      min = 0,
-      max = 100,
-      step = 0.1
-    ),
+    #shiny::hr(),
     shiny::hr(),
     shiny::numericInput(
       inputId = ns(EDISH$WINDOW_DAYS_ID),

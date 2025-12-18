@@ -15,14 +15,3 @@ mod <- dv.edish::mod_edish(
 
 trigger_input_id <- "mod-plot_selected"
 test_communication_with_papo(mod, data_list, trigger_input_id)
-
-
-
-foo <- function() {
-  dv.manager::run_app(
-    data = list("demo" = list("dm" = pharmaverseadam::adsl, "lb" = pharmaverseadam::adlb)),
-    module_list = list("edish" = mod),
-    filter_type = "datasets",
-    filter_data = "dm"
-  )
-}
