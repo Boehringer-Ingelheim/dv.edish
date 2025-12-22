@@ -49,6 +49,10 @@ test_that("the default values are correct at app launch" |>
   expected_plot_type <- "ULN"
   expect_identical(actual_plot_type, expected_plot_type)
 
+  actual_base_incl <- app$get_value(input = "edish-base_incl")
+  expected_base_incl <- "ALL"
+  expect_identical(actual_base_incl, expected_base_incl)
+
   app$stop()
 })
 

@@ -186,22 +186,24 @@ derive_req_vars <- function(dataset,
 
   ref_dataset <- dataset
 
-  # Set either ULN or baseline as the reference value for normalization
+  # Process baseline data
+  base_data <- ref_dataset |>
+    dplyr::filter(.data[[visit_var]] == baseline_visit_val) |>
+    dplyr::select(dplyr::all_of(c(subjectid_var, arm_var, lb_test_var)),
+                  .base_val = dplyr::all_of(lb_result_var))
+
+  # Merge on baseline values
+  ref_dataset <- ref_dataset |>
+    dplyr::left_join(base_data, by = c(subjectid_var, arm_var, lb_test_var))
+
+  # Normalize lab values according to ULN or baseline reference values
   if (norm_ref_type == "ULN") {
-    ref_dataset[[".ref_val"]] <- ref_dataset[[ref_range_upper_lim_var]]
+    ref_dataset[[".norm_val"]] <- ref_dataset[[lb_result_var]] / ref_dataset[[ref_range_upper_lim_var]]
+    ref_dataset[[".norm_base"]] <- ref_dataset[[".base_val"]] / ref_dataset[[ref_range_upper_lim_var]]
   } else {
-    # Process baseline data
-    base_data <- ref_dataset[ref_dataset[[visit_var]] == baseline_visit_val, ]
-    base_data[[".ref_val"]] <- base_data[[lb_result_var]]
-    base_data <- base_data[, c(subjectid_var, arm_var, lb_test_var, ".ref_val")]
-
-    # Merge on baseline values
-    ref_dataset <- ref_dataset |>
-      dplyr::left_join(base_data, by = c(subjectid_var, arm_var, lb_test_var))
+    ref_dataset[[".norm_val"]] <- ref_dataset[[lb_result_var]] / ref_dataset[[".base_val"]]
+    ref_dataset[[".norm_base"]] <- 1
   }
-
-  # Normalize lab values
-  ref_dataset[[".norm_val"]] <- ref_dataset[[lb_result_var]] / ref_dataset[[".ref_val"]]
 
   # Initialise base group variables for calculating peak values
   base_group_vars <- c(subjectid_var, arm_var, lb_test_var)
@@ -220,7 +222,7 @@ derive_req_vars <- function(dataset,
     dplyr::select(dplyr::all_of(c(subjectid_var, arm_var, lb_test_var)),
                   .visit_at = dplyr::all_of(visit_var),
                   .date_at = dplyr::all_of(lb_date_var),
-                  .norm_at = ".norm_val")
+                  .norm_at = ".norm_val", ".norm_base")
 
   # Get post-baseline total bilirubin (TBILI) rows
   tbili_data <- ref_dataset |>
@@ -286,7 +288,16 @@ derive_req_vars <- function(dataset,
 #'
 #' @param sel_lb_test `[character(1)]`
 #'
-#' Character vector specifying a selected aminotransferase laboratory test.
+#' String specifying a selected aminotransferase laboratory test.
+#'
+#' @param x_ref `[numeric(1)]`
+#'
+#' Numeric normalized x-axis threshold reference.
+#'
+#' @param base_incl `[character(1)]`
+#'
+#' String specifying the selected baseline inclusion choice, either `"LO"` (baseline within threshold),
+#' `"HI"` (baseline exceeds threshold), or `"ALL"` (all).
 #'
 #' @return A data frame.
 #'
@@ -294,7 +305,14 @@ derive_req_vars <- function(dataset,
 #' @inheritParams derive_req_vars
 #'
 #' @keywords internal
-filter_data <- function(dataset, norm_ref_type, arm_var, sel_arm, lb_test_var, sel_lb_test) {
+filter_data <- function(dataset,
+                        norm_ref_type,
+                        arm_var,
+                        sel_arm,
+                        lb_test_var,
+                        sel_lb_test,
+                        x_ref,
+                        base_incl) {
 
   ac <- checkmate::makeAssertCollection()
   checkmate::assert_string(norm_ref_type, min.chars = 1, add = ac)
@@ -303,12 +321,23 @@ filter_data <- function(dataset, norm_ref_type, arm_var, sel_arm, lb_test_var, s
                               unique = TRUE, min.len = 1, null.ok = TRUE, add = ac)
   checkmate::assert_string(lb_test_var, min.chars = 1, add = ac)
   checkmate::assert_string(sel_lb_test, min.chars = 1, add = ac)
+  checkmate::assert_numeric(x_ref, len = 1, any.missing = TRUE, add = ac)
+  checkmate::assert_string(base_incl, pattern = "LO|HI|ALL", add = ac)
   checkmate::reportAssertions(ac)
 
   dataset <- dataset |>
     dplyr::filter(.data[[".norm_ref_type"]] == norm_ref_type,
                   .data[[lb_test_var]] == sel_lb_test,
                   .data[[arm_var]] %in% sel_arm)
+
+  # Apply baseline inclusions for ULN data
+  if (norm_ref_type == "ULN") {
+    if (base_incl == "LO") {
+      dataset <- dataset[which(dataset[[".norm_base"]] <= x_ref), ]
+    } else if (base_incl == "HI") {
+      dataset <- dataset[which(dataset[[".norm_base"]] > x_ref), ]
+    }
+  }
 
   return(dataset)
 }

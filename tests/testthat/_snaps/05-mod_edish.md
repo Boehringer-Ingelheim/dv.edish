@@ -7,6 +7,9 @@
       $input$`edish-arm_id`
       [1] "arm1"
       
+      $input$`edish-base_incl`
+      [1] "ALL"
+      
       $input$`edish-by_visit`
       [1] FALSE
       

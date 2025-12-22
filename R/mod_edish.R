@@ -10,7 +10,7 @@ EDISH <- pack_of_constants(
   AXIS_LABEL = "Parameter:",
   X_REF_ID = "x_ref",
   Y_REF_ID = "y_ref",
-  REF_LABEL = "Reference line:",
+  REF_LABEL = "Threshold / Reference line:",
   X_RNG_ID = "x_rng",
   Y_RNG_ID = "y_rng",
   RNG_LABEL = "Range:",
@@ -18,11 +18,17 @@ EDISH <- pack_of_constants(
   BY_VISIT_LABEL = "By visit",
   BY_VISIT_INFO = "Aminotransferase values will be plotted for each visit",
   PLOT_TYPE_ID = "plot_type",
+  PLOT_TYPE_LABEL = "Plot type:",
   PLOT_TYPE_CHOICES = c("\u00d7 ULN (eDISH)" = "ULN",
                         "\u00d7 Baseline (mDISH)" = "Baseline"),
   PLOT_ID = "plot",
   WINDOW_DAYS_ID = "window_days",
-  WINDOW_DAYS_LABEL = "Max. days between peaks:"
+  WINDOW_DAYS_LABEL = "Max. days between peaks:",
+  BASE_INCL_ID = "base_incl",
+  BASE_INCL_LABEL = "Baseline inclusions:",
+  BASE_INCL_CHOICES = c("All" = "ALL",
+                        "Baseline within threshold" = "LO",
+                        "Baseline exceeds threshold" = "HI")
 )
 
 
@@ -58,7 +64,7 @@ edish_UI <- function(module_id,
     ),
     shiny::radioButtons(
       inputId = ns(EDISH$PLOT_TYPE_ID),
-      label = NULL,
+      label = EDISH$PLOT_TYPE_LABEL,
       choices = EDISH$PLOT_TYPE_CHOICES
     ),
     shiny::selectInput(
@@ -74,6 +80,13 @@ edish_UI <- function(module_id,
         6,
         shiny::div(
           shiny::h4(EDISH$X_AXIS_HEADER),
+          shiny::checkboxInput(
+            ns(EDISH$BY_VISIT_ID),
+            label = shiny::span(EDISH$BY_VISIT_LABEL,
+                                shiny::icon("circle-info",
+                                            title = EDISH$BY_VISIT_INFO)),
+            value = default_by_visit
+          ),
           shiny::selectInput(
             inputId = ns(EDISH$X_AXIS_ID),
             label = EDISH$AXIS_LABEL,
@@ -96,12 +109,10 @@ edish_UI <- function(module_id,
             max = 100,
             step = 0.1
           ),
-          shiny::checkboxInput(
-            ns(EDISH$BY_VISIT_ID),
-            label = shiny::span(EDISH$BY_VISIT_LABEL,
-                                shiny::icon("circle-info",
-                                            title = EDISH$BY_VISIT_INFO)),
-            value = default_by_visit
+          shiny::radioButtons(
+            inputId = ns(EDISH$BASE_INCL_ID),
+            label = EDISH$BASE_INCL_LABEL,
+            choices = EDISH$BASE_INCL_CHOICES
           ),
           style = "border: 1px solid grey; padding-left: 15px; padding-right: 15px"
         ),
@@ -221,6 +232,15 @@ edish_server <- function(
     # Ensure font "Liberation Sans" is registered, so it can be used by {{ggiraph}}
     gdtools::register_liberationsans()
 
+    # Disable baseline inclusions option for mDISH plot (only relevant to eDISH plot)
+    shiny::observeEvent(input[[EDISH$PLOT_TYPE_ID]], {
+      if (input[[EDISH$PLOT_TYPE_ID]] == "Baseline") {
+        shinyjs::disable(EDISH$BASE_INCL_ID)
+      } else {
+        shinyjs::enable(EDISH$BASE_INCL_ID)
+      }
+    })
+
     # Ensure window is a positive integer
     shiny::observeEvent(input[[EDISH$WINDOW_DAYS_ID]], ignoreInit = TRUE, {
       window_val <- input[[EDISH$WINDOW_DAYS_ID]]
@@ -306,7 +326,9 @@ edish_server <- function(
         arm_var = arm_var,
         sel_arm = input[[EDISH$ARM_ID]],
         lb_test_var = lb_test_var,
-        sel_lb_test = input[[EDISH$X_AXIS_ID]]
+        sel_lb_test = input[[EDISH$X_AXIS_ID]],
+        x_ref = input[[EDISH$X_REF_ID]],
+        base_incl = input[[EDISH$BASE_INCL_ID]]
       )
     })
 
