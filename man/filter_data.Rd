@@ -4,7 +4,16 @@
 \alias{filter_data}
 \title{Filter data prior to plotting}
 \usage{
-filter_data(dataset, norm_ref_type, arm_var, sel_arm, lb_test_var, sel_lb_test)
+filter_data(
+  dataset,
+  norm_ref_type,
+  arm_var,
+  sel_arm,
+  lb_test_var,
+  sel_lb_test,
+  x_ref,
+  base_incl
+)
 }
 \arguments{
 \item{dataset}{\verb{[data.frame]}
@@ -29,7 +38,16 @@ Name of the variable containing the laboratory test parameter.}
 
 \item{sel_lb_test}{\verb{[character(1)]}
 
-Character vector specifying a selected aminotransferase laboratory test.}
+String specifying a selected aminotransferase laboratory test.}
+
+\item{x_ref}{\verb{[numeric(1)]}
+
+Numeric normalized x-axis threshold reference.}
+
+\item{base_incl}{\verb{[character(1)]}
+
+String specifying the selected baseline inclusion choice, either \code{"LO"} (baseline within threshold),
+\code{"HI"} (baseline exceeds threshold), or \code{"ALL"} (all).}
 }
 \value{
 A data frame.
