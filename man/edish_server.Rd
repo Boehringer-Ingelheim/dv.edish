@@ -32,23 +32,23 @@ A reactive list of named datasets.}
 
 \item{subjectid_var}{\verb{[character(1)]}
 
-Name of the variable containing the unique subject IDs. Defaults to \code{"USUBJID"}.}
+Name of the variable containing the unique subject IDs.}
 
 \item{arm_var}{\verb{[character(1)]}
 
-Name of the variable containing the arm/treatment information. Defaults to \code{"ACTARM"}.}
+Name of the variable containing the arm/treatment information.}
 
 \item{visit_var}{\verb{[character(1)]}
 
-Name of the variable containing the visit information. Defaults to \code{"VISIT"}.}
+Name of the variable containing the visit information.}
 
 \item{baseline_visit_val}{\verb{[character(1)]}
 
-Character indicating which visit should be used as baseline visit. Defaults to \code{"VISIT 01"}.}
+Character indicating which visit should be used as baseline visit.}
 
 \item{lb_test_var}{\verb{[character(1)]}
 
-Name of the variable containing the laboratory test information. Defaults to \code{"LBTEST"}.}
+Name of the variable containing the laboratory test information.}
 
 \item{at_choices}{\verb{[character(1+)]}
 
@@ -68,15 +68,11 @@ Name of the variable (\code{Date} or \code{POSIXt} class) containing the laborat
 
 \item{lb_result_var}{\verb{[character(1)]}
 
-Name of the variable containing results of the laboratory test. Defaults to \code{"LBSTRESN"}.
-In case of multiple values in \code{lb_result_var} per \code{subjectid_var}, \code{visit_var}, and
-\code{lb_test_var}, only the maximum value will be used. Note that a NA value in the considered values
-will cause a value of NA to be returned as maximum value.}
+Name of the variable containing results of the laboratory test.}
 
 \item{ref_range_upper_lim_var}{\verb{[character(1)]}
 
-Name of the variable containing the reference range upper limits.
-Defaults to \code{"LBSTNRHI"}.}
+Name of the variable containing the reference range upper limits.}
 
 \item{on_sbj_click}{\verb{[function() | NULL]}
 

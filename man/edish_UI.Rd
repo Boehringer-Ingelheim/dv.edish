@@ -21,7 +21,7 @@ A unique ID string to create a namespace. Must match the ID of \code{edish_serve
 
 \item{arm_default_vals}{\verb{[character(1+) | NULL]}
 
-Vector specifying the default value(s) for the arm selector. Defaults to \code{NULL}.}
+Vector specifying the default value(s) for the arm selector.}
 
 \item{at_choices}{\verb{[character(1+)]}
 

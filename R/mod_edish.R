@@ -382,39 +382,44 @@ edish_server <- function(
 #' eDISH module
 #'
 #' `mod_edish()` displays the (modified) evaluation of Drug-Induced Serious Hepatotoxicity (eDISH/mDISH) plot
-#' to support the assessment of drug-induced liver injury (DILI).
+#' to support the assessment of drug-induced liver injury (DILI). The scatter plot depicts the correlation
+#' between peak values of an aminotransferase parameter and total bilirubin on a subject level.
 #'
 #' @param module_id `[character(1)]`
 #'
 #' A unique module ID.
 #'
-#' @param subject_level_dataset_name,lab_dataset_name `[character(1)]`
+#' @param subject_level_dataset_name `[character(1)]`
 #'
-#' Name(s) of the dataset(s) that will be displayed.
+#' Name of the subject-level dataset to be used.
+#'
+#' @param lab_dataset_name `[character(1)]`
+#'
+#' Name of the laboratory results dataset to be used.
 #'
 #' @param subjectid_var `[character(1)]`
 #'
-#' Name of the variable containing the unique subject IDs. Defaults to `"USUBJID"`.
+#' Name of the variable containing the unique subject IDs.
 #'
 #' @param arm_var `[character(1)]`
 #'
-#' Name of the variable containing the arm/treatment information. Defaults to `"ACTARM"`.
+#' Name of the variable containing the arm/treatment information.
 #'
 #' @param arm_default_vals `[character(1+) | NULL]`
 #'
-#' Vector specifying the default value(s) for the arm selector. Defaults to `NULL`.
+#' Vector specifying the default value(s) for the arm selector.
 #'
 #' @param visit_var `[character(1)]`
 #'
-#' Name of the variable containing the visit information. Defaults to `"VISIT"`.
+#' Name of the variable containing the visit information.
 #'
 #' @param baseline_visit_val `[character(1)]`
 #'
-#' Character indicating which visit should be used as baseline visit. Defaults to `"VISIT 01"`.
+#' Character indicating which visit should be used as baseline visit.
 #'
 #' @param lb_test_var `[character(1)]`
 #'
-#' Name of the variable containing the laboratory test information. Defaults to `"LBTEST"`.
+#' Name of the variable containing the laboratory test information.
 #'
 #' @param at_choices `[character(1+)]`
 #'
@@ -438,15 +443,11 @@ edish_server <- function(
 #'
 #' @param lb_result_var `[character(1)]`
 #'
-#' Name of the variable containing results of the laboratory test. Defaults to `"LBSTRESN"`.
-#' In case of multiple values in `lb_result_var` per `subjectid_var`, `visit_var`, and
-#' `lb_test_var`, only the maximum value will be used. Note that a NA value in the considered values
-#' will cause a value of NA to be returned as maximum value.
+#' Name of the variable containing results of the laboratory test.
 #'
 #' @param ref_range_upper_lim_var `[character(1)]`
 #'
 #' Name of the variable containing the reference range upper limits.
-#' Defaults to `"LBSTNRHI"`.
 #'
 #' @param default_by_visit `[logical(1)]`
 #'
