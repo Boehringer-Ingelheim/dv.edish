@@ -14,18 +14,20 @@ remotes::install_github("Boehringer-Ingelheim/dv.edish")
 
 ## Features
 
-The eDISH module shows a scatter plot depicting correlations of two lab parameters on a
-subject-level.
+The eDISH module shows a scatter plot depicting the correlation between peak values of an
+aminotransferase parameter and total bilirubin on a subject level.
 
-The parameter to be displayed on each axis can be selected by the app user. Moreover, the parameters
-can be displayed in multiples of either their upper limit normals (resulting in the eDISH plot) or
-the corresponding subject's baseline values (resulting in the mDISH plot).
+The user can specify the following:
 
-Horizontal and vertical reference lines indicate Hy's law multiples and can be updated by the user.
-
-By default, the x- and y-axis ranges are determined by the data, but the user can specify their own
-ranges. Both lower and upper values of an axis range need to be specified for the range to take
-effect. If either value is missing then the default axis range is used.
+- The window in which the total bilirubin is considered in relation to the aminotransferase value.
+- The aminotransferase parameter to be displayed on the x-axis (e.g. Alanine Aminotransferase or
+  Aspartate Aminotransferase).
+- Whether the parameters are displayed in multiples of either their upper limits of normal
+  (resulting in the eDISH plot) or the corresponding subject's baseline values (resulting in the mDISH plot).
+- Horizontal and vertical reference lines indicating Hy's law multiples.
+- Whether to plot subject aminotransferase values by visit.
+- Lower and/or upper values of the x- and y-axis ranges. If not specified then these values are
+  determined by the data.
 
 ## Creating an eDISH application
 
@@ -42,7 +44,8 @@ module_list <- list(
     subject_level_dataset_name = "dm",
     lab_dataset_name = "lb",
     arm_default_vals = c("Xanomeline Low Dose", "Xanomeline High Dose"),
-    baseline_visit_val = "SCREENING 1"
+    baseline_visit_val = "SCREENING 1",
+    lb_date_var = "ADT"
   )
 )
 
@@ -70,6 +73,8 @@ Note that the module expects two datasets:
   - Visit (e.g. `VISIT`)
   
   - Lab test result name (e.g. `LBTEST`)
+  
+  - Lab test date (e.g. `ADT`)
   
   - Numeric lab test result (e.g. `LBSTRESN`)
   
