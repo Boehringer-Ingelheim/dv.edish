@@ -88,9 +88,9 @@ test_that("the resulting plot object includes the correct hovertext" |>
 
   actual <- plt_obj[["data"]][["tooltip"]][1]
   expected <- paste0("Subject: 01<br>Arm: a1",
-                     "<br>---<br>Alanine Aminotransferase: 1.100<br>  Visit: V1<br>  Date: 2025-02-10 (1st)",
-                     "<br>  ALP/ULN ≤ 2 (0.200) R ≥ 5 (5.50)",
-                     "<br>---<br>Total Bilirubin: 0.100<br>  Visit: V2<br>  Date: 2025-02-20 (2nd)",
+                     "<br>---<br>Alanine Aminotransferase: 1.100<br>&nbsp;&nbsp;Visit: V1<br>&nbsp;&nbsp;Date: 2025-02-10 (1st)",
+                     "<br>&nbsp;&nbsp;ALP/ULN ≤ 2 (0.200)<br>&nbsp;&nbsp;R ≥ 5 (5.50)",
+                     "<br>---<br>Total Bilirubin: 0.100<br>&nbsp;&nbsp;Visit: V2<br>&nbsp;&nbsp;Date: 2025-02-20 (2nd)",
                      "<br>---<br>Time between peaks: 10 days")
   expect_identical(actual, expected)
 })
