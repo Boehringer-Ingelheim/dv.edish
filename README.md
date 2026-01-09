@@ -29,6 +29,25 @@ The user can specify the following:
 - Lower and/or upper values of the x- and y-axis ranges. If not specified then these values are
   determined by the data.
 
+When hovering over a point the following pop-up information is displayed:
+
+- Subject identifier.
+- Arm.
+- Normalized aminotransferase peak value, visit, and date.
+- Associated normalized Alkaline Phosphatase value categorized.
+- R-ratio categorized.
+- Normalized total bilirubin peak value, visit, and date.
+- Time in days between aminotransferase and total bilirubin dates. Negative days indicates that total bilirubin date
+  is before aminotransferase date.
+
+Normalized Alkaline Phosphatase (ALP/ULN or ALP/Baseline) categories are shown as ≤ 2 or > 2.
+
+The R-ratio (specific to ULN) is calculated as `R = Normalized aminotransferase / Normalized ALP`:
+
+- R ≥ 5 Hepatocellular - aminotransferase dominates; typical for Hy's Law
+- R ≤ 2 Cholestatic - ALP dominates
+- 2 < R < 5 Mixed - Both aminotransferase and ALP elevated
+
 ## Creating an eDISH application
 
 The following example shows how to set up a simple DaVinci app by means of {dv.manager}. 
