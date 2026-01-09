@@ -19,8 +19,8 @@ EDISH <- pack_of_constants(
   BY_VISIT_INFO = "Aminotransferase values will be plotted for each visit",
   PLOT_TYPE_ID = "plot_type",
   PLOT_TYPE_LABEL = "Plot type:",
-  PLOT_TYPE_CHOICES = c("\u00d7 ULN (eDISH)" = "ULN",
-                        "\u00d7 Baseline (mDISH)" = "Baseline"),
+  PLOT_TYPE_CHOICES = c("eDISH (\u00d7 ULN)" = "ULN",
+                        "mDISH (\u00d7 Baseline)" = "Baseline"),
   PLOT_ID = "plot",
   WINDOW_DAYS_ID = "window_days",
   WINDOW_DAYS_LABEL = "Max. days between peaks:",
@@ -151,7 +151,8 @@ edish_UI <- function(module_id,
       min = 0,
       max = 100,
       step = 1
-    )
+    ),
+    style = "max-height: 85vh; overflow-y: auto; overflow-x: hidden; padding: 10px;"
   )
 
   ui <- shiny::tagList(

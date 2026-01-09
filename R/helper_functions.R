@@ -429,14 +429,14 @@ generate_plot <- function(dataset,
 
   if (alp_flag) {
     if (norm_ref_type == "ULN") {
-      hover_alp <- sprintf("<br>  ALP/ULN %s (%.3f) %s (%.2f)",
+      hover_alp <- sprintf("<br>&nbsp;&nbsp;ALP/ULN %s (%.3f)<br>&nbsp;&nbsp;%s (%.2f)",
                            ifelse(dataset[[".norm_alp"]] <= 2, "≤ 2", "> 2"),
                            dataset[[".norm_alp"]],
                            ifelse(dataset[[".r_ratio"]] <= 2, "R ≤ 2",
                                   ifelse(dataset[[".r_ratio"]] >= 5, "R ≥ 5", "2 < R < 5")),
                            dataset[[".r_ratio"]])
     } else {
-      hover_alp <- sprintf("<br>  ALP/Baseline %s (%.3f)",
+      hover_alp <- sprintf("<br>&nbsp;&nbsp;ALP/Baseline %s (%.3f)",
                            ifelse(dataset[[".norm_alp"]] <= 2, "≤ 2", "> 2"),
                            dataset[[".norm_alp"]])
     }
@@ -453,12 +453,12 @@ generate_plot <- function(dataset,
     "Subject: ", dataset[[subjectid_var]],
     "<br>Arm: ", dataset[[arm_var]],
     "<br>---<br>", sel_x, ": ", sprintf("%.3f", dataset[[".norm_at"]]),
-    "<br>  Visit: ", dataset[[".visit_at"]],
-    "<br>  Date: ", hover_date_x,
+    "<br>&nbsp;&nbsp;Visit: ", dataset[[".visit_at"]],
+    "<br>&nbsp;&nbsp;Date: ", hover_date_x,
     hover_alp,
     "<br>---<br>", sel_y, ": ", sprintf("%.3f", dataset[[".norm_tbili"]]),
-    "<br>  Visit: ", dataset[[".visit_tbili"]],
-    "<br>  Date: ", hover_date_y,
+    "<br>&nbsp;&nbsp;Visit: ", dataset[[".visit_tbili"]],
+    "<br>&nbsp;&nbsp;Date: ", hover_date_y,
     "<br>---<br>Time between peaks: ", hover_offset
   )
 

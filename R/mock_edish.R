@@ -4,11 +4,19 @@
 #'
 #' @keywords internal
 mock_edish_app <- function() {
-  dm <- pharmaverseadam::adsl
-  lb <- pharmaverseadam::adlb
+  dm <- pharmaverseadam::adsl |> dplyr::mutate(dplyr::across(dplyr::where(is.character), as.factor))
+  lb <- pharmaverseadam::adlb |> dplyr::mutate(dplyr::across(dplyr::where(is.character), as.factor))
 
   mock_edish_UI <- function() { # nolint
-    shiny::fluidPage(edish_UI("edish"))
+    shiny::fluidPage(edish_UI(
+      module_id = "edish",
+      arm_default_vals = "Xanomeline High Dose",
+      at_choices = c("Alanine Aminotransferase", "Aspartate Aminotransferase"),
+      at_default_val = "Alanine Aminotransferase",
+      tbili_choice = "Bilirubin",
+      default_by_visit = FALSE,
+      window_days = NULL
+    ))
   }
 
   mock_edish_server <- function(input, output, session) {
@@ -18,6 +26,9 @@ mock_edish_app <- function() {
         list("dm" = dm, "lb" = lb)
       }),
       baseline_visit_val = "SCREENING 1",
+      at_choices = c("Alanine Aminotransferase", "Aspartate Aminotransferase"),
+      tbili_choice = "Bilirubin",
+      alp_choice = "Alkaline Phosphatase",
       lb_date_var = "ADT"
     )
   }
