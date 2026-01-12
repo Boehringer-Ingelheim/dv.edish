@@ -312,6 +312,9 @@ edish_server <- function(
       choices_arm <- levels(work_data()[[arm_var]])
       if (is.null(r_values[[EDISH$ARM_ID]])) {
         sel_arm <- input[[EDISH$ARM_ID]]
+
+        # If no arm has been selected then select all arms available
+        if (length(sel_arm) == 0) sel_arm <- choices_arm
       } else {
         sel_arm <- r_values[[EDISH$ARM_ID]]
         r_values[[EDISH$ARM_ID]] <- NULL
