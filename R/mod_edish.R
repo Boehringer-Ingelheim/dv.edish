@@ -297,13 +297,39 @@ edish_server <- function(
       }))
     })
 
+    shiny::onBookmark(function(state) {
+      # Store x and y ranges as state values, as they require special handling in `shiny::onRestore()`
+      state$values$x_rng <- state$input[[EDISH$X_RNG_ID]]
+      state$values$y_rng <- state$input[[EDISH$Y_RNG_ID]]
+    })
+
     # Storage for restored values from a bookmarked state
     r_values <- shiny::reactiveValues()
 
-    # Store arm selections from restored bookmarked state, to be applied after work data has been created
     shiny::onRestore(function(state) {
-      if (length(state$input) > 0) {
-        r_values[[EDISH$ARM_ID]] <- state$input[[EDISH$ARM_ID]]
+
+      # Store arm selections from restored bookmarked state, to be applied after work data has been created
+      if (length(state$input) > 0) r_values[[EDISH$ARM_ID]] <- state$input[[EDISH$ARM_ID]]
+
+      # When minimum or maximum from `shinyWidgets::numericRangeInput` is unspecified, the underlying
+      # value is represented as `NA`. But when calling `shinyWidgets::updateNumericRangeInput()`, it
+      # must be passed as `-Inf` for minimum, or `Inf` for maximum.
+
+      ns <- shiny::NS(module_id)
+
+      x_rng <- state$values$x_rng
+      y_rng <- state$values$y_rng
+
+      if (!is.null(x_rng)) {
+        x_rng[1] <- dplyr::coalesce(x_rng[1], -Inf)
+        x_rng[2] <- dplyr::coalesce(x_rng[2], Inf)
+        shinyWidgets::updateNumericRangeInput(inputId = ns(EDISH$X_RNG_ID), value = x_rng)
+      }
+
+      if (!is.null(y_rng)) {
+        y_rng[1] <- dplyr::coalesce(y_rng[1], -Inf)
+        y_rng[2] <- dplyr::coalesce(y_rng[2], Inf)
+        shinyWidgets::updateNumericRangeInput(inputId = ns(EDISH$Y_RNG_ID), value = y_rng)
       }
     })
 
