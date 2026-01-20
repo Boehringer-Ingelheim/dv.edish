@@ -1,45 +1,34 @@
 # the app displays the correct plot at app launch (snapshot test)__spec_ids{plot_specs$data}
 
     Code
-      app$get_values(input = TRUE, output = TRUE)
+      app_vals
     Output
       $input
-      $input$`.clientValue-default-plotlyCrosstalkOpts`
-      $input$`.clientValue-default-plotlyCrosstalkOpts`$on
-      [1] "plotly_click"
-      
-      $input$`.clientValue-default-plotlyCrosstalkOpts`$persistent
-      [1] FALSE
-      
-      $input$`.clientValue-default-plotlyCrosstalkOpts`$dynamic
-      [1] FALSE
-      
-      $input$`.clientValue-default-plotlyCrosstalkOpts`$selectize
-      [1] FALSE
-      
-      $input$`.clientValue-default-plotlyCrosstalkOpts`$opacityDim
-      [1] 0.2
-      
-      $input$`.clientValue-default-plotlyCrosstalkOpts`$selected
-      $input$`.clientValue-default-plotlyCrosstalkOpts`$selected$opacity
-      [1] 1
-      
-      
-      $input$`.clientValue-default-plotlyCrosstalkOpts`$debounce
-      [1] 0
-      
-      $input$`.clientValue-default-plotlyCrosstalkOpts`$color
-      list()
-      
-      
       $input$`edish-arm_id`
       [1] "arm1"
       
-      $input$`edish-x_axis`
-      [1] "test 1"
+      $input$`edish-base_incl`
+      [1] "ALL"
       
-      $input$`edish-x_plot_type`
+      $input$`edish-by_visit`
+      [1] FALSE
+      
+      $input$`edish-plot_options`
+      [1] 0
+      attr(,"class")
+      [1] "shinyActionButtonValue" "integer"               
+      
+      $input$`edish-plot_options_dropmenu`
+      [1] FALSE
+      
+      $input$`edish-plot_type`
       [1] "ULN"
+      
+      $input$`edish-window_days`
+      [1] NA
+      
+      $input$`edish-x_axis`
+      [1] "alt"
       
       $input$`edish-x_ref`
       [1] 3
@@ -47,92 +36,16 @@
       $input$`edish-x_rng`
       NULL
       
-      $input$`edish-y_axis`
-      [1] "test 2"
-      
-      $input$`edish-y_plot_type`
-      [1] "ULN"
-      
       $input$`edish-y_ref`
       [1] 2
       
       $input$`edish-y_rng`
       NULL
       
-      $input$`plotly_afterplot-edish-plot`
-      [1] "\"edish-plot\""
-      
       
       $output
-      $output$`edish-noplot`
-      $output$`edish-noplot`$src
-      [1] "data:image/png;base64,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"
-      
-      $output$`edish-noplot`$width
-      [1] 631.3281
-      
-      $output$`edish-noplot`$height
-      [1] 400
-      
-      $output$`edish-noplot`$alt
-      [1] "Plot object"
-      
-      $output$`edish-noplot`$coordmap
-      $output$`edish-noplot`$coordmap$panels
-      $output$`edish-noplot`$coordmap$panels[[1]]
-      $output$`edish-noplot`$coordmap$panels[[1]]$domain
-      $output$`edish-noplot`$coordmap$panels[[1]]$domain$left
-      [1] -0.04
-      
-      $output$`edish-noplot`$coordmap$panels[[1]]$domain$right
-      [1] 1.04
-      
-      $output$`edish-noplot`$coordmap$panels[[1]]$domain$bottom
-      [1] -0.04
-      
-      $output$`edish-noplot`$coordmap$panels[[1]]$domain$top
-      [1] 1.04
-      
-      
-      $output$`edish-noplot`$coordmap$panels[[1]]$range
-      $output$`edish-noplot`$coordmap$panels[[1]]$range$left
-      [1] 0
-      
-      $output$`edish-noplot`$coordmap$panels[[1]]$range$right
-      [1] 631.3281
-      
-      $output$`edish-noplot`$coordmap$panels[[1]]$range$bottom
-      [1] 399
-      
-      $output$`edish-noplot`$coordmap$panels[[1]]$range$top
-      [1] -1
-      
-      
-      $output$`edish-noplot`$coordmap$panels[[1]]$log
-      $output$`edish-noplot`$coordmap$panels[[1]]$log$x
-      NULL
-      
-      $output$`edish-noplot`$coordmap$panels[[1]]$log$y
-      NULL
-      
-      
-      $output$`edish-noplot`$coordmap$panels[[1]]$mapping
-      named list()
-      
-      
-      
-      $output$`edish-noplot`$coordmap$dims
-      $output$`edish-noplot`$coordmap$dims$width
-      [1] 631.3281
-      
-      $output$`edish-noplot`$coordmap$dims$height
-      [1] 400
-      
-      
-      
-      
       $output$`edish-plot`
-      {"x":{"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"xaxis":{"domain":[0,1],"automargin":true,"title":"test 1/ULN"},"yaxis":{"domain":[0,1],"automargin":true,"title":"test 2/ULN"},"shapes":[{"type":"line","y0":0,"y1":1,"yref":"paper","x0":3,"x1":3,"line":{"color":"gray","dash":"dot"}},{"type":"line","x0":0,"x1":1,"xref":"paper","y0":2,"y1":2,"line":{"color":"gray","dash":"dot"}}],"hovermode":"closest","showlegend":true},"source":"edish-plot","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"mode":"markers","key":"01","type":"scatter","name":"arm1","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"textfont":{"color":"rgba(252,141,98,1)"},"error_y":{"color":"rgba(252,141,98,1)"},"error_x":{"color":"rgba(252,141,98,1)"},"line":{"color":"rgba(252,141,98,1)"},"xaxis":"x","yaxis":"y","_isSimpleKey":true,"_isNestedKey":false,"frame":null},{"mode":"markers","key":"01","type":"scatter","x":[0.34734910411925335,0.54197535764588034,0.29432554882307305],"y":[0.74028746015250968,0.82460470462819024,0.03048746625449824],"hovertext":["Subject: 01<br>Arm: arm1<br>Visit: visit 1<br>x-axis: 0.347<br>y-axis: 0.74","Subject: 01<br>Arm: arm1<br>Visit: visit 2<br>x-axis: 0.542<br>y-axis: 0.825","Subject: 01<br>Arm: arm1<br>Visit: visit 3<br>x-axis: 0.294<br>y-axis: 0.03"],"hoverinfo":["text","text","text"],"name":"arm1","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"textfont":{"color":"rgba(252,141,98,1)"},"error_y":{"color":"rgba(252,141,98,1)"},"error_x":{"color":"rgba(252,141,98,1)"},"line":{"color":"rgba(252,141,98,1)"},"xaxis":"x","yaxis":"y","_isSimpleKey":true,"_isNestedKey":false,"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[],"deps":[{"name":"setprototypeof","version":"0.1","src":{"href":"setprototypeof-0.1"},"meta":null,"script":"setprototypeof.js","stylesheet":null,"head":null,"attachment":null,"all_files":false},{"name":"typedarray","version":"0.1","src":{"href":"typedarray-0.1"},"meta":null,"script":"typedarray.min.js","stylesheet":null,"head":null,"attachment":null,"all_files":false},{"name":"jquery","version":"3.5.1","src":{"href":"jquery-3.5.1"},"meta":null,"script":"jquery.min.js","stylesheet":null,"head":null,"attachment":null,"all_files":true},{"name":"crosstalk","version":"1.2.1","src":{"href":"crosstalk-1.2.1"},"meta":null,"script":"js/crosstalk.min.js","stylesheet":"css/crosstalk.min.css","head":null,"attachment":null,"all_files":true},{"name":"plotly-htmlwidgets-css","version":"2.11.1","src":{"href":"plotly-htmlwidgets-css-2.11.1"},"meta":null,"script":null,"stylesheet":"plotly-htmlwidgets.css","head":null,"attachment":null,"all_files":false},{"name":"plotly-main","version":"2.11.1","src":{"href":"plotly-main-2.11.1"},"meta":null,"script":"plotly-latest.min.js","stylesheet":null,"head":null,"attachment":null,"all_files":false}]} 
+      {"x":{"html":"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' class='ggiraph-svg' role='graphics-document' id='svg_CONST' viewBox='0 0 576 383.76'>\n <defs id='svg_CONST'>\n  <clipPath id='svg_CONST'>\n   <rect x='0' y='0' width='576' height='383.76'/>\n  <\/clipPath>\n  <clipPath id='svg_CONST'>\n   <rect x='28.8' y='4.48' width='486.65' height='354.02'/>\n  <\/clipPath>\n <\/defs>\n <g id='svg_CONST' class='ggiraph-svg-rootg'>\n  <g clip-path='url(#svg_CONST)'>\n   <rect x='0' y='0' width='576' height='383.76' fill='#FFFFFF' fill-opacity='1' stroke='#FFFFFF' stroke-opacity='1' stroke-width='0.75' stroke-linejoin='round' stroke-linecap='round' class='ggiraph-svg-bg'/>\n  <\/g>\n  <g clip-path='url(#svg_CONST)'>\n   <polyline points='28.80,336.13 515.46,336.13' fill='none' stroke='#EBEBEB' stroke-opacity='1' stroke-width='0.87' stroke-linejoin='round' stroke-linecap='butt'/>\n   <polyline points='28.80,295.99 515.46,295.99' fill='none' stroke='#EBEBEB' stroke-opacity='1' stroke-width='0.87' stroke-linejoin='round' stroke-linecap='butt'/>\n   <polyline points='28.80,260.59 515.46,260.59' fill='none' stroke='#EBEBEB' stroke-opacity='1' stroke-width='0.87' stroke-linejoin='round' stroke-linecap='butt'/>\n   <polyline points='28.80,228.92 515.46,228.92' fill='none' stroke='#EBEBEB' stroke-opacity='1' stroke-width='0.87' stroke-linejoin='round' stroke-linecap='butt'/>\n   <polyline points='28.80,20.58 515.46,20.58' fill='none' stroke='#EBEBEB' stroke-opacity='1' stroke-width='0.87' stroke-linejoin='round' stroke-linecap='butt'/>\n   <polyline points='60.03,358.51 60.03,4.48' fill='none' stroke='#EBEBEB' stroke-opacity='1' stroke-width='0.87' stroke-linejoin='round' stroke-linecap='butt'/>\n   <polyline points='114.16,358.51 114.16,4.48' fill='none' stroke='#EBEBEB' stroke-opacity='1' stroke-width='0.87' stroke-linejoin='round' stroke-linecap='butt'/>\n   <polyline points='156.15,358.51 156.15,4.48' fill='none' stroke='#EBEBEB' stroke-opacity='1' stroke-width='0.87' stroke-linejoin='round' stroke-linecap='butt'/>\n   <polyline points='190.46,358.51 190.46,4.48' fill='none' stroke='#EBEBEB' stroke-opacity='1' stroke-width='0.87' stroke-linejoin='round' stroke-linecap='butt'/>\n   <polyline points='219.47,358.51 219.47,4.48' fill='none' stroke='#EBEBEB' stroke-opacity='1' stroke-width='0.87' stroke-linejoin='round' stroke-linecap='butt'/>\n   <polyline points='244.60,358.51 244.60,4.48' fill='none' stroke='#EBEBEB' stroke-opacity='1' stroke-width='0.87' stroke-linejoin='round' stroke-linecap='butt'/>\n   <polyline points='266.77,358.51 266.77,4.48' fill='none' stroke='#EBEBEB' stroke-opacity='1' stroke-width='0.87' stroke-linejoin='round' stroke-linecap='butt'/>\n   <polyline points='286.59,358.51 286.59,4.48' fill='none' stroke='#EBEBEB' stroke-opacity='1' stroke-width='0.87' stroke-linejoin='round' stroke-linecap='butt'/>\n   <polyline points='417.03,358.51 417.03,4.48' fill='none' stroke='#EBEBEB' stroke-opacity='1' stroke-width='0.87' stroke-linejoin='round' stroke-linecap='butt'/>\n   <polyline points='493.33,358.51 493.33,4.48' fill='none' stroke='#EBEBEB' stroke-opacity='1' stroke-width='0.87' stroke-linejoin='round' stroke-linecap='butt'/>\n   <line x1='493.33' y1='358.51' x2='493.33' y2='4.48' stroke='#000000' stroke-opacity='1' stroke-width='1.07' stroke-dasharray='1,3' stroke-linejoin='round' stroke-linecap='butt'/>\n   <line x1='28.8' y1='20.58' x2='515.46' y2='20.58' stroke='#000000' stroke-opacity='1' stroke-width='1.07' stroke-dasharray='1,3' stroke-linejoin='round' stroke-linecap='butt'/>\n   <circle id='svg_CONST' cx='50.92' cy='342.41' r='1.6pt' fill='#F8766D' fill-opacity='0.8' stroke='#F8766D' stroke-opacity='0.8' title='Subject: 01&amp;lt;br&amp;gt;Arm: arm1&amp;lt;br&amp;gt;---&amp;lt;br&amp;gt;alt: 0.286&amp;lt;br&amp;gt;&amp;amp;nbsp;&amp;amp;nbsp;Visit: visit 2&amp;lt;br&amp;gt;&amp;amp;nbsp;&amp;amp;nbsp;Date: 2025-02-14 (1st)&amp;lt;br&amp;gt;&amp;amp;nbsp;&amp;amp;nbsp;ALP/ULN ≤ 2 (0.130)&amp;lt;br&amp;gt;&amp;amp;nbsp;&amp;amp;nbsp;2 &amp;lt; R &amp;lt; 5 (2.20)&amp;lt;br&amp;gt;---&amp;lt;br&amp;gt;tbili: 0.686&amp;lt;br&amp;gt;&amp;amp;nbsp;&amp;amp;nbsp;Visit: visit 3&amp;lt;br&amp;gt;&amp;amp;nbsp;&amp;amp;nbsp;Date: 2025-03-04 (2nd)&amp;lt;br&amp;gt;---&amp;lt;br&amp;gt;Time between peaks: 18 days' data-id='01'/>\n  <\/g>\n  <g clip-path='url(#svg_CONST)'>\n   <text x='14.78' y='338.6' font-size='5.4pt' font-family='Liberation Sans' fill='#4D4D4D' fill-opacity='1'>0.7<\/text>\n   <text x='14.78' y='298.46' font-size='5.4pt' font-family='Liberation Sans' fill='#4D4D4D' fill-opacity='1'>0.8<\/text>\n   <text x='14.78' y='263.06' font-size='5.4pt' font-family='Liberation Sans' fill='#4D4D4D' fill-opacity='1'>0.9<\/text>\n   <text x='20.77' y='231.39' font-size='5.4pt' font-family='Liberation Sans' fill='#4D4D4D' fill-opacity='1'>1<\/text>\n   <text x='20.77' y='23.05' font-size='5.4pt' font-family='Liberation Sans' fill='#4D4D4D' fill-opacity='1'>2<\/text>\n   <text x='55.03' y='367.49' font-size='5.4pt' font-family='Liberation Sans' fill='#4D4D4D' fill-opacity='1'>0.3<\/text>\n   <text x='109.17' y='367.49' font-size='5.4pt' font-family='Liberation Sans' fill='#4D4D4D' fill-opacity='1'>0.4<\/text>\n   <text x='151.16' y='367.49' font-size='5.4pt' font-family='Liberation Sans' fill='#4D4D4D' fill-opacity='1'>0.5<\/text>\n   <text x='185.47' y='367.49' font-size='5.4pt' font-family='Liberation Sans' fill='#4D4D4D' fill-opacity='1'>0.6<\/text>\n   <text x='214.48' y='367.49' font-size='5.4pt' font-family='Liberation Sans' fill='#4D4D4D' fill-opacity='1'>0.7<\/text>\n   <text x='239.61' y='367.49' font-size='5.4pt' font-family='Liberation Sans' fill='#4D4D4D' fill-opacity='1'>0.8<\/text>\n   <text x='261.77' y='367.49' font-size='5.4pt' font-family='Liberation Sans' fill='#4D4D4D' fill-opacity='1'>0.9<\/text>\n   <text x='284.6' y='367.49' font-size='5.4pt' font-family='Liberation Sans' fill='#4D4D4D' fill-opacity='1'>1<\/text>\n   <text x='415.03' y='367.49' font-size='5.4pt' font-family='Liberation Sans' fill='#4D4D4D' fill-opacity='1'>2<\/text>\n   <text x='491.34' y='367.49' font-size='5.4pt' font-family='Liberation Sans' fill='#4D4D4D' fill-opacity='1'>3<\/text>\n   <text x='250.25' y='377.41' font-size='6.75pt' font-family='Liberation Sans'>alt (× ULN)<\/text>\n   <text transform='translate(10.68,205.37) rotate(-90.00)' font-size='6.75pt' font-family='Liberation Sans'>tbili (× ULN)<\/text>\n   <circle cx='537.54' cy='187.76' r='1.6pt' fill='#F8766D' fill-opacity='0.8' stroke='#F8766D' stroke-opacity='0.8'/>\n   <text x='550.67' y='190.24' font-size='5.4pt' font-family='Liberation Sans'>arm1<\/text>\n  <\/g>\n <\/g>\n<\/svg>","js":null,"uid":"svg_CONST","ratio":1.50093808630394,"settings":{"tooltip":{"css":".tooltip_SVGID_ { padding:5px;background:black;color:white;border-radius:2px;text-align:left; ; position:absolute;pointer-events:none;z-index:999;}","placement":"doc","opacity":0.9,"offx":10,"offy":10,"use_cursor_pos":true,"use_fill":false,"use_stroke":false,"delay_over":200,"delay_out":500},"hover":{"css":".hover_data_SVGID_ { stroke: blue; stroke-width: 1px; fill-opacity: 0.8; }","reactive":false,"nearest_distance":null},"hover_inv":{"css":""},"hover_key":{"css":".hover_key_SVGID_ { fill:orange;stroke:black;cursor:pointer; }\ntext.hover_key_SVGID_ { stroke:none;fill:orange; }\ncircle.hover_key_SVGID_ { fill:orange;stroke:black; }\nline.hover_key_SVGID_, polyline.hover_key_SVGID_ { fill:none;stroke:orange; }\nrect.hover_key_SVGID_, polygon.hover_key_SVGID_, path.hover_key_SVGID_ { fill:orange;stroke:none; }\nimage.hover_key_SVGID_ { stroke:orange; }","reactive":true},"hover_theme":{"css":".hover_theme_SVGID_ { fill:orange;stroke:black;cursor:pointer; }\ntext.hover_theme_SVGID_ { stroke:none;fill:orange; }\ncircle.hover_theme_SVGID_ { fill:orange;stroke:black; }\nline.hover_theme_SVGID_, polyline.hover_theme_SVGID_ { fill:none;stroke:orange; }\nrect.hover_theme_SVGID_, polygon.hover_theme_SVGID_, path.hover_theme_SVGID_ { fill:orange;stroke:none; }\nimage.hover_theme_SVGID_ { stroke:orange; }","reactive":true},"select":{"css":".select_data_SVGID_ { stroke: black; stroke-width: 1px; }","type":"single","only_shiny":true,"selected":[]},"select_inv":{"css":""},"select_key":{"css":".select_key_SVGID_ { fill:red;stroke:black;cursor:pointer; }\ntext.select_key_SVGID_ { stroke:none;fill:red; }\ncircle.select_key_SVGID_ { fill:red;stroke:black; }\nline.select_key_SVGID_, polyline.select_key_SVGID_ { fill:none;stroke:red; }\nrect.select_key_SVGID_, polygon.select_key_SVGID_, path.select_key_SVGID_ { fill:red;stroke:none; }\nimage.select_key_SVGID_ { stroke:red; }","type":"single","only_shiny":true,"selected":[]},"select_theme":{"css":".select_theme_SVGID_ { fill:red;stroke:black;cursor:pointer; }\ntext.select_theme_SVGID_ { stroke:none;fill:red; }\ncircle.select_theme_SVGID_ { fill:red;stroke:black; }\nline.select_theme_SVGID_, polyline.select_theme_SVGID_ { fill:none;stroke:red; }\nrect.select_theme_SVGID_, polygon.select_theme_SVGID_, path.select_theme_SVGID_ { fill:red;stroke:none; }\nimage.select_theme_SVGID_ { stroke:red; }","type":"single","only_shiny":true,"selected":[]},"zoom":{"min":1,"max":1,"duration":300},"toolbar":{"position":"topright","pngname":"diagram","tooltips":null,"fixed":false,"hidden":[],"delay_over":200,"delay_out":500},"sizing":{"rescale":true,"width":1}}},"evals":[],"jsHooks":[],"deps":[]} 
       
       
 

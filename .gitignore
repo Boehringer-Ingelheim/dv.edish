@@ -3,4 +3,6 @@
 .RData
 .Ruserdata
 .lintr
+*.Rproj
 docs/
+shiny_bookmarks/

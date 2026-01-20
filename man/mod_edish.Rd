@@ -14,12 +14,15 @@ mod_edish(
   visit_var = "VISIT",
   baseline_visit_val = "VISIT 01",
   lb_test_var = "LBTEST",
-  lb_test_choices = c("Alkaline Phosphatase", "Alanine Aminotransferase",
-    "Aspartate Aminotransferase", "Bilirubin"),
-  lb_test_default_x_val = "Aspartate Aminotransferase",
-  lb_test_default_y_val = "Bilirubin",
+  at_choices = c("Alanine Aminotransferase", "Aspartate Aminotransferase"),
+  at_default_val = "Aspartate Aminotransferase",
+  tbili_choice = "Bilirubin",
+  alp_choice = "Alkaline Phosphatase",
+  lb_date_var = NULL,
   lb_result_var = "LBSTRESN",
   ref_range_upper_lim_var = "LBSTNRHI",
+  default_by_visit = FALSE,
+  window_days = NULL,
   receiver_id = NULL
 )
 }
@@ -28,60 +31,73 @@ mod_edish(
 
 A unique module ID.}
 
-\item{subject_level_dataset_name, lab_dataset_name}{\verb{[character(1)]}
+\item{subject_level_dataset_name}{\verb{[character(1)]}
 
-Name(s) of the dataset(s) that will be displayed.}
+Name of the subject-level dataset to be used.}
+
+\item{lab_dataset_name}{\verb{[character(1)]}
+
+Name of the laboratory results dataset to be used.}
 
 \item{subjectid_var}{\verb{[character(1)]}
 
-Name of the variable containing the unique subject IDs. Defaults to \code{"USUBJID"}.}
+Name of the variable containing the unique subject IDs.}
 
 \item{arm_var}{\verb{[character(1)]}
 
-Name of the variable containing the arm/treatment information. Defaults to \code{"ACTARM"}.}
+Name of the variable containing the arm/treatment information.}
 
-\item{arm_default_vals}{\verb{[character(1+)]}
+\item{arm_default_vals}{\verb{[character(1+) | NULL]}
 
-Vector specifying the default value(s) for the arm selector. Defaults to \code{NULL}.}
+Vector specifying the default value(s) for the arm selector.}
 
 \item{visit_var}{\verb{[character(1)]}
 
-Name of the variable containing the visit information. Defaults to \code{"VISIT"}.}
+Name of the variable containing the visit information.}
 
 \item{baseline_visit_val}{\verb{[character(1)]}
 
-Character indicating which visit should be used as baseline visit. Defaults to \code{"VISIT 01"}.}
+Character indicating which visit should be used as baseline visit.}
 
 \item{lb_test_var}{\verb{[character(1)]}
 
-Name of the variable containing the laboratory test information. Defaults to \code{"LBTEST"}.}
+Name of the variable containing the laboratory test information.}
 
-\item{lb_test_choices}{\verb{[character(1+)]}
+\item{at_choices}{\verb{[character(1+)]}
 
-Character vector specifying the possible choices of the laboratory test. Defaults to
-\code{c("Alkaline Phosphatase", "Alanine Aminotransferase", "Aspartate Aminotransferase", "Bilirubin")}}
+Character vector specifying the possible choices of the x-axis aminotransferase laboratory test.}
 
-\item{lb_test_default_x_val}{\verb{[character(1)]}
+\item{at_default_val}{\verb{[character(1)]}
 
-Character specifying the default laboratory test choice for the plot's x-axis.
-Defaults to \code{"Aspartate Aminotransferase"}.}
+Character specifying the default x-axis aminotransferase laboratory test choice.}
 
-\item{lb_test_default_y_val}{\verb{[character(1)]}
+\item{tbili_choice}{\verb{[character(1)]}
 
-Character specifying the default laboratory test choice for the plot's y-axis.
-Defaults to \code{"Bilirubin"}.}
+Character vector specifying the y-axis total bilirubin laboratory test choice.}
+
+\item{alp_choice}{\verb{[character(1) | NULL]}
+
+Character vector specifying the alkaline phosphatase laboratory test choice.}
+
+\item{lb_date_var}{\verb{[character(1)]}
+
+Name of the variable (\code{Date} or \code{POSIXt} class) containing the laboratory test date.}
 
 \item{lb_result_var}{\verb{[character(1)]}
 
-Name of the variable containing results of the laboratory test. Defaults to \code{"LBSTRESN"}.
-In case of multiple values in \code{lb_result_var} per \code{subjectid_var}, \code{visit_var}, and
-\code{lb_test_var}, only the maximum value will be used. Note that a NA value in the considered values
-will cause a value of NA to be returned as maximum value.}
+Name of the variable containing results of the laboratory test.}
 
 \item{ref_range_upper_lim_var}{\verb{[character(1)]}
 
-Name of the variable containing the reference range upper limits.
-Defaults to \code{"LBSTNRHI"}.}
+Name of the variable containing the reference range upper limits.}
+
+\item{default_by_visit}{\verb{[logical(1)]}
+
+A flag to indicate the default of whether or not to plot aminotransferase values for each visit.}
+
+\item{window_days}{\verb{[integer(1) | NULL]}
+
+Window of the number of days considered between peaks.}
 
 \item{receiver_id}{\verb{[character(1) | NULL]}
 
@@ -99,5 +115,6 @@ A list containing the following elements to be used by the
 }
 \description{
 \code{mod_edish()} displays the (modified) evaluation of Drug-Induced Serious Hepatotoxicity (eDISH/mDISH) plot
-to support the assessment of drug-induced liver injury (DILI).
+to support the assessment of drug-induced liver injury (DILI). The scatter plot depicts the correlation
+between peak values of an aminotransferase parameter and total bilirubin on a subject level.
 }

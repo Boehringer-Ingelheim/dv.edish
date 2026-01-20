@@ -4,11 +4,19 @@
 #'
 #' @keywords internal
 mock_edish_app <- function() {
-  dm <- pharmaverseadam::adsl
-  lb <- pharmaverseadam::adlb
+  dm <- pharmaverseadam::adsl |> dplyr::mutate(dplyr::across(dplyr::where(is.character), as.factor))
+  lb <- pharmaverseadam::adlb |> dplyr::mutate(dplyr::across(dplyr::where(is.character), as.factor))
 
   mock_edish_UI <- function() { # nolint
-    shiny::fluidPage(edish_UI("edish"))
+    shiny::fluidPage(edish_UI(
+      module_id = "edish",
+      arm_default_vals = "Xanomeline High Dose",
+      at_choices = c("Alanine Aminotransferase", "Aspartate Aminotransferase"),
+      at_default_val = "Alanine Aminotransferase",
+      tbili_choice = "Bilirubin",
+      default_by_visit = FALSE,
+      window_days = NULL
+    ))
   }
 
   mock_edish_server <- function(input, output, session) {
@@ -17,7 +25,11 @@ mock_edish_app <- function() {
       dataset_list = shiny::reactive({
         list("dm" = dm, "lb" = lb)
       }),
-      baseline_visit_val = "SCREENING 1"
+      baseline_visit_val = "SCREENING 1",
+      at_choices = c("Alanine Aminotransferase", "Aspartate Aminotransferase"),
+      tbili_choice = "Bilirubin",
+      alp_choice = "Alkaline Phosphatase",
+      lb_date_var = "ADT"
     )
   }
 
@@ -40,13 +52,26 @@ mock_edish_mm <- function() {
       subject_level_dataset_name = "dm",
       lab_dataset_name = "lb",
       arm_default_vals = c("Xanomeline Low Dose", "Placebo"),
-      baseline_visit_val = "SCREENING 1"
+      baseline_visit_val = "SCREENING 1",
+      lb_date_var = "ADT",
+      default_by_visit = FALSE,
+      window_days = 30L,
+      receiver_id = "papo"
+    ),
+    "Patient Profile" = dv.papo::mod_patient_profile(
+      module_id = "papo",
+      subject_level_dataset_name = "dm",
+      subjid_var = "USUBJID",
+      sender_ids = c("edish"),
+      summary = list(vars = c("AGE", "SEX", "RACE", "ETHNIC", "ARM"),
+                     column_count = 1)
     )
   )
 
   dv.manager::run_app(
     data = list("demo" = list("dm" = dm, "lb" = lb)),
     module_list = module_list,
+    filter_type = "datasets",
     filter_data = "dm"
   )
 }

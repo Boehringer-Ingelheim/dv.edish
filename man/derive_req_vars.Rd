@@ -2,24 +2,30 @@
 % Please edit documentation in R/helper_functions.R
 \name{derive_req_vars}
 \alias{derive_req_vars}
-\title{Derive required variables}
+\title{Derive required variables for plotting}
 \usage{
 derive_req_vars(
   dataset,
   subjectid_var,
   arm_var,
   visit_var,
+  baseline_visit_val,
   lb_test_var,
+  at_choices,
+  tbili_choice,
+  norm_ref_type,
+  alp_choice,
+  lb_date_var,
   lb_result_var,
   ref_range_upper_lim_var,
-  sel_x,
-  sel_y
+  by_visit,
+  window_days
 )
 }
 \arguments{
 \item{dataset}{\verb{[data.frame]}
 
-A data frame containing the variables listed below as columns.}
+A data frame containing the data from \code{prepare_initial_data()}.}
 
 \item{subjectid_var}{\verb{[character(1)]}
 
@@ -33,9 +39,36 @@ Name of the variable containing the arm/treatment information.}
 
 Name of the variable containing the visit information.}
 
+\item{baseline_visit_val}{\verb{[character(1)]}
+
+String indicating which visit should be used as baseline visit.}
+
 \item{lb_test_var}{\verb{[character(1)]}
 
-Name of the variable containing the laboratory test information.}
+Name of the variable containing the laboratory test parameter.}
+
+\item{at_choices}{\verb{[character(1+)]}
+
+Character vector specifying the possible choices of the aminotransferase
+laboratory test parameter for the x-axis.}
+
+\item{tbili_choice}{\verb{[character(1)]}
+
+Character vector specifying the choice of the total bilirubin laboratory
+test parameter for the y-axis.}
+
+\item{norm_ref_type}{\verb{[character(1)]}
+
+String indicating normalization reference type, either \code{"ULN"} or \code{"Baseline"}.}
+
+\item{alp_choice}{\verb{[character(1) | NULL]}
+
+Character vector specifying the choice of the alkaline phosphatase
+laboratory test parameter.}
+
+\item{lb_date_var}{\verb{[character(1)]}
+
+Name of the variable (\code{Date} or \code{POSIXt} class) containing the laboratory test date.}
 
 \item{lb_result_var}{\verb{[character(1)]}
 
@@ -45,20 +78,30 @@ Name of the variable containing results of the laboratory test.}
 
 Name of the variable containing the reference range upper limits.}
 
-\item{sel_x}{\verb{[character(1)]}
+\item{by_visit}{\verb{[logical(1)]}
 
-Character specifying the laboratory test selected for the x-axis.}
+A flag to indicate whether to plot aminotransferase values for each visit.}
 
-\item{sel_y}{\verb{[character(1)]}
+\item{window_days}{\verb{[integer(1) | NULL]}
 
-Character specifying the laboratory test selected for the y-axis.}
+Window of the number of days considered between peaks.}
 }
 \value{
-The restructured dataset.
+A data frame with the following derived variables:
+\itemize{
+\item \code{.ref_val}: ULN or baseline as the reference value for normalization.
+\item \code{.visit_at}: Visit of peak aminotransferase value.
+\item \code{.date_at}: Date of peak aminotransferase value.
+\item \code{.norm_at}: Normalized peak aminotransferase value.
+\item \code{.visit_tbili}: Visit of peak total bilirubin value.
+\item \code{.date_tbili}: Date of peak total bilirubin value.
+\item \code{.norm_tbili}: Normalized peak total bilirubin value.
+\item \code{.norm_alp}: Normalized alkaline phosphotase value at same visit as aminotransferase value.
+\item \code{.offset_days}: Number of days from aminotransferase visit to total bilirubin visit.
+\item \code{.norm_ref_type}: Normalization reference type, copied from \code{norm_ref_type} argument.
+}
 }
 \description{
-\code{derive_req_vars()} restructures the stated dataset to include variables containing
-the ratio of a lab result divided by ULN or the baseline value. The corresponding variable
-names are shaped as follows: "r_\if{html}{\out{<ULN or Baseline>}}_\if{html}{\out{<selected lab test>}}.
+Derive required variables for plotting
 }
 \keyword{internal}
