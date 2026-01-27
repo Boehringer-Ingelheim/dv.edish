@@ -266,7 +266,7 @@ derive_req_vars <- function(dataset,
   final_dataset <- peak_xy_data |>
     dplyr::left_join(alp_data, by = c(subjectid_var, arm_var, ".visit_at" = visit_var)) |>
     dplyr::mutate(.r_ratio = .data[[".norm_at"]] / .data[[".norm_alp"]]) |>
-    dplyr::arrange(.data[[subjectid_var]], .data[[".date_at"]])
+    dplyr::arrange(.data[[subjectid_var]], .data[[lb_test_var]], .data[[".date_at"]])
 
   # Set plot type
   final_dataset[[".norm_ref_type"]] <- norm_ref_type
