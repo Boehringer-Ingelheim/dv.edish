@@ -1,3 +1,7 @@
+# dv.edish 1.3.0-9001
+
+- Implement spider/path lines when aminotransferase values plotted for each visit.
+
 # dv.edish 1.3.0-9000
 
 - For each subject, plot normalized peak TBILI against normalized peak ALT/AST values, with the option to plot

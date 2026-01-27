@@ -265,7 +265,8 @@ derive_req_vars <- function(dataset,
   # Merge on ALP values occurring at same visit as AT values, and calculate R ratio
   final_dataset <- peak_xy_data |>
     dplyr::left_join(alp_data, by = c(subjectid_var, arm_var, ".visit_at" = visit_var)) |>
-    dplyr::mutate(.r_ratio = .data[[".norm_at"]] / .data[[".norm_alp"]])
+    dplyr::mutate(.r_ratio = .data[[".norm_at"]] / .data[[".norm_alp"]]) |>
+    dplyr::arrange(.data[[subjectid_var]], .data[[".date_at"]])
 
   # Set plot type
   final_dataset[[".norm_ref_type"]] <- norm_ref_type
@@ -400,6 +401,10 @@ filter_data <- function(dataset,
 #'
 #' Logical indicating if ALP data was requested.
 #'
+#' @param by_visit `[logical(1)]`
+#'
+#' A flag to indicate whether to plot aminotransferase values for each visit.
+#'
 #' @return An object specifying the generated eDISH plot.
 #'
 #' @keywords internal
@@ -415,7 +420,8 @@ generate_plot <- function(dataset,
                           x_rng_upper,
                           y_rng_lower,
                           y_rng_upper,
-                          alp_flag) {
+                          alp_flag,
+                          by_visit) {
 
   hover_date_x <- gsub("NA", "",
                        paste0(dataset[[".date_at"]],
@@ -481,7 +487,21 @@ generate_plot <- function(dataset,
   plt_obj <- dataset |>
     ggplot2::ggplot(ggplot2::aes(x = .data[[".norm_at"]],
                                  y = .data[[".norm_tbili"]],
-                                 color = .data[[arm_var]])) +
+                                 color = .data[[arm_var]],
+                                 group = .data[[subjectid_var]]))
+
+  # Add the spider/path lines if values plotted for each visit
+  if (by_visit) {
+    plt_obj <- plt_obj +
+      ggiraph::geom_path_interactive(
+        ggplot2::aes(data_id = .data[[subjectid_var]]),
+        alpha = 0.3,
+        linewidth = 0.5,
+        show.legend = FALSE
+      )
+  }
+
+  plt_obj <- plt_obj +
     ggplot2::scale_x_log10(breaks = major_breaks,
                            minor_breaks = NULL,
                            labels = function(x) sub("\\.0$", "", x),

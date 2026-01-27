@@ -378,7 +378,8 @@ edish_server <- function(
         x_rng_upper = input[[EDISH$X_RNG_ID]][2],
         y_rng_lower = input[[EDISH$Y_RNG_ID]][1],
         y_rng_upper = input[[EDISH$Y_RNG_ID]][2],
-        alp_flag = !is.null(alp_choice)
+        alp_flag = !is.null(alp_choice),
+        by_visit = input[[EDISH$BY_VISIT_ID]]
       )
 
       ggiraph::girafe(
