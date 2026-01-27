@@ -75,10 +75,6 @@ test_that("the app displays the correct plot at app launch (snapshot test)" |>
   app$stop()
 })
 
-test_that("default settings are visible after Single-Sign-On redirect", {
-  skip("Cannot integrate SSO within unit tests, i.e., this test has to be performed manually.")
-})
-
 test_that("the app's state is restored when bookmarking" |>
   vdoc[["add_spec"]](specs$framework_specs$bookmarking), {
 
