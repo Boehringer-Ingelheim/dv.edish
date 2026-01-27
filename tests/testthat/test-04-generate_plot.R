@@ -30,7 +30,8 @@ plt_obj <- generate_plot(dataset = edish_data,
                          x_rng_upper = NA,
                          y_rng_lower = 0.01,
                          y_rng_upper = 4.5,
-                         alp_flag = TRUE)
+                         alp_flag = TRUE,
+                         by_visit = FALSE)
 
 test_that("the resulting plot object includes the correct data" |>
   vdoc[["add_spec"]](specs$plot_specs$data), {
