@@ -423,6 +423,32 @@ generate_plot <- function(dataset,
                           alp_flag,
                           by_visit) {
 
+  # Tooltip preparation ----
+
+  # Create a color vector named with the arms based on the default ggplot2 hex colors
+  fill_color_map <- local({
+    arm_values <- sort(unique(dataset[[arm_var]]))
+    palette_colors <- scales::hue_pal()(length(arm_values))
+
+    setNames(palette_colors, arm_values)
+  })
+
+  text_color_map <- local({
+    fill_rgb_matrix <- grDevices::col2rgb(fill_color_map)
+
+    # W3C formula for relative luminance
+    # Multiply the RGB channels by their perceived brightness weights
+    luminance <- (0.299 * fill_rgb_matrix[1, ]) +
+      (0.587 * fill_rgb_matrix[2, ]) +
+      (0.114 * fill_rgb_matrix[3, ])
+
+    names(luminance) <- names(fill_color_map)
+
+    # If luminance is high (> 150-186 range), background is light -> use black text
+    # If luminance is low, background is dark -> use white text
+    ifelse(luminance > 160, "black", "white")
+  })
+
   hover_date_x <- gsub("NA", "",
                        paste0(dataset[[".date_at"]],
                               ifelse(dataset[[".date_at"]] <= dataset[[".date_tbili"]],
@@ -455,7 +481,13 @@ generate_plot <- function(dataset,
                          paste(dataset[[".offset_days"]], "days"),
                          "missing dates")
 
+
   dataset[["tooltip"]] <- paste0(
+    "<div style='background-color:", fill_color_map[as.character(dataset[[arm_var]])],
+    "; color:", text_color_map[as.character(dataset[[arm_var]])],
+    "; border:1px solid ", text_color_map[as.character(dataset[[arm_var]])],
+    "; padding:2px;'>",
+
     "Subject: ", dataset[[subjectid_var]],
     "<br>Arm: ", dataset[[arm_var]],
     "<br>---<br>", sel_x, ": ", sprintf("%.3f", dataset[[".norm_at"]]),
@@ -465,8 +497,12 @@ generate_plot <- function(dataset,
     "<br>---<br>", sel_y, ": ", sprintf("%.3f", dataset[[".norm_tbili"]]),
     "<br>&nbsp;&nbsp;Visit: ", dataset[[".visit_tbili"]],
     "<br>&nbsp;&nbsp;Date: ", hover_date_y,
-    "<br>---<br>Time between peaks: ", hover_offset
+    "<br>---<br>Time between peaks: ", hover_offset,
+
+    "</div>"
   )
+
+  # Plot creation ----
 
   # Define log axis breaks
   exponents <- -1:2
