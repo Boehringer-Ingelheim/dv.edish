@@ -88,10 +88,12 @@ test_that("the resulting plot object includes the correct hovertext" |>
   vdoc[["add_spec"]](specs$plot_specs$hovering), {
 
   actual <- plt_obj[["data"]][["tooltip"]][1]
-  expected <- paste0("Subject: 01<br>Arm: a1",
+  expected <- paste0("<div style='background-color:#F8766D; color:white; border:1px solid white; padding:2px;'>",
+                     "Subject: 01<br>Arm: a1",
                      "<br>---<br>Alanine Aminotransferase: 1.100<br>&nbsp;&nbsp;Visit: V1<br>&nbsp;&nbsp;Date: 2025-02-10 (1st)",
                      "<br>&nbsp;&nbsp;ALP/ULN ≤ 2 (0.200)<br>&nbsp;&nbsp;R ≥ 5 (5.50)",
                      "<br>---<br>Total Bilirubin: 0.100<br>&nbsp;&nbsp;Visit: V2<br>&nbsp;&nbsp;Date: 2025-02-20 (2nd)",
-                     "<br>---<br>Time between peaks: 10 days")
+                     "<br>---<br>Time between peaks: 10 days",
+                     "</div>")
   expect_identical(actual, expected)
 })
