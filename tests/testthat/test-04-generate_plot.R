@@ -18,20 +18,41 @@ edish_data <- data.frame(
 
 # Tests ----
 
-plt_obj <- generate_plot(dataset = edish_data,
-                         subjectid_var = "USUBJID",
-                         arm_var = "ARM",
-                         sel_x = "Alanine Aminotransferase",
-                         sel_y = "Total Bilirubin",
-                         norm_ref_type = "ULN",
-                         x_ref_line_num = 3,
-                         y_ref_line_num = 2,
-                         x_rng_lower = 0,
-                         x_rng_upper = NA,
-                         y_rng_lower = 0.01,
-                         y_rng_upper = 4.5,
-                         alp_flag = TRUE,
-                         by_visit = FALSE)
+# Single point plotted per subject
+plt_obj <- generate_plot(
+  dataset = edish_data,
+  subjectid_var = "USUBJID",
+  arm_var = "ARM",
+  sel_x = "Alanine Aminotransferase",
+  sel_y = "Total Bilirubin",
+  norm_ref_type = "ULN",
+  x_ref_line_num = 3,
+  y_ref_line_num = 2,
+  x_rng_lower = 0,
+  x_rng_upper = NA,
+  y_rng_lower = 0.01,
+  y_rng_upper = 4.5,
+  alp_flag = TRUE,
+  by_visit = FALSE
+)
+
+# Point plotted per subject per visit
+plt_obj_by_visit <- generate_plot(
+  dataset = edish_data,
+  subjectid_var = "USUBJID",
+  arm_var = "ARM",
+  sel_x = "Alanine Aminotransferase",
+  sel_y = "Total Bilirubin",
+  norm_ref_type = "ULN",
+  x_ref_line_num = 3,
+  y_ref_line_num = 2,
+  x_rng_lower = NULL,
+  x_rng_upper = NULL,
+  y_rng_lower = NULL,
+  y_rng_upper = NULL,
+  alp_flag = TRUE,
+  by_visit = TRUE
+)
 
 test_that("the resulting plot object includes the correct data" |>
   vdoc[["add_spec"]](specs$plot_specs$data), {
@@ -96,4 +117,10 @@ test_that("the resulting plot object includes the correct hovertext" |>
                      "<br>---<br>Time between peaks: 10 days",
                      "</div>")
   expect_identical(actual, expected)
+})
+
+test_that("the by-visit plot object includes the spider/path lines" |>
+  vdoc[["add_spec"]](specs$plot_specs$by_visit), {
+
+    expect_true(inherits(plt_obj_by_visit[["layers"]][[1]]$geom, "GeomPath"))
 })
