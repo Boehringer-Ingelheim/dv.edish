@@ -17,7 +17,8 @@ generate_plot(
   x_rng_upper,
   y_rng_lower,
   y_rng_upper,
-  alp_flag
+  alp_flag,
+  by_visit
 )
 }
 \arguments{
@@ -72,6 +73,10 @@ Numeric specifying the upper limit in the y-axis range.}
 \item{alp_flag}{\verb{[logical(1)]}
 
 Logical indicating if ALP data was requested.}
+
+\item{by_visit}{\verb{[logical(1)]}
+
+A flag to indicate whether to plot aminotransferase values for each visit.}
 
 \item{visit_var}{\verb{[character(1)]}
 

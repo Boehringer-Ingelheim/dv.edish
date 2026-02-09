@@ -265,7 +265,8 @@ derive_req_vars <- function(dataset,
   # Merge on ALP values occurring at same visit as AT values, and calculate R ratio
   final_dataset <- peak_xy_data |>
     dplyr::left_join(alp_data, by = c(subjectid_var, arm_var, ".visit_at" = visit_var)) |>
-    dplyr::mutate(.r_ratio = .data[[".norm_at"]] / .data[[".norm_alp"]])
+    dplyr::mutate(.r_ratio = .data[[".norm_at"]] / .data[[".norm_alp"]]) |>
+    dplyr::arrange(.data[[subjectid_var]], .data[[lb_test_var]], .data[[".date_at"]])
 
   # Set plot type
   final_dataset[[".norm_ref_type"]] <- norm_ref_type
@@ -400,6 +401,10 @@ filter_data <- function(dataset,
 #'
 #' Logical indicating if ALP data was requested.
 #'
+#' @param by_visit `[logical(1)]`
+#'
+#' A flag to indicate whether to plot aminotransferase values for each visit.
+#'
 #' @return An object specifying the generated eDISH plot.
 #'
 #' @keywords internal
@@ -415,7 +420,34 @@ generate_plot <- function(dataset,
                           x_rng_upper,
                           y_rng_lower,
                           y_rng_upper,
-                          alp_flag) {
+                          alp_flag,
+                          by_visit) {
+
+  # Tooltip preparation ----
+
+  # Create a color vector named with the arms based on the default ggplot2 hex colors
+  fill_color_map <- local({
+    arm_values <- sort(unique(dataset[[arm_var]]))
+    palette_colors <- scales::hue_pal()(length(arm_values))
+
+    setNames(palette_colors, arm_values)
+  })
+
+  text_color_map <- local({
+    fill_rgb_matrix <- grDevices::col2rgb(fill_color_map)
+
+    # W3C formula for relative luminance
+    # Multiply the RGB channels by their perceived brightness weights
+    luminance <- (0.299 * fill_rgb_matrix[1, ]) +
+      (0.587 * fill_rgb_matrix[2, ]) +
+      (0.114 * fill_rgb_matrix[3, ])
+
+    names(luminance) <- names(fill_color_map)
+
+    # If luminance is high (> 150-186 range), background is light -> use black text
+    # If luminance is low, background is dark -> use white text
+    ifelse(luminance > 160, "black", "white")
+  })
 
   hover_date_x <- gsub("NA", "",
                        paste0(dataset[[".date_at"]],
@@ -449,7 +481,13 @@ generate_plot <- function(dataset,
                          paste(dataset[[".offset_days"]], "days"),
                          "missing dates")
 
+
   dataset[["tooltip"]] <- paste0(
+    "<div style='background-color:", fill_color_map[as.character(dataset[[arm_var]])],
+    "; color:", text_color_map[as.character(dataset[[arm_var]])],
+    "; border:1px solid ", text_color_map[as.character(dataset[[arm_var]])],
+    "; padding:2px;'>",
+
     "Subject: ", dataset[[subjectid_var]],
     "<br>Arm: ", dataset[[arm_var]],
     "<br>---<br>", sel_x, ": ", sprintf("%.3f", dataset[[".norm_at"]]),
@@ -459,8 +497,12 @@ generate_plot <- function(dataset,
     "<br>---<br>", sel_y, ": ", sprintf("%.3f", dataset[[".norm_tbili"]]),
     "<br>&nbsp;&nbsp;Visit: ", dataset[[".visit_tbili"]],
     "<br>&nbsp;&nbsp;Date: ", hover_date_y,
-    "<br>---<br>Time between peaks: ", hover_offset
+    "<br>---<br>Time between peaks: ", hover_offset,
+
+    "</div>"
   )
+
+  # Plot creation ----
 
   # Define log axis breaks
   exponents <- -1:2
@@ -481,7 +523,21 @@ generate_plot <- function(dataset,
   plt_obj <- dataset |>
     ggplot2::ggplot(ggplot2::aes(x = .data[[".norm_at"]],
                                  y = .data[[".norm_tbili"]],
-                                 color = .data[[arm_var]])) +
+                                 color = .data[[arm_var]],
+                                 group = .data[[subjectid_var]]))
+
+  # Add the spider/path lines if values plotted for each visit
+  if (by_visit) {
+    plt_obj <- plt_obj +
+      ggiraph::geom_path_interactive(
+        ggplot2::aes(data_id = .data[[subjectid_var]]),
+        alpha = 0.3,
+        linewidth = 0.5,
+        show.legend = FALSE
+      )
+  }
+
+  plt_obj <- plt_obj +
     ggplot2::scale_x_log10(breaks = major_breaks,
                            minor_breaks = NULL,
                            labels = function(x) sub("\\.0$", "", x),

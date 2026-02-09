@@ -17,52 +17,45 @@ test_that("the default values are correct at app launch" |>
   )
   app$wait_for_idle()
 
-  actual_arm_vals <- app$get_value(input = "edish-arm_id")
-  expected_arm_vals <- "arm1"
-  expect_identical(actual_arm_vals, expected_arm_vals)
+  # Get values after launch and test
+  actual <- app$get_values(input = c("edish-plot_type", "edish-arm_id", "edish-x_axis",
+                                     "edish-x_ref", "edish-y_ref", "edish-x_rng", "edish-y_rng",
+                                     "edish-window_days", "edish-by_visit", "edish-base_incl"))
 
-  actual_x_sel <- app$get_value(input = "edish-x_axis")
-  expected_x_sel <- "alt"
-  expect_identical(actual_x_sel, expected_x_sel)
-
-  actual_x_ref <- app$get_value(input = "edish-x_ref")
-  expected_x_ref <- 3L
-  expect_identical(actual_x_ref, expected_x_ref)
-
-  actual_y_ref <- app$get_value(input = "edish-y_ref")
-  expected_y_ref <- 2L
-  expect_identical(actual_y_ref, expected_y_ref)
-
-  actual_x_rng <- app$get_value(input = "edish-x_rng")
-  expected_x_rng <- NULL
-  expect_identical(actual_x_rng, expected_x_rng)
-
-  actual_y_rng <- app$get_value(input = "edish-y_rng")
-  expected_y_rng <- NULL
-  expect_identical(actual_y_rng, expected_y_rng)
-
-  actual_by_visit <- app$get_value(input = "edish-by_visit")
-  expected_by_visit <- FALSE
-  expect_identical(actual_by_visit, expected_by_visit)
-
-  actual_plot_type <- app$get_value(input = "edish-plot_type")
-  expected_plot_type <- "ULN"
-  expect_identical(actual_plot_type, expected_plot_type)
-
-  actual_base_incl <- app$get_value(input = "edish-base_incl")
-  expected_base_incl <- "ALL"
-  expect_identical(actual_base_incl, expected_base_incl)
+  expected <- list(
+    input = list(
+      `edish-arm_id` = "arm1",
+      `edish-base_incl` = "ALL",
+      `edish-by_visit` = FALSE,
+      `edish-plot_type` = "ULN",
+      `edish-window_days` = NA,
+      `edish-x_axis` = "alt",
+      `edish-x_ref` = 3L,
+      `edish-x_rng` = NULL,
+      `edish-y_ref` = 2L,
+      `edish-y_rng` = NULL
+    )
+  )
+  testthat::expect_identical(actual, expected)
 
   app$stop()
 })
 
-test_that("the app displays the correct plot at app launch (snapshot test)" |>
+test_that("the app displays the correct plot data after selections (snapshot test)" |>
   vdoc[["add_spec"]](specs$plot_specs$data), {
 
   app <- shinytest2::AppDriver$new(
     app_dir = app_url,
     name = "test_snapshot"
   )
+  app$wait_for_idle()
+
+  # Update values
+  app$set_inputs(`edish-plot_type` = "Baseline")
+  app$set_inputs(`edish-arm_id` = c("arm1", "arm2"))
+  app$set_inputs(`edish-x_axis` = "ast")
+  app$set_inputs(`edish-by_visit` = TRUE)
+  app$set_inputs(`edish-window_days` = 10)
   app$wait_for_idle()
 
   app_vals <- app$get_values(input = TRUE, output = TRUE)
@@ -73,10 +66,6 @@ test_that("the app displays the correct plot at app launch (snapshot test)" |>
   expect_snapshot(app_vals, cran = TRUE)
 
   app$stop()
-})
-
-test_that("default settings are visible after Single-Sign-On redirect", {
-  skip("Cannot integrate SSO within unit tests, i.e., this test has to be performed manually.")
 })
 
 test_that("the app's state is restored when bookmarking" |>

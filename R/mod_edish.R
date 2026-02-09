@@ -378,7 +378,8 @@ edish_server <- function(
         x_rng_upper = input[[EDISH$X_RNG_ID]][2],
         y_rng_lower = input[[EDISH$Y_RNG_ID]][1],
         y_rng_upper = input[[EDISH$Y_RNG_ID]][2],
-        alp_flag = !is.null(alp_choice)
+        alp_flag = !is.null(alp_choice),
+        by_visit = input[[EDISH$BY_VISIT_ID]]
       )
 
       ggiraph::girafe(
@@ -388,7 +389,8 @@ edish_server <- function(
         options = list(
           ggiraph::opts_sizing(rescale = TRUE),
           ggiraph::opts_hover(css = "stroke: blue; stroke-width: 1px; fill-opacity: 0.8;"),
-          ggiraph::opts_selection(type = "single", css = "stroke: black; stroke-width: 1px;")
+          ggiraph::opts_selection(type = "single", css = "stroke: black; stroke-width: 1px;"),
+          ggiraph::opts_tooltip(css = "border:none; padding:0px;")
         )
       )
     })
