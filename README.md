@@ -25,7 +25,7 @@ The user can specify the following:
 - Whether the parameters are displayed in multiples of either their upper limits of normal
   (resulting in the eDISH plot) or the corresponding subject's baseline values (resulting in the mDISH plot).
 - Horizontal and vertical reference lines indicating Hy's law multiples.
-- Whether to plot subject aminotransferase values by visit.
+- Whether to plot subject aminotransferase values by visit, with lines connecting points between visits.
 - Lower and/or upper values of the x- and y-axis ranges. If not specified then these values are
   determined by the data.
 
