@@ -71,7 +71,6 @@ mock_edish_mm <- function() {
   dv.manager::run_app(
     data = list("demo" = list("dm" = dm, "lb" = lb)),
     module_list = module_list,
-    filter_type = "datasets",
     filter_data = "dm"
   )
 }
