@@ -1,6 +1,7 @@
 # dv.edish 1.3.0-9002
 
 - Update screenshot.
+- Align QC report with updated template.
 
 # dv.edish 1.3.0-9001
 
