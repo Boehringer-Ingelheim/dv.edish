@@ -1,3 +1,7 @@
+# dv.edish 1.3.0-9003
+
+- Fix issue where colors of data points are undesirably changed when using together with {teal.modules.clinical}.
+
 # dv.edish 1.3.0-9002
 
 - Update screenshot.
