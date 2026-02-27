@@ -557,11 +557,16 @@ generate_plot <- function(dataset,
                   color = "") +
     ggplot2::theme_minimal(base_family = "Liberation Sans",
                            base_size = 9) +
-    ggiraph::geom_point_interactive(ggplot2::aes(tooltip = .data[["tooltip"]],
-                                                 data_id = .data[[subjectid_var]]),
-                                    size = 2,
-                                    alpha = 0.8,
-                                    stroke = 0)
+    ggiraph::geom_point_interactive(
+      ggplot2::aes(
+        tooltip = .data[["tooltip"]],
+        data_id = .data[[subjectid_var]]
+      ),
+      size = 2,
+      alpha = 0.8,
+      stroke = 0) +
+    ggplot2::scale_color_manual(values = fill_color_map)
+
 
   return(plt_obj)
 }
