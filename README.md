@@ -19,6 +19,7 @@ aminotransferase parameter and total bilirubin on a subject level.
 
 The user can specify the following:
 
+- Treatment arm selection.
 - The window in which the total bilirubin is considered in relation to the aminotransferase value.
 - The aminotransferase parameter to be displayed on the x-axis (e.g. Alanine Aminotransferase or
   Aspartate Aminotransferase).
