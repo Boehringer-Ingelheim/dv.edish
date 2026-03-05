@@ -1,3 +1,7 @@
+# dv.edish 1.3.0-9004
+
+- Fix cropping of plot options in the drop menu.
+
 # dv.edish 1.3.0-9003
 
 - Fix issue where colors of data points are undesirably changed when using together with {teal.modules.clinical}.
@@ -23,6 +27,7 @@
   one selector for ULN/baseline that applies to both axes.
 - Show value of ALP (Alkaline Phosphatase) at the time of peak ALT/AST value, flagged ≤ 2 x ULN or > 2 x ULN (or
   baseline).
+- Move options from a sidebar layout to a drop menu.
 
 # dv.edish 1.3.0
 
