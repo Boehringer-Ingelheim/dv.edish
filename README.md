@@ -17,7 +17,7 @@ remotes::install_github("Boehringer-Ingelheim/dv.edish")
 The eDISH module shows a scatter plot depicting the correlation between peak values of an
 aminotransferase parameter and total bilirubin on a subject level.
 
-The user can specify the following:
+The user can control the following from the user interface drop-down plot options:
 
 - Treatment arm selection.
 - The window in which the total bilirubin is considered in relation to the aminotransferase value.
@@ -26,6 +26,7 @@ The user can specify the following:
 - Whether the parameters are displayed in multiples of either their upper limits of normal
   (resulting in the eDISH plot) or the corresponding subject's baseline values (resulting in the mDISH plot).
 - Horizontal and vertical reference lines indicating Hy's law multiples.
+- Whether to include subjects based on their baseline value being within the aminotransferase threshold.
 - Whether to plot subject aminotransferase values by visit, with lines connecting points between visits.
 - Lower and/or upper values of the x- and y-axis ranges. If not specified then these values are
   determined by the data.
