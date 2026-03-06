@@ -1,33 +1,19 @@
-# dv.edish 1.3.0-9004
+# dv.edish 2.0.0
 
-- Fix cropping of plot options in the drop menu.
-
-# dv.edish 1.3.0-9003
-
-- Fix issue where colors of data points are undesirably changed when using together with {teal.modules.clinical}.
-
-# dv.edish 1.3.0-9002
-
-- Update screenshot.
-- Align QC report with updated template.
-
-# dv.edish 1.3.0-9001
-
-- Implement spider/path lines when aminotransferase values plotted for each visit.
-
-# dv.edish 1.3.0-9000
-
+- Refactor code to use {ggiraph} instead of {plotly}.
+- Move options from a sidebar layout to a drop menu.
 - For each subject, plot normalized peak TBILI against normalized peak ALT/AST values, with the option to plot
   aminotransferase values for each visit.
+- Implement spider/path lines when aminotransferase values plotted for each visit.
 - Apply log value to axes.
-- Show the time between peaks.
-- Show the sequence (peak ALT/AST on or before peak TBILI most concerning).
 - Mixing ULN for ALT/AST and baseline for TBILI (or vice versa) is not standard and generally does not make scientific
   sense in DILI analysis, but the previous eDISH plot allowed control of ULN/baseline for each axis. Update to use only
   one selector for ULN/baseline that applies to both axes.
-- Show value of ALP (Alkaline Phosphatase) at the time of peak ALT/AST value, flagged ≤ 2 x ULN or > 2 x ULN (or
-  baseline).
-- Move options from a sidebar layout to a drop menu.
+- Update tooltip/hover text:
+  - Show the time between peaks.
+  - Show the sequence (peak ALT/AST on or before peak TBILI most concerning).
+  - Show value of ALP (Alkaline Phosphatase) at the time of peak ALT/AST value, flagged ≤ 2 x ULN or > 2 x ULN (or
+    baseline).
 
 # dv.edish 1.3.0
 
