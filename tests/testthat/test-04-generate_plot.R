@@ -1,144 +1,126 @@
-# Specify function arguments for tests
-usubjid <- c("01", "02")
-arm <- c("arm1", "arm2")
-visit <- c("visit 1", "visit 2", "visit 3")
-lbtest <- c("test 1", "test 2", "test 3")
+# Data ----
 
-lb <- tidyr::expand_grid(
-  "USUBJID" = usubjid,
-  "LBTEST" = lbtest,
-  "VISIT" = visit
-)
-lb$LBSTRESN <- runif(nrow(lb), min = 0, max = 10)
-lb$LBSTNRHI <- runif(nrow(lb), min = 5, max = 15)
-
-dm <- data.frame("USUBJID" = usubjid, "ARM" = arm)
-
-baseline_visit_val <- visit[1]
-lb_test_choices <- lbtest
-
-dataset_tmp <- prepare_initial_data(
-  dataset_list = list(dm, lb),
-  subjectid_var = "USUBJID",
-  arm_var = "ARM",
-  visit_var = "VISIT",
-  baseline_visit_val = baseline_visit_val,
-  lb_test_var = "LBTEST",
-  lb_test_choices = lb_test_choices,
-  lb_result_var = "LBSTRESN",
-  ref_range_upper_lim_var = "LBSTNRHI"
+edish_data <- data.frame(
+  USUBJID = c("01", "02", "03"),
+  ARM = c("a1", "a2", "a1"),
+  LBTEST = c("alt", "alt", "alt"),
+  .visit_at = c("V1", "V2", "V1"),
+  .date_at = as.Date(c("2025-02-10", "2025-02-20", "2025-02-10")),
+  .norm_at = c(1.1, 2.2, 3.3),
+  .visit_tbili = c("V2", "V1", "V1"),
+  .date_tbili = as.Date(c("2025-02-20", "2025-02-10", "2025-02-10")),
+  .norm_tbili = c(0.1, 0.2, 0.3),
+  .offset_days = c(10L, -10L, 0L),
+  .norm_alp = c(0.2, 0.9, 5.3),
+  .r_ratio = c(5.5, 2.4, 0.6),
+  .norm_ref_type = "ULN"
 )
 
-sel_x <- "test 2"
-sel_y <- "test 1"
+# Tests ----
 
-dataset <- derive_req_vars(
-  dataset = dataset_tmp,
-  subjectid_var = "USUBJID",
-  arm_var = "ARM",
-  visit_var = "VISIT",
-  lb_test_var = "LBTEST",
-  lb_result_var = "LBSTRESN",
-  ref_range_upper_lim_var = "LBSTNRHI",
-  sel_x = sel_x,
-  sel_y = sel_y
-)
-
-x_plot_type <- "ULN"
-y_plot_type <- "Baseline"
-x_ref_line_num <- 3
-y_ref_line_num <- 2
-x_rng_lower <- 0
-x_rng_upper <- 10
-y_rng_lower <- 0
-y_rng_upper <- 10
-
-# Invoke the function
+# Single point plotted per subject
 plt_obj <- generate_plot(
-  dataset = dataset,
+  dataset = edish_data,
   subjectid_var = "USUBJID",
   arm_var = "ARM",
-  visit_var = "VISIT",
-  sel_x = sel_x,
-  sel_y = sel_y,
-  x_plot_type = x_plot_type,
-  y_plot_type = y_plot_type,
-  x_ref_line_num = x_ref_line_num,
-  y_ref_line_num = y_ref_line_num,
-  x_rng_lower = x_rng_lower,
-  x_rng_upper = x_rng_upper,
-  y_rng_lower = y_rng_lower,
-  y_rng_upper = y_rng_upper
+  sel_x = "Alanine Aminotransferase",
+  sel_y = "Total Bilirubin",
+  norm_ref_type = "ULN",
+  x_ref_line_num = 3,
+  y_ref_line_num = 2,
+  x_rng_lower = 0,
+  x_rng_upper = NA,
+  y_rng_lower = 0.01,
+  y_rng_upper = 4.5,
+  alp_flag = TRUE,
+  by_visit = FALSE
 )
 
-# Tests
-test_that("the resulting plot object includes the correct data" %>%
+# Point plotted per subject per visit
+plt_obj_by_visit <- generate_plot(
+  dataset = edish_data,
+  subjectid_var = "USUBJID",
+  arm_var = "ARM",
+  sel_x = "Alanine Aminotransferase",
+  sel_y = "Total Bilirubin",
+  norm_ref_type = "ULN",
+  x_ref_line_num = 3,
+  y_ref_line_num = 2,
+  x_rng_lower = NULL,
+  x_rng_upper = NULL,
+  y_rng_lower = NULL,
+  y_rng_upper = NULL,
+  alp_flag = TRUE,
+  by_visit = TRUE
+)
+
+test_that("the resulting plot object includes the correct data" |>
   vdoc[["add_spec"]](specs$plot_specs$data), {
-  # correct dataset
-  actual <- plt_obj$x$visdat[[1]]()
-  expected <- dataset
-  expect_identical(actual, expected)
 
-  # correct x and y selection
-  tmp_x <- as.character(plt_obj$x$attrs[[2]]$x)[2]
-  tmp_x <- substr(tmp_x, 8, nchar(tmp_x) - 2) # remove .data[[...]]
-  actual_x <- eval(parse(text = tmp_x))
-  tmp_y <- as.character(plt_obj$x$attrs[[2]]$y)[2]
-  tmp_y <- substr(tmp_y, 8, nchar(tmp_y) - 2) # remove .data[[...]]
-  actual_y <- eval(parse(text = tmp_y))
-  expected_x <- paste0("r_", x_plot_type, "_", sel_x)
-  expected_y <- paste0("r_", y_plot_type, "_", sel_y)
-  expect_identical(actual_x, expected_x)
-  expect_identical(actual_y, expected_y)
+  # correct dataset (exclude tooltip)
+  actual <- plt_obj$data
+  expected <- edish_data
+  expect_identical(actual[, names(actual) != "tooltip"], expected)
 })
 
-test_that("the resulting plot object includes the correct axis labels" %>%
+test_that("the resulting plot object includes the correct axis labels" |>
   vdoc[["add_spec"]](specs$plot_specs$axis_labels), {
-  actual_x <- plt_obj$x$layoutAttrs[[1]]$xaxis$title
-  actual_y <- plt_obj$x$layoutAttrs[[1]]$yaxis$title
-  expected_x <- paste0(sel_x, "/", x_plot_type)
-  expected_y <- paste0(sel_y, "/", y_plot_type)
+
+  actual_x <- plt_obj[["labels"]][["x"]]
+  actual_y <- plt_obj[["labels"]][["y"]]
+  expected_x <- "Alanine Aminotransferase (\u00d7 ULN)"
+  expected_y <- "Total Bilirubin (\u00d7 ULN)"
   expect_identical(actual_x, expected_x)
   expect_identical(actual_y, expected_y)
 })
 
-test_that("the resulting plot object includes the correct reference lines" %>%
+test_that("the resulting plot object includes the correct reference lines" |>
   vdoc[["add_spec"]](specs$plot_specs$ref_lines), {
-  actual_x_type <- plt_obj$x$layoutAttrs[[1]]$shapes[[1]]$type
-  actual_x0 <- plt_obj$x$layoutAttrs[[1]]$shapes[[1]]$x0
-  actual_x1 <- plt_obj$x$layoutAttrs[[1]]$shapes[[1]]$x1
-  actual_y_type <- plt_obj$x$layoutAttrs[[1]]$shapes[[2]]$type
-  actual_y0 <- plt_obj$x$layoutAttrs[[1]]$shapes[[2]]$y0
-  actual_y1 <- plt_obj$x$layoutAttrs[[1]]$shapes[[2]]$y1
 
-  expect_identical(actual_x_type, "line")
-  expect_identical(actual_x0, x_ref_line_num)
-  expect_identical(actual_x1, x_ref_line_num)
-  expect_identical(actual_y0, y_ref_line_num)
-  expect_identical(actual_y1, y_ref_line_num)
+  actual_x <- plt_obj[["layers"]][[1]][["data"]][["xintercept"]]
+  actual_y <- plt_obj[["layers"]][[2]][["data"]][["yintercept"]]
+
+  expect_identical(actual_x, 3)
+  expect_identical(actual_y, 2)
 })
 
-test_that("the resulting plot object includes the correct axis range" %>%
+test_that("the resulting plot object includes the correct axis range" |>
   vdoc[["add_spec"]](specs$plot_specs$axis_ranges), {
-  actual_x <- plt_obj$x$layoutAttrs[[1]]$xaxis$range
-  actual_y <- plt_obj$x$layoutAttrs[[1]]$yaxis$range
-  
-  expected_x <- c(x_rng_lower, x_rng_upper)
-  expected_y <- c(y_rng_lower, y_rng_upper)
-  
+
+  actual_x <- plt_obj[["scales"]][["scales"]][[1]][["limits"]]
+  actual_y <- plt_obj[["scales"]][["scales"]][[2]][["limits"]]
+
+  expected_x <- c(log10(0.001), NA)
+  expected_y <- c(log10(0.01), log10(4.5))
+
   expect_identical(actual_x, expected_x)
   expect_identical(actual_y, expected_y)
 })
 
-test_that("the resulting plot object includes the correct coloring" %>%
+test_that("the resulting plot object includes the correct coloring" |>
   vdoc[["add_spec"]](specs$plot_specs$arm_coloring), {
-  actual <- plt_obj$x$attrs[[1]]$color
-  expected <- dataset$ARM
+
+  actual <- rlang::quo_get_expr(plt_obj[["mapping"]][["colour"]])[[3]]
+  expected <- "ARM"
   expect_identical(actual, expected)
 })
 
-test_that("the resulting plot object includes the correct hovertext (snapshot test)" %>%
+test_that("the resulting plot object includes the correct hovertext" |>
   vdoc[["add_spec"]](specs$plot_specs$hovering), {
-  actual <- as.character(plt_obj$x$attrs[[2]]$hovertext)[2]
-  expect_snapshot(actual, cran = TRUE)
+
+  actual <- plt_obj[["data"]][["tooltip"]][1]
+  expected <- paste0("<div style='background-color:#F8766D; color:white; border:1px solid white; padding:2px;'>",
+                     "Subject: 01<br>Arm: a1",
+                     "<br>---<br>Alanine Aminotransferase: 1.100<br>&nbsp;&nbsp;Visit: V1<br>&nbsp;&nbsp;Date: 2025-02-10 (1st)",
+                     "<br>&nbsp;&nbsp;ALP/ULN ≤ 2 (0.200)<br>&nbsp;&nbsp;R ≥ 5 (5.50)",
+                     "<br>---<br>Total Bilirubin: 0.100<br>&nbsp;&nbsp;Visit: V2<br>&nbsp;&nbsp;Date: 2025-02-20 (2nd)",
+                     "<br>---<br>Time between peaks: 10 days",
+                     "</div>")
+  expect_identical(actual, expected)
+})
+
+test_that("the by-visit plot object includes the spider/path lines" |>
+  vdoc[["add_spec"]](specs$plot_specs$by_visit), {
+
+    expect_true(inherits(plt_obj_by_visit[["layers"]][[1]]$geom, "GeomPath"))
 })

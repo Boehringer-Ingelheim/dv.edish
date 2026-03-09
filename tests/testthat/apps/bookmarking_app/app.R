@@ -10,32 +10,41 @@ if (use_load_all) {
   devtools::load_all(pkg_path, quiet = TRUE)
 }
 
+usubjid <- c("01", "02") |> as.factor()
+arm <- c("arm1", "arm2") |> as.factor()
+lbdtc <- c("visit 1" = "2025-01-24", "visit 2" = "2025-02-14", "visit 3" = "2025-03-04")
+visit <- names(lbdtc) |> as.factor()
+lbtest <- c("alt", "ast", "tbili", "alp") |> as.factor()
+
+set.seed(20251217) # needs to be set due to snapshot test
+
+lb <- tidyr::expand_grid(
+  "USUBJID" = usubjid,
+  "LBTEST" = lbtest,
+  "VISIT" = visit
+)
+lb$LBDT <- as.Date(unname(lbdtc[lb$VISIT]))
+lb$LBSTRESN <- runif(nrow(lb), min = 0, max = 10)
+lb$LBSTNRHI <- runif(nrow(lb), min = 5, max = 15)
+
+dm <- data.frame("USUBJID" = usubjid, "ARM" = arm)
 
 test_ui <- function() {
   shiny::fluidPage(
     shiny::bookmarkButton(),
-    dv.edish::edish_UI("edish")
+    dv.edish::edish_UI(
+      module_id = "edish",
+      arm_default_vals = "arm1",
+      at_choices = c("alt", "ast"),
+      at_default_val = "alt",
+      tbili_choice = "tbili",
+      default_by_visit = FALSE,
+      window_days = NULL
+    )
   )
 }
 
 test_server <- function(input, output, session) {
-  usubjid <- c("01", "02")
-  arm <- c("arm1", "arm2")
-  visit <- c("visit 1", "visit 2", "visit 3")
-  lbtest <- c("test 1", "test 2", "test 3")
-
-  set.seed(123) # needs to be set due to snapshot test
-
-  lb <- tidyr::expand_grid(
-    "USUBJID" = usubjid,
-    "LBTEST" = lbtest,
-    "VISIT" = visit
-  )
-  lb$LBSTRESN <- runif(nrow(lb), min = 0, max = 10)
-  lb$LBSTNRHI <- runif(nrow(lb), min = 5, max = 15)
-
-  dm <- data.frame("USUBJID" = usubjid, "ARM" = arm)
-
   dv.edish::edish_server(
     module_id = "edish",
     dataset_list = shiny::reactive({
@@ -43,13 +52,13 @@ test_server <- function(input, output, session) {
     }),
     subjectid_var = "USUBJID",
     arm_var = "ARM",
-    arm_default_vals = arm[1],
     visit_var = "VISIT",
-    baseline_visit_val = visit[1],
+    baseline_visit_val = "visit 1",
     lb_test_var = "LBTEST",
-    lb_test_choices = lbtest[c(1, 2)],
-    lb_test_default_x_val = lbtest[1],
-    lb_test_default_y_val = lbtest[2],
+    at_choices = c("alt", "ast"),
+    tbili_choice = "tbili",
+    alp_choice = "alp",
+    lb_date_var = "LBDT",
     lb_result_var = "LBSTRESN",
     ref_range_upper_lim_var = "LBSTNRHI"
   )

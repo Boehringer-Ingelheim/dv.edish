@@ -9,9 +9,11 @@ prepare_initial_data(
   subjectid_var,
   arm_var,
   visit_var,
-  baseline_visit_val,
   lb_test_var,
-  lb_test_choices,
+  at_choices,
+  tbili_choice,
+  alp_choice,
+  lb_date_var,
   lb_result_var,
   ref_range_upper_lim_var
 )
@@ -35,17 +37,28 @@ Name of the variable containing the arm/treatment information.}
 
 Name of the variable containing the visit information.}
 
-\item{baseline_visit_val}{\verb{[character(1)]}
-
-Character indicating which visit should be used as baseline visit.}
-
 \item{lb_test_var}{\verb{[character(1)]}
 
-Name of the variable containing the laboratory test information.}
+Name of the variable containing the laboratory test parameter.}
 
-\item{lb_test_choices}{\verb{[character(1+)]}
+\item{at_choices}{\verb{[character(1+)]}
 
-Character vector specifying the possible choices of the laboratory test.}
+Character vector specifying the possible choices of the aminotransferase
+laboratory test parameter for the x-axis.}
+
+\item{tbili_choice}{\verb{[character(1)]}
+
+Character vector specifying the choice of the total bilirubin laboratory
+test parameter for the y-axis.}
+
+\item{alp_choice}{\verb{[character(1) | NULL]}
+
+Character vector specifying the choice of the alkaline phosphatase
+laboratory test parameter.}
+
+\item{lb_date_var}{\verb{[character(1)]}
+
+Name of the variable (\code{Date} or \code{POSIXt} class) containing the laboratory test date.}
 
 \item{lb_result_var}{\verb{[character(1)]}
 
@@ -56,15 +69,14 @@ Name of the variable containing results of the laboratory test.}
 Name of the variable containing the reference range upper limits.}
 }
 \value{
-A single dataframe including columns defined by \code{subjectid_var},
-\code{arm_var}, \code{visit_var}, \code{lb_test_var}, \code{lb_result_var}, and \code{ref_range_upper_lim_var},
-as well as the column "BASE" containing the corresponding baseline values.
-In case of multiple values in \code{lb_result_var} per \code{subjectid_var}, \code{visit_var}, and
-\code{lb_test_var}, only the maximum value will be used. Note that a NA value in the considered values
-will cause a value of NA to be returned as maximum value.
+A data frame with the variables specified by the function arguments,
+\code{subjectid_var}, \code{arm_var}, \code{visit_var}, \code{lb_test_var}, \code{lb_date_var},
+\code{lb_result_var} and \code{ref_range_upper_lim_var}. Only rows for laboratory test
+parameters specified by \code{at_choices}, \code{tbili_choice} and \code{alp_choice} are
+kept.
 }
 \description{
-\code{prepare_initial_data()} prepares data initially by restructuring
-and joining DM and LB dataset into one.
+Join DM and LB datasets into one, and filter on specified laboratory test
+parameters, and maximum values for each subject/arm/test/visit group.
 }
 \keyword{internal}

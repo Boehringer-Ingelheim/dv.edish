@@ -2,24 +2,23 @@
 % Please edit documentation in R/helper_functions.R
 \name{generate_plot}
 \alias{generate_plot}
-\title{Generate plot}
+\title{Generate an eDISH plot}
 \usage{
 generate_plot(
   dataset,
   subjectid_var,
   arm_var,
-  visit_var,
   sel_x,
   sel_y,
-  x_plot_type,
-  y_plot_type,
+  norm_ref_type,
   x_ref_line_num,
   y_ref_line_num,
   x_rng_lower,
   x_rng_upper,
   y_rng_lower,
   y_rng_upper,
-  source = NULL
+  alp_flag,
+  by_visit
 )
 }
 \arguments{
@@ -35,27 +34,17 @@ Name of the variable containing the unique subject IDs.}
 
 Name of the variable containing the arm/treatment information.}
 
-\item{visit_var}{\verb{[character(1)]}
-
-Name of the variable containing the visit information.}
-
 \item{sel_x}{\verb{[character(1)]}
 
-Character specifying the laboratory test to be displayed on the x-axis.}
+String specifying the laboratory test to be displayed on the x-axis.}
 
 \item{sel_y}{\verb{[character(1)]}
 
-Character specifying the laboratory test to be displayed on the y-axis.}
+String specifying the laboratory test to be displayed on the y-axis.}
 
-\item{x_plot_type}{\verb{[character(1)]}
+\item{norm_ref_type}{\verb{[character(1)]}
 
-Character specifying the plot type for the x-axis. This leads to
-using the \code{dataset}'s column "r_<x_plot_type>_<x_sel>" for the x-values.}
-
-\item{y_plot_type}{\verb{[character(1)]}
-
-Character specifying the plot type for the y-axis. This leads to
-using the \code{dataset}'s column "r_<y_plot_type>_<y_sel>" for the y-values.}
+String indicating normalization reference type, either \code{"ULN"} or \code{"Baseline"}.}
 
 \item{x_ref_line_num}{\verb{[numeric(1)]}
 
@@ -65,26 +54,38 @@ Numeric specifying the reference line for the x-axis.}
 
 Numeric specifying the reference line for the y-axis.}
 
-\item{x_rng_lower}{\verb{[numeric(1)]}
+\item{x_rng_lower}{\verb{[numeric(1) | NULL]}
 
 Numeric specifying the lower limit in the x-axis range.}
 
-\item{x_rng_upper}{\verb{[numeric(1)]}
+\item{x_rng_upper}{\verb{[numeric(1) | NULL]}
 
 Numeric specifying the upper limit in the x-axis range.}
 
-\item{y_rng_lower}{\verb{[numeric(1)]}
+\item{y_rng_lower}{\verb{[numeric(1) | NULL]}
 
 Numeric specifying the lower limit in the y-axis range.}
 
-\item{y_rng_upper}{\verb{[numeric(1)]}
+\item{y_rng_upper}{\verb{[numeric(1) | NULL]}
 
 Numeric specifying the upper limit in the y-axis range.}
+
+\item{alp_flag}{\verb{[logical(1)]}
+
+Logical indicating if ALP data was requested.}
+
+\item{by_visit}{\verb{[logical(1)]}
+
+A flag to indicate whether to plot aminotransferase values for each visit.}
+
+\item{visit_var}{\verb{[character(1)]}
+
+Name of the variable containing the visit information.}
 }
 \value{
-A plotly object specifying the generated eDISH plot.
+An object specifying the generated eDISH plot.
 }
 \description{
-\code{generate_plot()} generates an eDISH plot by means of the \pkg{plotly} package.
+Generate an eDISH plot
 }
 \keyword{internal}
