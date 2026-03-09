@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">dv.edish</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -59,10 +59,35 @@
 <div class="section level2">
 <h2 id="features">Features<a class="anchor" aria-label="anchor" href="#features"></a>
 </h2>
-<p>The eDISH module shows a scatter plot depicting correlations of two lab parameters on a subject-level.</p>
-<p>The parameter to be displayed on each axis can be selected by the app user. Moreover, the parameters can be displayed in multiples of either their upper limit normals (resulting in the eDISH plot) or the corresponding subject’s baseline values (resulting in the mDISH plot).</p>
-<p>Horizontal and vertical reference lines indicate Hy’s law multiples and can be updated by the user.</p>
-<p>By default, the x- and y-axis ranges are determined by the data, but the user can specify their own ranges. Both lower and upper values of an axis range need to be specified for the range to take effect. If either value is missing then the default axis range is used.</p>
+<p>The eDISH module shows a scatter plot depicting the correlation between peak values of an aminotransferase parameter and total bilirubin on a subject level.</p>
+<p>The user can control the following from the user interface drop-down plot options:</p>
+<ul>
+<li>Treatment arm selection.</li>
+<li>The window in which the total bilirubin is considered in relation to the aminotransferase value.</li>
+<li>The aminotransferase parameter to be displayed on the x-axis (e.g. Alanine Aminotransferase or Aspartate Aminotransferase).</li>
+<li>Whether the parameters are displayed in multiples of either their upper limits of normal (resulting in the eDISH plot) or the corresponding subject’s baseline values (resulting in the mDISH plot).</li>
+<li>Horizontal and vertical reference lines indicating Hy’s law multiples.</li>
+<li>Whether to include subjects based on their baseline value being within the aminotransferase threshold.</li>
+<li>Whether to plot subject aminotransferase values by visit, with lines connecting points between visits.</li>
+<li>Lower and/or upper values of the x- and y-axis ranges. If not specified then these values are determined by the data.</li>
+</ul>
+<p>When hovering over a point the following pop-up information is displayed:</p>
+<ul>
+<li>Subject identifier.</li>
+<li>Arm.</li>
+<li>Normalized aminotransferase peak value, visit, and date.</li>
+<li>Associated normalized Alkaline Phosphatase value categorized.</li>
+<li>R-ratio categorized.</li>
+<li>Normalized total bilirubin peak value, visit, and date.</li>
+<li>Time in days between aminotransferase and total bilirubin dates. Negative days indicates that total bilirubin date is before aminotransferase date.</li>
+</ul>
+<p>Normalized Alkaline Phosphatase (ALP/ULN or ALP/Baseline) categories are shown as ≤ 2 or &gt; 2.</p>
+<p>The R-ratio (specific to ULN) is calculated as <code>R = Normalized aminotransferase / Normalized ALP</code>:</p>
+<ul>
+<li>R ≥ 5 Hepatocellular - aminotransferase dominates; typical for Hy’s Law</li>
+<li>R ≤ 2 Cholestatic - ALP dominates</li>
+<li>2 &lt; R &lt; 5 Mixed - Both aminotransferase and ALP elevated</li>
+</ul>
 </div>
 <div class="section level2">
 <h2 id="creating-an-edish-application">Creating an eDISH application<a class="anchor" aria-label="anchor" href="#creating-an-edish-application"></a>
@@ -78,7 +103,8 @@
 <span>    subject_level_dataset_name <span class="op">=</span> <span class="st">"dm"</span>,</span>
 <span>    lab_dataset_name <span class="op">=</span> <span class="st">"lb"</span>,</span>
 <span>    arm_default_vals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Xanomeline Low Dose"</span>, <span class="st">"Xanomeline High Dose"</span><span class="op">)</span>,</span>
-<span>    baseline_visit_val <span class="op">=</span> <span class="st">"SCREENING 1"</span></span>
+<span>    baseline_visit_val <span class="op">=</span> <span class="st">"SCREENING 1"</span>,</span>
+<span>    lb_date_var <span class="op">=</span> <span class="st">"ADT"</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -102,6 +128,7 @@
 <li><p>Unique subject identifier (e.g. <code>USUBJID</code>)</p></li>
 <li><p>Visit (e.g. <code>VISIT</code>)</p></li>
 <li><p>Lab test result name (e.g. <code>LBTEST</code>)</p></li>
+<li><p>Lab test date (e.g. <code>ADT</code>)</p></li>
 <li><p>Numeric lab test result (e.g. <code>LBSTRESN</code>)</p></li>
 <li><p>Lab test reference range upper limit (e.g. <code>LBSTNRHI</code>)</p></li>
 </ul>

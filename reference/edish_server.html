@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">dv.edish</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,14 +43,13 @@
 <span>  <span class="va">dataset_list</span>,</span>
 <span>  subjectid_var <span class="op">=</span> <span class="st">"USUBJID"</span>,</span>
 <span>  arm_var <span class="op">=</span> <span class="st">"ACTARM"</span>,</span>
-<span>  arm_default_vals <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  visit_var <span class="op">=</span> <span class="st">"VISIT"</span>,</span>
 <span>  baseline_visit_val <span class="op">=</span> <span class="st">"VISIT 01"</span>,</span>
 <span>  lb_test_var <span class="op">=</span> <span class="st">"LBTEST"</span>,</span>
-<span>  lb_test_choices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Alkaline Phosphatase"</span>, <span class="st">"Alanine Aminotransferase"</span>,</span>
-<span>    <span class="st">"Aspartate Aminotransferase"</span>, <span class="st">"Bilirubin"</span><span class="op">)</span>,</span>
-<span>  lb_test_default_x_val <span class="op">=</span> <span class="st">"Aspartate Aminotransferase"</span>,</span>
-<span>  lb_test_default_y_val <span class="op">=</span> <span class="st">"Bilirubin"</span>,</span>
+<span>  at_choices <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  tbili_choice <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  alp_choice <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  lb_date_var <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  lb_result_var <span class="op">=</span> <span class="st">"LBSTRESN"</span>,</span>
 <span>  ref_range_upper_lim_var <span class="op">=</span> <span class="st">"LBSTNRHI"</span>,</span>
 <span>  on_sbj_click <span class="op">=</span> <span class="cn">NULL</span></span>
@@ -73,64 +72,57 @@
 
 <dt id="arg-subjectid-var">subjectid_var<a class="anchor" aria-label="anchor" href="#arg-subjectid-var"></a></dt>
 <dd><p><code>[character(1)]</code></p>
-<p>Name of the variable containing the unique subject IDs. Defaults to <code>"USUBJID"</code>.</p></dd>
+<p>Name of the variable containing the unique subject IDs.</p></dd>
 
 
 <dt id="arg-arm-var">arm_var<a class="anchor" aria-label="anchor" href="#arg-arm-var"></a></dt>
 <dd><p><code>[character(1)]</code></p>
-<p>Name of the variable containing the arm/treatment information. Defaults to <code>"ACTARM"</code>.</p></dd>
-
-
-<dt id="arg-arm-default-vals">arm_default_vals<a class="anchor" aria-label="anchor" href="#arg-arm-default-vals"></a></dt>
-<dd><p><code>[character(1+)]</code></p>
-<p>Vector specifying the default value(s) for the arm selector. Defaults to <code>NULL</code>.</p></dd>
+<p>Name of the variable containing the arm/treatment information.</p></dd>
 
 
 <dt id="arg-visit-var">visit_var<a class="anchor" aria-label="anchor" href="#arg-visit-var"></a></dt>
 <dd><p><code>[character(1)]</code></p>
-<p>Name of the variable containing the visit information. Defaults to <code>"VISIT"</code>.</p></dd>
+<p>Name of the variable containing the visit information.</p></dd>
 
 
 <dt id="arg-baseline-visit-val">baseline_visit_val<a class="anchor" aria-label="anchor" href="#arg-baseline-visit-val"></a></dt>
 <dd><p><code>[character(1)]</code></p>
-<p>Character indicating which visit should be used as baseline visit. Defaults to <code>"VISIT 01"</code>.</p></dd>
+<p>Character indicating which visit should be used as baseline visit.</p></dd>
 
 
 <dt id="arg-lb-test-var">lb_test_var<a class="anchor" aria-label="anchor" href="#arg-lb-test-var"></a></dt>
 <dd><p><code>[character(1)]</code></p>
-<p>Name of the variable containing the laboratory test information. Defaults to <code>"LBTEST"</code>.</p></dd>
+<p>Name of the variable containing the laboratory test information.</p></dd>
 
 
-<dt id="arg-lb-test-choices">lb_test_choices<a class="anchor" aria-label="anchor" href="#arg-lb-test-choices"></a></dt>
+<dt id="arg-at-choices">at_choices<a class="anchor" aria-label="anchor" href="#arg-at-choices"></a></dt>
 <dd><p><code>[character(1+)]</code></p>
-<p>Character vector specifying the possible choices of the laboratory test. Defaults to
-<code>c("Alkaline Phosphatase", "Alanine Aminotransferase", "Aspartate Aminotransferase", "Bilirubin")</code></p></dd>
+<p>Character vector specifying the possible choices of the x-axis aminotransferase laboratory test.</p></dd>
 
 
-<dt id="arg-lb-test-default-x-val">lb_test_default_x_val<a class="anchor" aria-label="anchor" href="#arg-lb-test-default-x-val"></a></dt>
+<dt id="arg-tbili-choice">tbili_choice<a class="anchor" aria-label="anchor" href="#arg-tbili-choice"></a></dt>
 <dd><p><code>[character(1)]</code></p>
-<p>Character specifying the default laboratory test choice for the plot's x-axis.
-Defaults to <code>"Aspartate Aminotransferase"</code>.</p></dd>
+<p>Character vector specifying the y-axis total bilirubin laboratory test choice.</p></dd>
 
 
-<dt id="arg-lb-test-default-y-val">lb_test_default_y_val<a class="anchor" aria-label="anchor" href="#arg-lb-test-default-y-val"></a></dt>
+<dt id="arg-alp-choice">alp_choice<a class="anchor" aria-label="anchor" href="#arg-alp-choice"></a></dt>
+<dd><p><code>[character(1) | NULL]</code></p>
+<p>Character vector specifying the alkaline phosphatase laboratory test choice.</p></dd>
+
+
+<dt id="arg-lb-date-var">lb_date_var<a class="anchor" aria-label="anchor" href="#arg-lb-date-var"></a></dt>
 <dd><p><code>[character(1)]</code></p>
-<p>Character specifying the default laboratory test choice for the plot's y-axis.
-Defaults to <code>"Bilirubin"</code>.</p></dd>
+<p>Name of the variable (<code>Date</code> or <code>POSIXt</code> class) containing the laboratory test date.</p></dd>
 
 
 <dt id="arg-lb-result-var">lb_result_var<a class="anchor" aria-label="anchor" href="#arg-lb-result-var"></a></dt>
 <dd><p><code>[character(1)]</code></p>
-<p>Name of the variable containing results of the laboratory test. Defaults to <code>"LBSTRESN"</code>.
-In case of multiple values in <code>lb_result_var</code> per <code>subjectid_var</code>, <code>visit_var</code>, and
-<code>lb_test_var</code>, only the maximum value will be used. Note that a NA value in the considered values
-will cause a value of NA to be returned as maximum value.</p></dd>
+<p>Name of the variable containing results of the laboratory test.</p></dd>
 
 
 <dt id="arg-ref-range-upper-lim-var">ref_range_upper_lim_var<a class="anchor" aria-label="anchor" href="#arg-ref-range-upper-lim-var"></a></dt>
 <dd><p><code>[character(1)]</code></p>
-<p>Name of the variable containing the reference range upper limits.
-Defaults to <code>"LBSTNRHI"</code>.</p></dd>
+<p>Name of the variable containing the reference range upper limits.</p></dd>
 
 
 <dt id="arg-on-sbj-click">on_sbj_click<a class="anchor" aria-label="anchor" href="#arg-on-sbj-click"></a></dt>
@@ -138,6 +130,10 @@ Defaults to <code>"LBSTNRHI"</code>.</p></dd>
 <p>Function to invoke when a subject is clicked on the plot. If <code>NULL</code>, no action is taken.</p></dd>
 
 </dl></div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    <p>A reactive value containing the list of subjects in the clicked point, if applicable.</p>
+    </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p><code><a href="mod_edish.html">mod_edish()</a></code> and <code><a href="edish_UI.html">edish_UI()</a></code></p></div>

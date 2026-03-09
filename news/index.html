@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">dv.edish</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -31,6 +31,20 @@
 
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="2.0.0" id="dvedish-200">dv.edish 2.0.0<a class="anchor" aria-label="anchor" href="#dvedish-200"></a></h2>
+<ul><li>Refactor code to use {ggiraph} instead of {plotly}.</li>
+<li>Move options from a sidebar layout to a drop menu.</li>
+<li>For each subject, plot normalized peak TBILI against normalized peak ALT/AST values, with the option to plot aminotransferase values for each visit.</li>
+<li>Implement spider/path lines when aminotransferase values plotted for each visit.</li>
+<li>Apply log value to axes.</li>
+<li>Mixing ULN for ALT/AST and baseline for TBILI (or vice versa) is not standard and generally does not make scientific sense in DILI analysis, but the previous eDISH plot allowed control of ULN/baseline for each axis. Update to use only one selector for ULN/baseline that applies to both axes.</li>
+<li>Update tooltip/hover text:
+<ul><li>Show the time between peaks.</li>
+<li>Show the sequence (peak ALT/AST on or before peak TBILI most concerning).</li>
+<li>Show value of ALP (Alkaline Phosphatase) at the time of peak ALT/AST value, flagged ≤ 2 x ULN or &gt; 2 x ULN (or baseline).</li>
+</ul></li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.3.0" id="dvedish-130">dv.edish 1.3.0<a class="anchor" aria-label="anchor" href="#dvedish-130"></a></h2>
 <ul><li>Add jumping feature.</li>
