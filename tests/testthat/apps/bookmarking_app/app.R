@@ -50,6 +50,7 @@ test_server <- function(input, output, session) {
     dataset_list = shiny::reactive({
       list("dm" = dm, "lb" = lb)
     }),
+    lb_date_var = "LBDT",
     subjectid_var = "USUBJID",
     arm_var = "ARM",
     visit_var = "VISIT",
@@ -58,7 +59,6 @@ test_server <- function(input, output, session) {
     at_choices = c("alt", "ast"),
     tbili_choice = "tbili",
     alp_choice = "alp",
-    lb_date_var = "LBDT",
     lb_result_var = "LBSTRESN",
     ref_range_upper_lim_var = "LBSTNRHI"
   )

@@ -8,6 +8,7 @@ mod_edish(
   module_id,
   subject_level_dataset_name,
   lab_dataset_name,
+  lb_date_var,
   subjectid_var = "USUBJID",
   arm_var = "ACTARM",
   arm_default_vals = NULL,
@@ -18,7 +19,6 @@ mod_edish(
   at_default_val = "Aspartate Aminotransferase",
   tbili_choice = "Bilirubin",
   alp_choice = "Alkaline Phosphatase",
-  lb_date_var = NULL,
   lb_result_var = "LBSTRESN",
   ref_range_upper_lim_var = "LBSTNRHI",
   default_by_visit = FALSE,
@@ -38,6 +38,10 @@ Name of the subject-level dataset to be used.}
 \item{lab_dataset_name}{\verb{[character(1)]}
 
 Name of the laboratory results dataset to be used.}
+
+\item{lb_date_var}{\verb{[character(1)]}
+
+Name of the variable (\code{Date} or \code{POSIXt} class) containing the laboratory test date.}
 
 \item{subjectid_var}{\verb{[character(1)]}
 
@@ -78,10 +82,6 @@ Character vector specifying the y-axis total bilirubin laboratory test choice.}
 \item{alp_choice}{\verb{[character(1) | NULL]}
 
 Character vector specifying the alkaline phosphatase laboratory test choice.}
-
-\item{lb_date_var}{\verb{[character(1)]}
-
-Name of the variable (\code{Date} or \code{POSIXt} class) containing the laboratory test date.}
 
 \item{lb_result_var}{\verb{[character(1)]}
 

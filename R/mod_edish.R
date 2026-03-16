@@ -190,6 +190,7 @@ edish_UI <- function(module_id,
 edish_server <- function(
     module_id,
     dataset_list,
+    lb_date_var,
     subjectid_var = "USUBJID",
     arm_var = "ACTARM",
     visit_var = "VISIT",
@@ -198,7 +199,6 @@ edish_server <- function(
     at_choices = NULL,
     tbili_choice = NULL,
     alp_choice = NULL,
-    lb_date_var = NULL,
     lb_result_var = "LBSTRESN",
     ref_range_upper_lim_var = "LBSTNRHI",
     on_sbj_click = NULL) {
@@ -208,6 +208,7 @@ edish_server <- function(
   # Check validity of arguments
   ac <- checkmate::makeAssertCollection()
   checkmate::assert_multi_class(dataset_list, c("reactive", "shinymeta_reactive"), add = ac)
+  checkmate::assert_string(lb_date_var, min.chars = 1, add = ac)
   checkmate::assert_string(subjectid_var, min.chars = 1, add = ac)
   checkmate::assert_string(arm_var, min.chars = 1, add = ac)
   checkmate::assert_string(visit_var, min.chars = 1, add = ac)
@@ -217,7 +218,6 @@ edish_server <- function(
                               unique = TRUE, min.len = 1, add = ac)
   checkmate::assert_string(tbili_choice, min.chars = 1, add = ac)
   checkmate::assert_string(alp_choice, min.chars = 1, null.ok = TRUE, add = ac)
-  checkmate::assert_string(lb_date_var, min.chars = 1, add = ac)
   checkmate::assert_string(lb_result_var, min.chars = 1, add = ac)
   checkmate::assert_string(ref_range_upper_lim_var, min.chars = 1, add = ac)
   checkmate::reportAssertions(ac)
@@ -430,6 +430,10 @@ edish_server <- function(
 #'
 #' Name of the laboratory results dataset to be used.
 #'
+#' @param lb_date_var `[character(1)]`
+#'
+#' Name of the variable (`Date` or `POSIXt` class) containing the laboratory test date.
+#'
 #' @param subjectid_var `[character(1)]`
 #'
 #' Name of the variable containing the unique subject IDs.
@@ -470,10 +474,6 @@ edish_server <- function(
 #'
 #' Character vector specifying the alkaline phosphatase laboratory test choice.
 #'
-#' @param lb_date_var `[character(1)]`
-#'
-#' Name of the variable (`Date` or `POSIXt` class) containing the laboratory test date.
-#'
 #' @param lb_result_var `[character(1)]`
 #'
 #' Name of the variable containing results of the laboratory test.
@@ -508,6 +508,7 @@ mod_edish <- function(
     module_id,
     subject_level_dataset_name,
     lab_dataset_name,
+    lb_date_var,
     subjectid_var = "USUBJID",
     arm_var = "ACTARM",
     arm_default_vals = NULL,
@@ -518,7 +519,6 @@ mod_edish <- function(
     at_default_val = "Aspartate Aminotransferase",
     tbili_choice = "Bilirubin",
     alp_choice = "Alkaline Phosphatase",
-    lb_date_var = NULL,
     lb_result_var = "LBSTRESN",
     ref_range_upper_lim_var = "LBSTNRHI",
     default_by_visit = FALSE,
@@ -557,6 +557,7 @@ mod_edish <- function(
       edish_server(
         module_id = module_id,
         dataset_list = dataset_list,
+        lb_date_var = lb_date_var,
         subjectid_var = subjectid_var,
         arm_var = arm_var,
         visit_var = visit_var,
@@ -565,7 +566,6 @@ mod_edish <- function(
         at_choices = at_choices,
         tbili_choice = tbili_choice,
         alp_choice = alp_choice,
-        lb_date_var = lb_date_var,
         lb_result_var = lb_result_var,
         ref_range_upper_lim_var = ref_range_upper_lim_var,
         on_sbj_click = on_sbj_click_fun
@@ -584,6 +584,7 @@ mod_edish_API_docs <- list(
   module_id = list(""),
   subject_level_dataset_name = list(""),
   lab_dataset_name = list(""),
+  lb_date_var = list(""),
   subjectid_var = list(""),
   arm_var = list(""),
   arm_default_vals = list(""),
@@ -594,7 +595,6 @@ mod_edish_API_docs <- list(
   at_default_val = list(""),
   tbili_choice = list(""),
   alp_choice = list(""),
-  lb_date_var = list(""),
   lb_result_var = list(""),
   ref_range_upper_lim_var = list(""),
   default_by_visit = list(""),
@@ -606,6 +606,7 @@ mod_edish_API_spec <- TC$group(
   module_id = TC$mod_ID(),
   subject_level_dataset_name = TC$dataset_name() |> TC$flag("subject_level_dataset_name"),
   lab_dataset_name = TC$dataset_name(),
+  lb_date_var = TC$col("lab_dataset_name", TC$or(TC$date(), TC$datetime())),
   subjectid_var = TC$col("subject_level_dataset_name", TC$or(TC$character(), TC$factor())) |> TC$flag("subjid_var"),
   arm_var = TC$col("subject_level_dataset_name", TC$or(TC$character(), TC$factor())),
   arm_default_vals = TC$choice_from_col_contents("arm_var") |> TC$flag("one_or_more", "optional", "manual_check"),
@@ -616,7 +617,6 @@ mod_edish_API_spec <- TC$group(
   at_default_val = TC$choice_from_col_contents("lb_test_var") |> TC$flag("optional"),
   tbili_choice = TC$choice_from_col_contents("lb_test_var"),
   alp_choice = TC$choice_from_col_contents("lb_test_var") |> TC$flag("optional"),
-  lb_date_var = TC$col("lab_dataset_name", TC$or(TC$date(), TC$datetime())),
   lb_result_var = TC$col("lab_dataset_name", TC$numeric()),
   ref_range_upper_lim_var = TC$col("lab_dataset_name", TC$numeric()) |> TC$flag("optional"),
   default_by_visit = TC$logical() |> TC$flag("manual_check"),
@@ -625,20 +625,20 @@ mod_edish_API_spec <- TC$group(
 ) |> TC$attach_docs(mod_edish_API_docs)
 
 check_mod_edish <- function(
-    afmm, datasets, module_id, subject_level_dataset_name, lab_dataset_name, subjectid_var, arm_var, arm_default_vals,
-    visit_var, baseline_visit_val, lb_test_var,
-    at_choices, at_default_val, tbili_choice, alp_choice,
-    lb_date_var, lb_result_var, ref_range_upper_lim_var, default_by_visit, window_days, receiver_id
+    afmm, datasets, module_id, subject_level_dataset_name, lab_dataset_name, lb_date_var,
+    subjectid_var, arm_var, arm_default_vals, visit_var, baseline_visit_val, lb_test_var,
+    at_choices, at_default_val, tbili_choice, alp_choice, lb_result_var,
+    ref_range_upper_lim_var, default_by_visit, window_days, receiver_id
   ) {
   warn <- CM$container()
   err <- CM$container()
 
   OK <- check_mod_edish_auto(
     afmm, datasets,
-    module_id, subject_level_dataset_name, lab_dataset_name, subjectid_var, arm_var, arm_default_vals,
-    visit_var, baseline_visit_val, lb_test_var,
-    at_choices, at_default_val, tbili_choice, alp_choice,
-    lb_date_var, lb_result_var, ref_range_upper_lim_var, window_days, default_by_visit, receiver_id,
+    module_id, subject_level_dataset_name, lab_dataset_name, lb_date_var,
+    subjectid_var, arm_var, arm_default_vals, visit_var, baseline_visit_val, lb_test_var,
+    at_choices, at_default_val, tbili_choice, alp_choice, lb_result_var,
+    ref_range_upper_lim_var, window_days, default_by_visit, receiver_id,
     warn, err
   )
 
