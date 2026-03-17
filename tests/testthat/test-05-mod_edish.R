@@ -18,7 +18,7 @@ test_that("the default values are correct at app launch" |>
   app$wait_for_idle()
 
   # Get values after launch and test
-  actual <- app$get_values(input = c("edish-plot_type", "edish-arm_id", "edish-x_axis",
+  actual <- app$get_values(input = c("edish-plot_type", "edish-arm_id", "edish-x_axis", "edish-y_axis",
                                      "edish-x_ref", "edish-y_ref", "edish-x_rng", "edish-y_rng",
                                      "edish-window_days", "edish-by_visit", "edish-base_incl"))
 
@@ -32,6 +32,7 @@ test_that("the default values are correct at app launch" |>
       `edish-x_axis` = "alt",
       `edish-x_ref` = 3L,
       `edish-x_rng` = NULL,
+      `edish-y_axis` = "tbili",
       `edish-y_ref` = 2L,
       `edish-y_rng` = NULL
     )
@@ -121,8 +122,8 @@ test_that("the app's state is restored when bookmarking" |>
   app_rst$wait_for_idle()
 
   # Get values and test
-  actual <- app_rst$get_values(input = c("edish-plot_type", "edish-arm_id", "edish-x_axis", "edish-x_ref",
-                                         "edish-x_rng", "edish-y_rng", "edish-by_visit"))
+  actual <- app_rst$get_values(input = c("edish-plot_type", "edish-arm_id", "edish-x_axis", "edish-y_axis",
+                                         "edish-x_ref", "edish-x_rng", "edish-y_rng", "edish-by_visit"))
   expected <- list(
     input = list(
       `edish-arm_id` = c("arm1", "arm2"),
@@ -131,6 +132,7 @@ test_that("the app's state is restored when bookmarking" |>
       `edish-x_axis` = "ast",
       `edish-x_ref` = 3.5,
       `edish-x_rng` = c(0.1, 5.1),
+      `edish-y_axis` = "tbili",
       `edish-y_rng` = c(0.1, 7.1)
     )
   )

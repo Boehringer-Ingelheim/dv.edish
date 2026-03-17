@@ -7,6 +7,7 @@ EDISH <- pack_of_constants(
   X_AXIS_HEADER = "Specify x-axis",
   Y_AXIS_HEADER = "Specify y-axis",
   X_AXIS_ID = "x_axis",
+  Y_AXIS_ID = "y_axis",
   AXIS_LABEL = "Parameter:",
   X_REF_ID = "x_ref",
   Y_REF_ID = "y_ref",
@@ -50,7 +51,8 @@ edish_UI <- function(module_id,
                      arm_default_vals,
                      at_choices,
                      at_default_val,
-                     tbili_choice,
+                     tbili_choices,
+                     tbili_default_val,
                      default_by_visit,
                      window_days) {
 
@@ -122,6 +124,12 @@ edish_UI <- function(module_id,
         6,
         shiny::div(
           shiny::h4(EDISH$Y_AXIS_HEADER),
+          shiny::selectInput(
+            inputId = ns(EDISH$Y_AXIS_ID),
+            label = EDISH$AXIS_LABEL,
+            choices = tbili_choices,
+            selected = tbili_default_val
+          ),
           shiny::numericInput(
             inputId = ns(EDISH$Y_REF_ID),
             label = EDISH$REF_LABEL,
@@ -197,7 +205,6 @@ edish_server <- function(
     baseline_visit_val = "VISIT 01",
     lb_test_var = "LBTEST",
     at_choices = NULL,
-    tbili_choice = NULL,
     alp_choice = NULL,
     lb_result_var = "LBSTRESN",
     ref_range_upper_lim_var = "LBSTNRHI",
@@ -216,7 +223,6 @@ edish_server <- function(
   checkmate::assert_string(lb_test_var, min.chars = 1, add = ac)
   checkmate::assert_character(at_choices, min.chars = 1, any.missing = FALSE, all.missing = FALSE,
                               unique = TRUE, min.len = 1, add = ac)
-  checkmate::assert_string(tbili_choice, min.chars = 1, add = ac)
   checkmate::assert_string(alp_choice, min.chars = 1, null.ok = TRUE, add = ac)
   checkmate::assert_string(lb_result_var, min.chars = 1, add = ac)
   checkmate::assert_string(ref_range_upper_lim_var, min.chars = 1, add = ac)
@@ -268,7 +274,7 @@ edish_server <- function(
         visit_var = visit_var,
         lb_test_var = lb_test_var,
         at_choices = at_choices,
-        tbili_choice = tbili_choice,
+        tbili_choice = input[[EDISH$Y_AXIS_ID]],
         alp_choice = alp_choice,
         lb_date_var = lb_date_var,
         lb_result_var = lb_result_var,
@@ -286,7 +292,7 @@ edish_server <- function(
           baseline_visit_val = baseline_visit_val,
           lb_test_var = lb_test_var,
           at_choices = at_choices,
-          tbili_choice = tbili_choice,
+          tbili_choice = input[[EDISH$Y_AXIS_ID]],
           norm_ref_type = nrt,
           alp_choice = alp_choice,
           lb_date_var = lb_date_var,
@@ -371,7 +377,7 @@ edish_server <- function(
         subjectid_var = subjectid_var,
         arm_var = arm_var,
         sel_x = input[[EDISH$X_AXIS_ID]],
-        sel_y = tbili_choice,
+        sel_y = input[[EDISH$Y_AXIS_ID]],
         norm_ref_type = input[[EDISH$PLOT_TYPE_ID]],
         x_ref_line_num = input[[EDISH$X_REF_ID]],
         y_ref_line_num = input[[EDISH$Y_REF_ID]],
@@ -462,13 +468,17 @@ edish_server <- function(
 #'
 #' Character vector specifying the possible choices of the x-axis aminotransferase laboratory test.
 #'
-#' @param at_default_val `[character(1)]`
+#' @param at_default_val `[character(1) | NULL]`
 #'
 #' Character specifying the default x-axis aminotransferase laboratory test choice.
 #'
-#' @param tbili_choice `[character(1)]`
+#' @param tbili_choices `[character(1+)]`
 #'
-#' Character vector specifying the y-axis total bilirubin laboratory test choice.
+#' Character vector specifying the possible choices of the y-axis total bilirubin laboratory test.
+#'
+#' @param tbili_default_val `[character(1) | NULL]`
+#'
+#' Character specifying the default y-axis total bilirubin laboratory test choice.
 #'
 #' @param alp_choice `[character(1) | NULL]`
 #'
@@ -517,7 +527,8 @@ mod_edish <- function(
     lb_test_var = "LBTEST",
     at_choices = c("Alanine Aminotransferase", "Aspartate Aminotransferase"),
     at_default_val = "Aspartate Aminotransferase",
-    tbili_choice = "Bilirubin",
+    tbili_choices = "Bilirubin",
+    tbili_default_val = "Bilirubin",
     alp_choice = "Alkaline Phosphatase",
     lb_result_var = "LBSTRESN",
     ref_range_upper_lim_var = "LBSTNRHI",
@@ -531,7 +542,8 @@ mod_edish <- function(
                arm_default_vals = arm_default_vals,
                at_choices = at_choices,
                at_default_val = at_default_val,
-               tbili_choice = tbili_choice,
+               tbili_choices = tbili_choices,
+               tbili_default_val = tbili_default_val,
                default_by_visit = default_by_visit,
                window_days = window_days)
     },
@@ -564,7 +576,6 @@ mod_edish <- function(
         baseline_visit_val = baseline_visit_val,
         lb_test_var = lb_test_var,
         at_choices = at_choices,
-        tbili_choice = tbili_choice,
         alp_choice = alp_choice,
         lb_result_var = lb_result_var,
         ref_range_upper_lim_var = ref_range_upper_lim_var,
@@ -593,7 +604,8 @@ mod_edish_API_docs <- list(
   lb_test_var = list(""),
   at_choices = list(""),
   at_default_val = list(""),
-  tbili_choice = list(""),
+  tbili_choices = list(""),
+  tbili_default_val = list(""),
   alp_choice = list(""),
   lb_result_var = list(""),
   ref_range_upper_lim_var = list(""),
@@ -615,7 +627,8 @@ mod_edish_API_spec <- TC$group(
   lb_test_var = TC$col("lab_dataset_name", TC$or(TC$character(), TC$factor())),
   at_choices = TC$choice_from_col_contents("lb_test_var") |> TC$flag("one_or_more"),
   at_default_val = TC$choice_from_col_contents("lb_test_var") |> TC$flag("optional"),
-  tbili_choice = TC$choice_from_col_contents("lb_test_var"),
+  tbili_choices = TC$choice_from_col_contents("lb_test_var") |> TC$flag("one_or_more"),
+  tbili_default_val = TC$choice_from_col_contents("lb_test_var") |> TC$flag("optional"),
   alp_choice = TC$choice_from_col_contents("lb_test_var") |> TC$flag("optional"),
   lb_result_var = TC$col("lab_dataset_name", TC$numeric()),
   ref_range_upper_lim_var = TC$col("lab_dataset_name", TC$numeric()) |> TC$flag("optional"),
@@ -627,9 +640,9 @@ mod_edish_API_spec <- TC$group(
 check_mod_edish <- function(
     afmm, datasets, module_id, subject_level_dataset_name, lab_dataset_name, lb_date_var,
     subjectid_var, arm_var, arm_default_vals, visit_var, baseline_visit_val, lb_test_var,
-    at_choices, at_default_val, tbili_choice, alp_choice, lb_result_var,
+    at_choices, at_default_val, tbili_choices, tbili_default_val, alp_choice, lb_result_var,
     ref_range_upper_lim_var, default_by_visit, window_days, receiver_id
-  ) {
+) {
   warn <- CM$container()
   err <- CM$container()
 
@@ -637,7 +650,7 @@ check_mod_edish <- function(
     afmm, datasets,
     module_id, subject_level_dataset_name, lab_dataset_name, lb_date_var,
     subjectid_var, arm_var, arm_default_vals, visit_var, baseline_visit_val, lb_test_var,
-    at_choices, at_default_val, tbili_choice, alp_choice, lb_result_var,
+    at_choices, at_default_val, tbili_choices, tbili_default_val, alp_choice, lb_result_var,
     ref_range_upper_lim_var, window_days, default_by_visit, receiver_id,
     warn, err
   )
@@ -686,12 +699,12 @@ check_mod_edish <- function(
       cond = !any(duplicated(all_vars)),
       msg = sprintf(
         "This modules expects the following variables to refer to unique columns:<br><pre>%s</pre>",
-        paste(capture.output(setNames(all_vars, var_parameters)), collapse = "\n")
+        paste(utils::capture.output(stats::setNames(all_vars, var_parameters)), collapse = "\n")
       )
     )
   }
 
-  # NOTE: Ensures that `lb_test_default_{x,y}_val` are a subset of the available `lb_test_choices`
+  # NOTE: Ensures that `at_default_val` is a subset of the available `at_choices`
   if (all(OK[c("lab_dataset_name", "lb_test_var", "at_choices", "at_default_val")])) {
     CM$assert(
       container = err,
@@ -699,6 +712,18 @@ check_mod_edish <- function(
       msg = sprintf(
         'The value assigned to `at_default_val` ("%s") should be among the ones provided by `at_choices` (%s).',
         at_default_val, paste(sprintf('"%s"', at_choices), collapse = ", ")
+      )
+    )
+  }
+
+  # NOTE: Ensures that `tbili_default_val` is a subset of the available `tbili_choices`
+  if (all(OK[c("lab_dataset_name", "lb_test_var", "tbili_choices", "tbili_default_val")])) {
+    CM$assert(
+      container = err,
+      cond = tbili_default_val %in% tbili_choices,
+      msg = sprintf(
+        'The value assigned to `tbili_default_val` ("%s") should be among the ones provided by `tbili_choices` (%s).',
+        tbili_default_val, paste(sprintf('"%s"', tbili_choices), collapse = ", ")
       )
     )
   }

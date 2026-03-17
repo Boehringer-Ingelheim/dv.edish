@@ -13,7 +13,8 @@ mock_edish_app <- function() {
       arm_default_vals = "Xanomeline High Dose",
       at_choices = c("Alanine Aminotransferase", "Aspartate Aminotransferase"),
       at_default_val = "Alanine Aminotransferase",
-      tbili_choice = "Bilirubin",
+      tbili_choices = "Bilirubin",
+      tbili_default_val = "Bilirubin",
       default_by_visit = FALSE,
       window_days = NULL
     ))
@@ -28,7 +29,6 @@ mock_edish_app <- function() {
       lb_date_var = "ADT",
       baseline_visit_val = "SCREENING 1",
       at_choices = c("Alanine Aminotransferase", "Aspartate Aminotransferase"),
-      tbili_choice = "Bilirubin",
       alp_choice = "Alkaline Phosphatase"
     )
   }
