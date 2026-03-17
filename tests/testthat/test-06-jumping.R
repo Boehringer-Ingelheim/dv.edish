@@ -14,4 +14,5 @@ mod <- dv.edish::mod_edish(
 )
 
 trigger_input_id <- "mod-plot_selected"
-test_communication_with_papo(mod, data_list, trigger_input_id, "jumping_feature", specs$jumping_feature)
+test_communication_with_papo(mod, data_list, trigger_input_id, 
+                             "framework_specs$jumping_feature", specs$framework_specs$jumping_feature)
