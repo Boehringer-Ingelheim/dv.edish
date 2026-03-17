@@ -9,7 +9,8 @@ edish_UI(
   arm_default_vals,
   at_choices,
   at_default_val,
-  tbili_choice,
+  tbili_choices,
+  tbili_default_val,
   default_by_visit,
   window_days
 )
@@ -27,13 +28,17 @@ Vector specifying the default value(s) for the arm selector.}
 
 Character vector specifying the possible choices of the x-axis aminotransferase laboratory test.}
 
-\item{at_default_val}{\verb{[character(1)]}
+\item{at_default_val}{\verb{[character(1) | NULL]}
 
 Character specifying the default x-axis aminotransferase laboratory test choice.}
 
-\item{tbili_choice}{\verb{[character(1)]}
+\item{tbili_choices}{\verb{[character(1+)]}
 
-Character vector specifying the y-axis total bilirubin laboratory test choice.}
+Character vector specifying the possible choices of the y-axis total bilirubin laboratory test.}
+
+\item{tbili_default_val}{\verb{[character(1) | NULL]}
+
+Character specifying the default y-axis total bilirubin laboratory test choice.}
 
 \item{default_by_visit}{\verb{[logical(1)]}
 
