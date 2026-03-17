@@ -33,5 +33,6 @@ framework_specs <- specs_list(
 specs <- specs_list(
   input_menu_specs = input_menu_specs,
   plot_specs = plot_specs,
-  framework_specs = framework_specs
+  framework_specs = framework_specs,
+  jumping_feature = "Jump-to-subject feature."
 )
