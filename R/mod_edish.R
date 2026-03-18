@@ -82,13 +82,6 @@ edish_UI <- function(module_id,
         6,
         shiny::div(
           shiny::h4(EDISH$X_AXIS_HEADER),
-          shiny::checkboxInput(
-            ns(EDISH$BY_VISIT_ID),
-            label = shiny::span(EDISH$BY_VISIT_LABEL,
-                                shiny::icon("circle-info",
-                                            title = EDISH$BY_VISIT_INFO)),
-            value = default_by_visit
-          ),
           shiny::selectInput(
             inputId = ns(EDISH$X_AXIS_ID),
             label = EDISH$AXIS_LABEL,
@@ -110,6 +103,13 @@ edish_UI <- function(module_id,
             min = 0,
             max = 100,
             step = 0.1
+          ),
+          shiny::checkboxInput(
+            ns(EDISH$BY_VISIT_ID),
+            label = shiny::span(EDISH$BY_VISIT_LABEL,
+                                shiny::icon("circle-info",
+                                            title = EDISH$BY_VISIT_INFO)),
+            value = default_by_visit
           ),
           shiny::radioButtons(
             inputId = ns(EDISH$BASE_INCL_ID),
