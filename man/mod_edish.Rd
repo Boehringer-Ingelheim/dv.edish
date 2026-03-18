@@ -78,11 +78,12 @@ Character specifying the default x-axis aminotransferase laboratory test choice.
 
 \item{tbili_choices}{\verb{[character(1+)]}
 
-Character vector specifying the possible choices of the y-axis total bilirubin laboratory test.}
+Character vector specifying the possible choices of the y-axis liver function laboratory test
+(e.g. "Bilirubin", "Prothrombin Intl. Normalized Ratio", etc.).}
 
 \item{tbili_default_val}{\verb{[character(1) | NULL]}
 
-Character specifying the default y-axis total bilirubin laboratory test choice.}
+Character specifying the default y-axis liver function laboratory test choice.}
 
 \item{alp_choice}{\verb{[character(1) | NULL]}
 
@@ -121,5 +122,5 @@ A list containing the following elements to be used by the
 \description{
 \code{mod_edish()} displays the (modified) evaluation of Drug-Induced Serious Hepatotoxicity (eDISH/mDISH) plot
 to support the assessment of drug-induced liver injury (DILI). The scatter plot depicts the correlation
-between peak values of an aminotransferase parameter and total bilirubin on a subject level.
+between peak values of an aminotransferase parameter and a liver function parameter on a subject level.
 }
