@@ -13,7 +13,8 @@ mock_edish_app <- function() {
       arm_default_vals = "Xanomeline High Dose",
       at_choices = c("Alanine Aminotransferase", "Aspartate Aminotransferase"),
       at_default_val = "Alanine Aminotransferase",
-      tbili_choice = "Bilirubin",
+      tbili_choices = "Bilirubin",
+      tbili_default_val = "Bilirubin",
       default_by_visit = FALSE,
       window_days = NULL
     ))
@@ -25,11 +26,10 @@ mock_edish_app <- function() {
       dataset_list = shiny::reactive({
         list("dm" = dm, "lb" = lb)
       }),
+      lb_date_var = "ADT",
       baseline_visit_val = "SCREENING 1",
       at_choices = c("Alanine Aminotransferase", "Aspartate Aminotransferase"),
-      tbili_choice = "Bilirubin",
-      alp_choice = "Alkaline Phosphatase",
-      lb_date_var = "ADT"
+      alp_choice = "Alkaline Phosphatase"
     )
   }
 
@@ -51,9 +51,9 @@ mock_edish_mm <- function() {
       module_id = "edish",
       subject_level_dataset_name = "dm",
       lab_dataset_name = "lb",
+      lb_date_var = "ADT",
       arm_default_vals = c("Xanomeline Low Dose", "Placebo"),
       baseline_visit_val = "SCREENING 1",
-      lb_date_var = "ADT",
       default_by_visit = FALSE,
       window_days = 30L,
       receiver_id = "papo"

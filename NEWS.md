@@ -1,3 +1,8 @@
+# dv.edish 2.0.1
+
+- Reinstate UI selection of liver function parameter on y-axis.
+- Convert `mod_edish()` `lb_date_var` to a mandatory argument removing the `NULL` default.
+
 # dv.edish 2.0.0
 
 - Refactor code to use {ggiraph} instead of {plotly}.

@@ -37,7 +37,8 @@ test_ui <- function() {
       arm_default_vals = "arm1",
       at_choices = c("alt", "ast"),
       at_default_val = "alt",
-      tbili_choice = "tbili",
+      tbili_choices = "tbili",
+      tbili_default_val = "tbili",
       default_by_visit = FALSE,
       window_days = NULL
     )
@@ -50,15 +51,14 @@ test_server <- function(input, output, session) {
     dataset_list = shiny::reactive({
       list("dm" = dm, "lb" = lb)
     }),
+    lb_date_var = "LBDT",
     subjectid_var = "USUBJID",
     arm_var = "ARM",
     visit_var = "VISIT",
     baseline_visit_val = "visit 1",
     lb_test_var = "LBTEST",
     at_choices = c("alt", "ast"),
-    tbili_choice = "tbili",
     alp_choice = "alp",
-    lb_date_var = "LBDT",
     lb_result_var = "LBSTRESN",
     ref_range_upper_lim_var = "LBSTNRHI"
   )

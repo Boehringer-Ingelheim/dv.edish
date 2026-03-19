@@ -15,14 +15,16 @@ remotes::install_github("Boehringer-Ingelheim/dv.edish")
 ## Features
 
 The eDISH module shows a scatter plot depicting the correlation between peak values of an
-aminotransferase parameter and total bilirubin on a subject level.
+aminotransferase parameter and a liver function parameter on a subject level.
 
 The user can control the following from the user interface drop-down plot options:
 
 - Treatment arm selection.
-- The window in which the total bilirubin is considered in relation to the aminotransferase value.
 - The aminotransferase parameter to be displayed on the x-axis (e.g. Alanine Aminotransferase or
   Aspartate Aminotransferase).
+- The liver function parameter to be displayed on the y-axis (e.g. Total Bilirubin or
+  Prothrombin Intl. Normalized Ratio)
+- The window in which the liver function parameter value is considered in relation to the aminotransferase value.
 - Whether the parameters are displayed in multiples of either their upper limits of normal
   (resulting in the eDISH plot) or the corresponding subject's baseline values (resulting in the mDISH plot).
 - Horizontal and vertical reference lines indicating Hy's law multiples.
@@ -38,8 +40,8 @@ When hovering over a point the following pop-up information is displayed:
 - Normalized aminotransferase peak value, visit, and date.
 - Associated normalized Alkaline Phosphatase value categorized.
 - R-ratio categorized.
-- Normalized total bilirubin peak value, visit, and date.
-- Time in days between aminotransferase and total bilirubin dates. Negative days indicates that total bilirubin date
+- Normalized liver function parameter peak value, visit, and date.
+- Time in days between aminotransferase and liver function dates. Negative days indicates that liver function date
   is before aminotransferase date.
 
 Normalized Alkaline Phosphatase (ALP/ULN or ALP/Baseline) categories are shown as ≤ 2 or > 2.
@@ -64,9 +66,9 @@ module_list <- list(
     module_id = "edish",
     subject_level_dataset_name = "dm",
     lab_dataset_name = "lb",
+    lb_date_var = "ADT",
     arm_default_vals = c("Xanomeline Low Dose", "Xanomeline High Dose"),
-    baseline_visit_val = "SCREENING 1",
-    lb_date_var = "ADT"
+    baseline_visit_val = "SCREENING 1"
   )
 )
 

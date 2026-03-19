@@ -36,6 +36,9 @@
       $input$`edish-x_rng`
       NULL
       
+      $input$`edish-y_axis`
+      [1] "tbili"
+      
       $input$`edish-y_ref`
       [1] 2
       

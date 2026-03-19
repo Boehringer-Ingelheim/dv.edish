@@ -357,10 +357,6 @@ filter_data <- function(dataset,
 #'
 #' Name of the variable containing the arm/treatment information.
 #'
-#' @param visit_var `[character(1)]`
-#'
-#' Name of the variable containing the visit information.
-#'
 #' @param sel_x `[character(1)]`
 #'
 #' String specifying the laboratory test to be displayed on the x-axis.
@@ -430,7 +426,7 @@ generate_plot <- function(dataset,
     arm_values <- sort(unique(dataset[[arm_var]]))
     palette_colors <- scales::hue_pal()(length(arm_values))
 
-    setNames(palette_colors, arm_values)
+    stats::setNames(palette_colors, arm_values)
   })
 
   text_color_map <- local({
@@ -462,14 +458,14 @@ generate_plot <- function(dataset,
   if (alp_flag) {
     if (norm_ref_type == "ULN") {
       hover_alp <- sprintf("<br>&nbsp;&nbsp;ALP/ULN %s (%.3f)<br>&nbsp;&nbsp;%s (%.2f)",
-                           ifelse(dataset[[".norm_alp"]] <= 2, "≤ 2", "> 2"),
+                           ifelse(dataset[[".norm_alp"]] <= 2, "\u2264 2", "> 2"),
                            dataset[[".norm_alp"]],
-                           ifelse(dataset[[".r_ratio"]] <= 2, "R ≤ 2",
-                                  ifelse(dataset[[".r_ratio"]] >= 5, "R ≥ 5", "2 < R < 5")),
+                           ifelse(dataset[[".r_ratio"]] <= 2, "R \u2264 2",
+                                  ifelse(dataset[[".r_ratio"]] >= 5, "R \u2265 5", "2 < R < 5")),
                            dataset[[".r_ratio"]])
     } else {
       hover_alp <- sprintf("<br>&nbsp;&nbsp;ALP/Baseline %s (%.3f)",
-                           ifelse(dataset[[".norm_alp"]] <= 2, "≤ 2", "> 2"),
+                           ifelse(dataset[[".norm_alp"]] <= 2, "\u2264 2", "> 2"),
                            dataset[[".norm_alp"]])
     }
     hover_alp <- sub("(NA \\(NA\\) ?)+", "missing data", hover_alp)

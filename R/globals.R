@@ -1,3 +1,2 @@
-utils::globalVariables(c(
-  ".", ".data"
-))
+#' @importFrom rlang .data
+NULL

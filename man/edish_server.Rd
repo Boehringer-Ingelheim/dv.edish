@@ -7,15 +7,14 @@
 edish_server(
   module_id,
   dataset_list,
+  lb_date_var,
   subjectid_var = "USUBJID",
   arm_var = "ACTARM",
   visit_var = "VISIT",
   baseline_visit_val = "VISIT 01",
   lb_test_var = "LBTEST",
   at_choices = NULL,
-  tbili_choice = NULL,
   alp_choice = NULL,
-  lb_date_var = NULL,
   lb_result_var = "LBSTRESN",
   ref_range_upper_lim_var = "LBSTNRHI",
   on_sbj_click = NULL
@@ -29,6 +28,10 @@ A unique ID string to create a namespace. Must match the ID of \code{edish_UI()}
 \item{dataset_list}{\verb{[shiny::reactive(list(data.frame))]}
 
 A reactive list of named datasets.}
+
+\item{lb_date_var}{\verb{[character(1)]}
+
+Name of the variable (\code{Date} or \code{POSIXt} class) containing the laboratory test date.}
 
 \item{subjectid_var}{\verb{[character(1)]}
 
@@ -54,17 +57,9 @@ Name of the variable containing the laboratory test information.}
 
 Character vector specifying the possible choices of the x-axis aminotransferase laboratory test.}
 
-\item{tbili_choice}{\verb{[character(1)]}
-
-Character vector specifying the y-axis total bilirubin laboratory test choice.}
-
 \item{alp_choice}{\verb{[character(1) | NULL]}
 
 Character vector specifying the alkaline phosphatase laboratory test choice.}
-
-\item{lb_date_var}{\verb{[character(1)]}
-
-Name of the variable (\code{Date} or \code{POSIXt} class) containing the laboratory test date.}
 
 \item{lb_result_var}{\verb{[character(1)]}
 

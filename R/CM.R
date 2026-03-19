@@ -112,8 +112,9 @@ CM <- local({ # _C_hecked _M_odule
         }
       }
 
+      args <- list(...)
+      
       if (is.null(error_message)) {
-        args <- list(...)
         evaluated_module <- do.call(module, args)
         module_ui <- evaluated_module[["ui"]]
         module_server <- evaluated_module[["server"]]

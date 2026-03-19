@@ -77,10 +77,6 @@ Logical indicating if ALP data was requested.}
 \item{by_visit}{\verb{[logical(1)]}
 
 A flag to indicate whether to plot aminotransferase values for each visit.}
-
-\item{visit_var}{\verb{[character(1)]}
-
-Name of the variable containing the visit information.}
 }
 \value{
 An object specifying the generated eDISH plot.
