@@ -1,9 +1,6 @@
-# dv.edish 2.0.0-9001
+# dv.edish 2.0.1
 
 - Reinstate UI selection of liver function parameter on y-axis.
-
-# dv.edish 2.0.0-9000
-
 - Convert `mod_edish()` `lb_date_var` to a mandatory argument removing the `NULL` default.
 
 # dv.edish 2.0.0
