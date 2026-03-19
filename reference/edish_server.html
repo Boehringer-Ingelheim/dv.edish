@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">dv.edish</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -41,15 +41,14 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">edish_server</span><span class="op">(</span></span>
 <span>  <span class="va">module_id</span>,</span>
 <span>  <span class="va">dataset_list</span>,</span>
+<span>  <span class="va">lb_date_var</span>,</span>
 <span>  subjectid_var <span class="op">=</span> <span class="st">"USUBJID"</span>,</span>
 <span>  arm_var <span class="op">=</span> <span class="st">"ACTARM"</span>,</span>
 <span>  visit_var <span class="op">=</span> <span class="st">"VISIT"</span>,</span>
 <span>  baseline_visit_val <span class="op">=</span> <span class="st">"VISIT 01"</span>,</span>
 <span>  lb_test_var <span class="op">=</span> <span class="st">"LBTEST"</span>,</span>
 <span>  at_choices <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  tbili_choice <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  alp_choice <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  lb_date_var <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  lb_result_var <span class="op">=</span> <span class="st">"LBSTRESN"</span>,</span>
 <span>  ref_range_upper_lim_var <span class="op">=</span> <span class="st">"LBSTNRHI"</span>,</span>
 <span>  on_sbj_click <span class="op">=</span> <span class="cn">NULL</span></span>
@@ -68,6 +67,11 @@
 <dt id="arg-dataset-list">dataset_list<a class="anchor" aria-label="anchor" href="#arg-dataset-list"></a></dt>
 <dd><p><code>[shiny::reactive(list(data.frame))]</code></p>
 <p>A reactive list of named datasets.</p></dd>
+
+
+<dt id="arg-lb-date-var">lb_date_var<a class="anchor" aria-label="anchor" href="#arg-lb-date-var"></a></dt>
+<dd><p><code>[character(1)]</code></p>
+<p>Name of the variable (<code>Date</code> or <code>POSIXt</code> class) containing the laboratory test date.</p></dd>
 
 
 <dt id="arg-subjectid-var">subjectid_var<a class="anchor" aria-label="anchor" href="#arg-subjectid-var"></a></dt>
@@ -100,19 +104,9 @@
 <p>Character vector specifying the possible choices of the x-axis aminotransferase laboratory test.</p></dd>
 
 
-<dt id="arg-tbili-choice">tbili_choice<a class="anchor" aria-label="anchor" href="#arg-tbili-choice"></a></dt>
-<dd><p><code>[character(1)]</code></p>
-<p>Character vector specifying the y-axis total bilirubin laboratory test choice.</p></dd>
-
-
 <dt id="arg-alp-choice">alp_choice<a class="anchor" aria-label="anchor" href="#arg-alp-choice"></a></dt>
 <dd><p><code>[character(1) | NULL]</code></p>
 <p>Character vector specifying the alkaline phosphatase laboratory test choice.</p></dd>
-
-
-<dt id="arg-lb-date-var">lb_date_var<a class="anchor" aria-label="anchor" href="#arg-lb-date-var"></a></dt>
-<dd><p><code>[character(1)]</code></p>
-<p>Name of the variable (<code>Date</code> or <code>POSIXt</code> class) containing the laboratory test date.</p></dd>
 
 
 <dt id="arg-lb-result-var">lb_result_var<a class="anchor" aria-label="anchor" href="#arg-lb-result-var"></a></dt>

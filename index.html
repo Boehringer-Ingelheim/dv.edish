@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">dv.edish</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -59,12 +59,13 @@
 <div class="section level2">
 <h2 id="features">Features<a class="anchor" aria-label="anchor" href="#features"></a>
 </h2>
-<p>The eDISH module shows a scatter plot depicting the correlation between peak values of an aminotransferase parameter and total bilirubin on a subject level.</p>
+<p>The eDISH module shows a scatter plot depicting the correlation between peak values of an aminotransferase parameter and a liver function parameter on a subject level.</p>
 <p>The user can control the following from the user interface drop-down plot options:</p>
 <ul>
 <li>Treatment arm selection.</li>
-<li>The window in which the total bilirubin is considered in relation to the aminotransferase value.</li>
 <li>The aminotransferase parameter to be displayed on the x-axis (e.g. Alanine Aminotransferase or Aspartate Aminotransferase).</li>
+<li>The liver function parameter to be displayed on the y-axis (e.g. Total Bilirubin or Prothrombin Intl. Normalized Ratio)</li>
+<li>The window in which the liver function parameter value is considered in relation to the aminotransferase value.</li>
 <li>Whether the parameters are displayed in multiples of either their upper limits of normal (resulting in the eDISH plot) or the corresponding subject’s baseline values (resulting in the mDISH plot).</li>
 <li>Horizontal and vertical reference lines indicating Hy’s law multiples.</li>
 <li>Whether to include subjects based on their baseline value being within the aminotransferase threshold.</li>
@@ -78,8 +79,8 @@
 <li>Normalized aminotransferase peak value, visit, and date.</li>
 <li>Associated normalized Alkaline Phosphatase value categorized.</li>
 <li>R-ratio categorized.</li>
-<li>Normalized total bilirubin peak value, visit, and date.</li>
-<li>Time in days between aminotransferase and total bilirubin dates. Negative days indicates that total bilirubin date is before aminotransferase date.</li>
+<li>Normalized liver function parameter peak value, visit, and date.</li>
+<li>Time in days between aminotransferase and liver function dates. Negative days indicates that liver function date is before aminotransferase date.</li>
 </ul>
 <p>Normalized Alkaline Phosphatase (ALP/ULN or ALP/Baseline) categories are shown as ≤ 2 or &gt; 2.</p>
 <p>The R-ratio (specific to ULN) is calculated as <code>R = Normalized aminotransferase / Normalized ALP</code>:</p>
@@ -102,9 +103,9 @@
 <span>    module_id <span class="op">=</span> <span class="st">"edish"</span>,</span>
 <span>    subject_level_dataset_name <span class="op">=</span> <span class="st">"dm"</span>,</span>
 <span>    lab_dataset_name <span class="op">=</span> <span class="st">"lb"</span>,</span>
+<span>    lb_date_var <span class="op">=</span> <span class="st">"ADT"</span>,</span>
 <span>    arm_default_vals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Xanomeline Low Dose"</span>, <span class="st">"Xanomeline High Dose"</span><span class="op">)</span>,</span>
-<span>    baseline_visit_val <span class="op">=</span> <span class="st">"SCREENING 1"</span>,</span>
-<span>    lb_date_var <span class="op">=</span> <span class="st">"ADT"</span></span>
+<span>    baseline_visit_val <span class="op">=</span> <span class="st">"SCREENING 1"</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>

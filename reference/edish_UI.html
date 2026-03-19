@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">dv.edish</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,7 +43,8 @@
 <span>  <span class="va">arm_default_vals</span>,</span>
 <span>  <span class="va">at_choices</span>,</span>
 <span>  <span class="va">at_default_val</span>,</span>
-<span>  <span class="va">tbili_choice</span>,</span>
+<span>  <span class="va">tbili_choices</span>,</span>
+<span>  <span class="va">tbili_default_val</span>,</span>
 <span>  <span class="va">default_by_visit</span>,</span>
 <span>  <span class="va">window_days</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -69,13 +70,19 @@
 
 
 <dt id="arg-at-default-val">at_default_val<a class="anchor" aria-label="anchor" href="#arg-at-default-val"></a></dt>
-<dd><p><code>[character(1)]</code></p>
+<dd><p><code>[character(1) | NULL]</code></p>
 <p>Character specifying the default x-axis aminotransferase laboratory test choice.</p></dd>
 
 
-<dt id="arg-tbili-choice">tbili_choice<a class="anchor" aria-label="anchor" href="#arg-tbili-choice"></a></dt>
-<dd><p><code>[character(1)]</code></p>
-<p>Character vector specifying the y-axis total bilirubin laboratory test choice.</p></dd>
+<dt id="arg-tbili-choices">tbili_choices<a class="anchor" aria-label="anchor" href="#arg-tbili-choices"></a></dt>
+<dd><p><code>[character(1+)]</code></p>
+<p>Character vector specifying the possible choices of the y-axis liver function laboratory test
+(e.g. "Bilirubin", "Prothrombin Intl. Normalized Ratio", etc.).</p></dd>
+
+
+<dt id="arg-tbili-default-val">tbili_default_val<a class="anchor" aria-label="anchor" href="#arg-tbili-default-val"></a></dt>
+<dd><p><code>[character(1) | NULL]</code></p>
+<p>Character specifying the default y-axis liver function laboratory test choice.</p></dd>
 
 
 <dt id="arg-default-by-visit">default_by_visit<a class="anchor" aria-label="anchor" href="#arg-default-by-visit"></a></dt>
