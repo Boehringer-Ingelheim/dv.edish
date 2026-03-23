@@ -56,7 +56,7 @@ test_communication_with_papo <- function(mod, data, trigger_input_id, papo_spec_
     vdoc[["add_spec"]](papo_spec_text, papo_spec_id), {
     app <- shinytest2::AppDriver$new(app, name = "test_send_subject_id_to_papo_protocol")
 
-    app$wait_for_idle()
+    app$wait_for_value(export = "update_count")
 
     # Module starts and sends no message
     exports <- app$get_values()[["export"]]

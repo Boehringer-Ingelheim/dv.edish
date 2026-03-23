@@ -3,3 +3,4 @@
 export(edish_UI)
 export(edish_server)
 export(mod_edish)
+importFrom(rlang,.data)

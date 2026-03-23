@@ -14,7 +14,6 @@ edish_server(
   baseline_visit_val = "VISIT 01",
   lb_test_var = "LBTEST",
   at_choices = NULL,
-  tbili_choice = NULL,
   alp_choice = NULL,
   lb_result_var = "LBSTRESN",
   ref_range_upper_lim_var = "LBSTNRHI",
@@ -57,10 +56,6 @@ Name of the variable containing the laboratory test information.}
 \item{at_choices}{\verb{[character(1+)]}
 
 Character vector specifying the possible choices of the x-axis aminotransferase laboratory test.}
-
-\item{tbili_choice}{\verb{[character(1)]}
-
-Character vector specifying the y-axis total bilirubin laboratory test choice.}
 
 \item{alp_choice}{\verb{[character(1) | NULL]}
 

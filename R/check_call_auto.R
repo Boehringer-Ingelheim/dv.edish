@@ -5,8 +5,8 @@
 # dv.edish::mod_edish
 check_mod_edish_auto <- function(afmm, datasets, module_id, subject_level_dataset_name, lab_dataset_name,
     lb_date_var, subjectid_var, arm_var, arm_default_vals, visit_var, baseline_visit_val, lb_test_var,
-    at_choices, at_default_val, tbili_choice, alp_choice, lb_result_var, ref_range_upper_lim_var, default_by_visit,
-    window_days, receiver_id, warn, err) {
+    at_choices, at_default_val, tbili_choices, tbili_default_val, alp_choice, lb_result_var, ref_range_upper_lim_var,
+    default_by_visit, window_days, receiver_id, warn, err) {
     OK <- logical(0)
     used_dataset_names <- new.env(parent = emptyenv())
     OK[["module_id"]] <- CM$check_module_id("module_id", module_id, warn, err)
@@ -50,9 +50,13 @@ check_mod_edish_auto <- function(afmm, datasets, module_id, subject_level_datase
     flags <- list(optional = TRUE)
     OK[["at_default_val"]] <- OK[["lb_test_var"]] && CM$check_choice_from_col_contents("at_default_val",
         at_default_val, flags, "lab_dataset_name", datasets[[lab_dataset_name]], lb_test_var, warn, err)
-    flags <- structure(list(), names = character(0))
-    OK[["tbili_choice"]] <- OK[["lb_test_var"]] && CM$check_choice_from_col_contents("tbili_choice",
-        tbili_choice, flags, "lab_dataset_name", datasets[[lab_dataset_name]], lb_test_var, warn, err)
+    flags <- list(one_or_more = TRUE)
+    OK[["tbili_choices"]] <- OK[["lb_test_var"]] && CM$check_choice_from_col_contents("tbili_choices",
+        tbili_choices, flags, "lab_dataset_name", datasets[[lab_dataset_name]], lb_test_var, warn, err)
+    flags <- list(optional = TRUE)
+    OK[["tbili_default_val"]] <- OK[["lb_test_var"]] && CM$check_choice_from_col_contents("tbili_default_val",
+        tbili_default_val, flags, "lab_dataset_name", datasets[[lab_dataset_name]], lb_test_var, warn,
+        err)
     flags <- list(optional = TRUE)
     OK[["alp_choice"]] <- OK[["lb_test_var"]] && CM$check_choice_from_col_contents("alp_choice", alp_choice,
         flags, "lab_dataset_name", datasets[[lab_dataset_name]], lb_test_var, warn, err)

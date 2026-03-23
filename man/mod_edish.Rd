@@ -17,7 +17,8 @@ mod_edish(
   lb_test_var = "LBTEST",
   at_choices = c("Alanine Aminotransferase", "Aspartate Aminotransferase"),
   at_default_val = "Aspartate Aminotransferase",
-  tbili_choice = "Bilirubin",
+  tbili_choices = "Bilirubin",
+  tbili_default_val = "Bilirubin",
   alp_choice = "Alkaline Phosphatase",
   lb_result_var = "LBSTRESN",
   ref_range_upper_lim_var = "LBSTNRHI",
@@ -71,13 +72,18 @@ Name of the variable containing the laboratory test information.}
 
 Character vector specifying the possible choices of the x-axis aminotransferase laboratory test.}
 
-\item{at_default_val}{\verb{[character(1)]}
+\item{at_default_val}{\verb{[character(1) | NULL]}
 
 Character specifying the default x-axis aminotransferase laboratory test choice.}
 
-\item{tbili_choice}{\verb{[character(1)]}
+\item{tbili_choices}{\verb{[character(1+)]}
 
-Character vector specifying the y-axis total bilirubin laboratory test choice.}
+Character vector specifying the possible choices of the y-axis liver function laboratory test
+(e.g. "Bilirubin", "Prothrombin Intl. Normalized Ratio", etc.).}
+
+\item{tbili_default_val}{\verb{[character(1) | NULL]}
+
+Character specifying the default y-axis liver function laboratory test choice.}
 
 \item{alp_choice}{\verb{[character(1) | NULL]}
 
@@ -116,5 +122,5 @@ A list containing the following elements to be used by the
 \description{
 \code{mod_edish()} displays the (modified) evaluation of Drug-Induced Serious Hepatotoxicity (eDISH/mDISH) plot
 to support the assessment of drug-induced liver injury (DILI). The scatter plot depicts the correlation
-between peak values of an aminotransferase parameter and total bilirubin on a subject level.
+between peak values of an aminotransferase parameter and a liver function parameter on a subject level.
 }
