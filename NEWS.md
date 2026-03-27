@@ -1,3 +1,7 @@
+# dv.edish 2.0.1-9001
+
+- [NOT USER-FACING] Update CM.R snippet
+
 # dv.edish 2.0.1-9000
 
 - [NOT USER-FACING] Update communication with papo test snippet
