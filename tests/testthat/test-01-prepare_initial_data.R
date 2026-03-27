@@ -8,7 +8,7 @@ lbdtc <- c("visit 1" = "2025-01-24", "visit 2" = "2025-02-14", "visit 3" = "2025
 visit <- names(lbdtc)
 lbtest <- c("alt", "ast", "tbili", "alp", "xyz")
 
-lb <- expand.grid(
+lb <- tidyr::expand_grid(
   "USUBJID" = usubjid,
   "LBTEST" = lbtest,
   "VISIT" = visit

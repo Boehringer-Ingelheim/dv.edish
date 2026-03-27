@@ -18,7 +18,7 @@ lbtest <- c("alt", "ast", "tbili", "alp") |> as.factor()
 
 set.seed(20251217) # needs to be set due to snapshot test
 
-lb <- expand.grid(
+lb <- tidyr::expand_grid(
   "USUBJID" = usubjid,
   "LBTEST" = lbtest,
   "VISIT" = visit
