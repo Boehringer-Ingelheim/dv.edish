@@ -1,4 +1,4 @@
-# YT#VH6cbb4db897d00c26bed7291a0f2f8658#VH00000000000000000000000000000000#
+# YT#VHb8d7094dccccb00c0c217628906ca717#VH6cbb4db897d00c26bed7291a0f2f8658#
 DR <- local({ # _D_ressing _R_oom
   inline_shiny_input <- function(elem, label = NULL, name_selector = NULL, label_elem = NULL) {
     if (is.character(label) && length(label) == 1 && nchar(label) > 0) {
@@ -90,9 +90,9 @@ DR <- local({ # _D_ressing _R_oom
   explorer_ui <- function() {
     panel <- function(...) {
       shiny::div(
-        class = "panel panel-default",
+        class = "card",
         style = "background-color:#eff7ff;",
-        shiny::div(class = "panel-body", style = "padding-bottom:0.5rem;", ...)
+        shiny::div(class = "card-body", style = "padding-bottom:0.5rem;", ...)
       )
     }
 
