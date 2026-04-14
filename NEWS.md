@@ -1,18 +1,6 @@
-# dv.edish 2.0.1-9003
+# dv.edish 2.0.2
 
-- [NOT USER-FACING] Update snapshot of snapshot test
-
-# dv.edish 2.0.1-9002
-
-- [NOT USER-FACING] Update DR.R snippet
-
-# dv.edish 2.0.1-9001
-
-- [NOT USER-FACING] Update CM.R snippet
-
-# dv.edish 2.0.1-9000
-
-- [NOT USER-FACING] Update communication with papo test snippet
+- [NOT USER-FACING] Update early error feedback snippets, communication with papo test snippet and test snapshot.
 
 # dv.edish 2.0.1
 
