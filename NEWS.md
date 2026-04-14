@@ -1,3 +1,7 @@
+# dv.edish 2.0.1-9003
+
+- [NOT USER-FACING] Update snapshot of snapshot test
+
 # dv.edish 2.0.1-9002
 
 - [NOT USER-FACING] Update DR.R snippet

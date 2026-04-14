@@ -1,6 +1,6 @@
 Package: dv.edish
 Title: eDISH Plot Module for DILI assessment
-Version: 2.0.1-9002
+Version: 2.0.1-9003
 Authors@R: c(
     person("Boehringer-Ingelheim Pharma GmbH & Co.KG", role = c("cph", "fnd")),
     person("Isabel", "Glauss", , "isabel.glauss@boehringer-ingelheim.com", role = c("aut", "cre")),
