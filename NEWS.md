@@ -1,3 +1,7 @@
+# dv.edish 2.0.2
+
+- [NOT USER-FACING] Update early error feedback snippets, communication with papo test snippet and test snapshot.
+
 # dv.edish 2.0.1
 
 - Reinstate UI selection of liver function parameter on y-axis.

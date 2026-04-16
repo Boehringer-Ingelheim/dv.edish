@@ -644,7 +644,6 @@ check_mod_edish <- function(
     at_choices, at_default_val, tbili_choices, tbili_default_val, alp_choice, lb_result_var,
     ref_range_upper_lim_var, default_by_visit, window_days, receiver_id
 ) {
-  warn <- CM$container()
   err <- CM$container()
 
   OK <- check_mod_edish_auto(
@@ -653,7 +652,7 @@ check_mod_edish <- function(
     subjectid_var, arm_var, arm_default_vals, visit_var, baseline_visit_val, lb_test_var,
     at_choices, at_default_val, tbili_choices, tbili_default_val, alp_choice, lb_result_var,
     ref_range_upper_lim_var, window_days, default_by_visit, receiver_id,
-    warn, err
+    err
   )
 
   # Check only if `arm_default_vals` is a character vector
@@ -729,7 +728,7 @@ check_mod_edish <- function(
     )
   }
 
-  res <- list(warnings = warn[["messages"]], errors = err[["messages"]])
+  res <- list(errors = err[["messages"]])
   return(res)
 }
 
