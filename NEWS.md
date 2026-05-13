@@ -1,3 +1,7 @@
+# dv.edish 2.0.2-9000
+
+- Update scrollbar settings for better handling with new Shiny bootstrap.
+
 # dv.edish 2.0.2
 
 - [NOT USER-FACING] Update early error feedback snippets, communication with papo test snippet and test snapshot.
