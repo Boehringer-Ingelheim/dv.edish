@@ -1,6 +1,7 @@
 # dv.edish 2.0.2-9000
 
 - Update scrollbar settings for better handling with new Shiny bootstrap.
+- Enable zoom option.
 
 # dv.edish 2.0.2
 
