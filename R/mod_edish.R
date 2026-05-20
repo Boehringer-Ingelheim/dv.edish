@@ -160,30 +160,21 @@ edish_UI <- function(module_id,
       max = 100,
       step = 1
     ),
+    style = "max-height: 85vh; overflow-y: auto; overflow-x: hidden; padding: 10px;",
     options = shinyWidgets::dropMenuOptions(
-      boundary = "window",
-      placement = "bottom-start",
-      offset = "4, 0"
+      popperOptions = list(
+        modifiers = list(
+          preventOverflow = list(
+            enabled = TRUE,
+            boundariesElement = "scrollParent",
+            priority = list("left", "right", "bottom", "top")
+          )
+        )
+      )
     )
   )
 
   ui <- shiny::tagList(
-    tags$head(
-      tags$style(HTML("
-        /* Force all tab panes to let elements spill outside their borders */
-        .tab-content, .tab-pane, .tab-pane.active {
-          overflow: visible !important;
-        }
-
-        /* Target the actual inner container of the dropMenu directly */
-        .tippy-content {
-          max-height: calc(100vh - 180px) !important;
-          overflow-y: auto !important;
-          overflow-x: hidden !important;
-          padding: 10px !important;
-        }
-      "))
-    ),
     drop_menu,
     gdtools::liberationsansHtmlDependency(),
     ggiraph::girafeOutput(outputId = ns(EDISH$PLOT_ID), width = "100%", height = "600px")
