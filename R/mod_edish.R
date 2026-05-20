@@ -171,7 +171,7 @@ edish_UI <- function(module_id,
         )
       )
     ),
-    style = "max-height: 85vh; overflow-y: auto; overflow-x: hidden; padding: 10px;",
+    style = "max-height: 85vh; overflow-y: auto; overflow-x: hidden; padding: 10px;"
   )
 
   ui <- shiny::tagList(
