@@ -160,7 +160,6 @@ edish_UI <- function(module_id,
       max = 100,
       step = 1
     ),
-    style = "max-height: 85vh; overflow-y: auto; overflow-x: hidden; padding: 10px;",
     options = shinyWidgets::dropMenuOptions(
       popperOptions = list(
         modifiers = list(
@@ -171,7 +170,8 @@ edish_UI <- function(module_id,
           )
         )
       )
-    )
+    ),
+    style = "max-height: 85vh; overflow-y: auto; overflow-x: hidden; padding: 10px;",
   )
 
   ui <- shiny::tagList(
