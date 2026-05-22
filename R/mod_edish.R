@@ -160,7 +160,17 @@ edish_UI <- function(module_id,
       max = 100,
       step = 1
     ),
-    options = shinyWidgets::dropMenuOptions(boundary = "scrollParent"),
+    options = shinyWidgets::dropMenuOptions(
+      popperOptions = list(
+        modifiers = list(
+          preventOverflow = list(
+            enabled = TRUE,
+            boundariesElement = "scrollParent",
+            priority = list("left", "right", "bottom", "top")
+          )
+        )
+      )
+    ),
     style = "max-height: 85vh; overflow-y: auto; overflow-x: hidden; padding: 10px;"
   )
 
@@ -397,7 +407,8 @@ edish_server <- function(
           ggiraph::opts_sizing(rescale = TRUE),
           ggiraph::opts_hover(css = "stroke: blue; stroke-width: 1px; fill-opacity: 0.8;"),
           ggiraph::opts_selection(type = "single", css = "stroke: black; stroke-width: 1px;"),
-          ggiraph::opts_tooltip(css = "border:none; padding:0px;")
+          ggiraph::opts_tooltip(css = "border:none; padding:0px;"),
+          ggiraph::opts_zoom(min = 1, max = 5)
         )
       )
     })
