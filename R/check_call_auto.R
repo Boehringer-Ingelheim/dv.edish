@@ -6,7 +6,7 @@
 check_mod_edish_auto <- function(afmm, datasets, module_id, subject_level_dataset_name, lab_dataset_name,
     lb_date_var, subjectid_var, arm_var, arm_default_vals, visit_var, baseline_visit_val, lb_test_var,
     at_choices, at_default_val, tbili_choices, tbili_default_val, alp_choice, lb_result_var, ref_range_upper_lim_var,
-    default_by_visit, window_days, receiver_id, err) {
+    default_by_visit, window_days, norm_ref_lines, abs_ref_lines, uln_multiples, receiver_id, err) {
     OK <- logical(0)
     used_dataset_names <- new.env(parent = emptyenv())
     OK[["module_id"]] <- CM$check_module_id("module_id", module_id, err)
@@ -71,6 +71,15 @@ check_mod_edish_auto <- function(afmm, datasets, module_id, subject_level_datase
     "      the caller of this function has written manual checks near the call site."
     "NOTE: window_days (integer) tagged as \"manual_check\""
     "      The expectation is that it either does not require automated checks or that"
+    "      the caller of this function has written manual checks near the call site."
+    "NOTE: norm_ref_lines (numeric) has no associated automated checks"
+    "      The expectation is that it either does not require them or that"
+    "      the caller of this function has written manual checks near the call site."
+    "NOTE: abs_ref_lines (numeric) has no associated automated checks"
+    "      The expectation is that it either does not require them or that"
+    "      the caller of this function has written manual checks near the call site."
+    "NOTE: uln_multiples (numeric) has no associated automated checks"
+    "      The expectation is that it either does not require them or that"
     "      the caller of this function has written manual checks near the call site."
     "NOTE: receiver_id (character) has no associated automated checks"
     "      The expectation is that it either does not require them or that"

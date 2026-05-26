@@ -9,9 +9,16 @@ EDISH <- pack_of_constants(
   X_AXIS_ID = "x_axis",
   Y_AXIS_ID = "y_axis",
   AXIS_LABEL = "Parameter:",
+  X_ABS_ID = "x_abs",
+  Y_ABS_ID = "y_abs",
+  ABS_LABEL = "Plot absolute value",
+  # X_LOG_ID = "x_log",
+  # Y_LOG_ID = "y_log",
+  # LOG_LABEL = "Log axis",
   X_REF_ID = "x_ref",
   Y_REF_ID = "y_ref",
-  REF_LABEL = "Threshold / Reference line:",
+  #REF_LABEL = "Threshold / Reference line:",
+  REF_LABEL = "Reference line",
   X_RNG_ID = "x_rng",
   Y_RNG_ID = "y_rng",
   RNG_LABEL = "Range:",
@@ -24,12 +31,18 @@ EDISH <- pack_of_constants(
                         "mDISH (\u00d7 Baseline)" = "Baseline"),
   PLOT_ID = "plot",
   WINDOW_DAYS_ID = "window_days",
-  WINDOW_DAYS_LABEL = "Max. days between peaks:",
+  #WINDOW_DAYS_LABEL = "Max. days between peaks:",
+  WINDOW_DAYS_LABEL = "Max days between peaks",
   BASE_INCL_ID = "base_incl",
-  BASE_INCL_LABEL = "Baseline inclusions:",
+  BASE_INCL_LABEL = "Baseline inclusions relative to ULN multiple:",
   BASE_INCL_CHOICES = c("All" = "ALL",
-                        "Baseline within threshold" = "LO",
-                        "Baseline exceeds threshold" = "HI")
+                        "<" = "LT",
+                        "\u2264" = "LTE",
+                        "\u2265" = "GTE",
+                        ">" = "GT"),
+  ULN_MULTIPLE_ID = "uln_multiple",
+  TIMES_ULN = "\u00d7 ULN",
+  TIMES_BL = "\u00d7 Baseline"
 )
 
 
@@ -88,22 +101,34 @@ edish_UI <- function(module_id,
             choices = at_choices,
             selected = at_default_val
           ),
-          shiny::numericInput(
+          shinyWidgets::numericInputIcon(
             inputId = ns(EDISH$X_REF_ID),
-            label = EDISH$REF_LABEL,
+            label = NULL,
+            # label = EDISH$REF_LABEL,
             value = 3,
             min = 0,
-            max = 100,
-            step = 0.5
+            max = Inf,
+            step = 0.5,
+            icon = list(EDISH$REF_LABEL, "")
           ),
           shinyWidgets::numericRangeInput(
             inputId = ns(EDISH$X_RNG_ID),
             label = EDISH$RNG_LABEL,
             value = c(NA, NA),
             min = 0,
-            max = 100,
-            step = 0.1
+            max = Inf,
+            step = 0.5
           ),
+          shiny::checkboxInput(
+            ns(EDISH$X_ABS_ID),
+            label = EDISH$ABS_LABEL,
+            value = FALSE
+          ),
+          # shiny::checkboxInput(
+          #   ns(EDISH$X_LOG_ID),
+          #   label = EDISH$LOG_LABEL,
+          #   value = TRUE
+          # ),
           shiny::checkboxInput(
             ns(EDISH$BY_VISIT_ID),
             label = shiny::span(EDISH$BY_VISIT_LABEL,
@@ -114,9 +139,17 @@ edish_UI <- function(module_id,
           shiny::radioButtons(
             inputId = ns(EDISH$BASE_INCL_ID),
             label = EDISH$BASE_INCL_LABEL,
-            choices = EDISH$BASE_INCL_CHOICES
+            choices = EDISH$BASE_INCL_CHOICES,
+            inline = TRUE
           ),
-          style = "border: 1px solid grey; padding-left: 15px; padding-right: 15px"
+          shinyWidgets::numericInputIcon(
+            inputId = ns(EDISH$ULN_MULTIPLE_ID),
+            label = NULL,
+            value = NULL,
+            step = 0.5,
+            icon = list(NULL, EDISH$TIMES_ULN)
+          ),
+          style = "border: 1px solid lightgrey; padding-left: 15px; padding-right: 15px"
         ),
         style = "padding-left: 10px; padding-right: 5px"
       ),
@@ -130,36 +163,72 @@ edish_UI <- function(module_id,
             choices = tbili_choices,
             selected = tbili_default_val
           ),
-          shiny::numericInput(
+          shinyWidgets::numericInputIcon(
             inputId = ns(EDISH$Y_REF_ID),
-            label = EDISH$REF_LABEL,
+            label = NULL,
+            # label = EDISH$REF_LABEL,
             value = 2,
             min = 0,
-            max = 100,
-            step = 0.5
+            max = Inf,
+            step = 0.5,
+            icon = list(EDISH$REF_LABEL, "")
           ),
           shinyWidgets::numericRangeInput(
             inputId = ns(EDISH$Y_RNG_ID),
             label = EDISH$RNG_LABEL,
             value = c(NA, NA),
             min = 0,
-            max = 100,
+            max = Inf,
             step = 0.1
           ),
-          style = "border: 1px solid grey; padding-left: 15px; padding-right: 15px"
+          shiny::checkboxInput(
+            ns(EDISH$Y_ABS_ID),
+            label = EDISH$ABS_LABEL,
+            value = FALSE
+          ),
+          # shiny::checkboxInput(
+          #   ns(EDISH$Y_LOG_ID),
+          #   label = EDISH$LOG_LABEL,
+          #   value = TRUE
+          # ),
+          style = "border: 1px solid lightgrey; padding-left: 15px; padding-right: 15px"
         ),
+        shiny::hr(),
+        shiny::div(
+          shinyWidgets::numericInputIcon(
+            inputId = ns(EDISH$WINDOW_DAYS_ID),
+            label = NULL,
+            value = window_days,
+            min = 0,
+            max = 100,
+            step = 1,
+            icon = list(EDISH$WINDOW_DAYS_LABEL)
+          ),
+          style = "padding-left: 15px; padding-right: 15px"
+        ),
+        # shiny::div(
+        #   shiny::numericInput(
+        #     inputId = ns(EDISH$WINDOW_DAYS_ID),
+        #     label = EDISH$WINDOW_DAYS_LABEL,
+        #     value = window_days,
+        #     min = 0,
+        #     max = 100,
+        #     step = 1
+        #   ),
+        #   style = "border: 1px solid lightgrey; padding-left: 15px; padding-right: 15px"
+        # ),
         style = "padding-left: 5px; padding-right: 10px"
       )
     ),
-    shiny::hr(),
-    shiny::numericInput(
-      inputId = ns(EDISH$WINDOW_DAYS_ID),
-      label = EDISH$WINDOW_DAYS_LABEL,
-      value = window_days,
-      min = 0,
-      max = 100,
-      step = 1
-    ),
+    # shiny::hr(),
+    # shiny::numericInput(
+    #   inputId = ns(EDISH$WINDOW_DAYS_ID),
+    #   label = EDISH$WINDOW_DAYS_LABEL,
+    #   value = window_days,
+    #   min = 0,
+    #   max = 100,
+    #   step = 1
+    # ),
     options = shinyWidgets::dropMenuOptions(boundary = "scrollParent"),
     style = "max-height: 85vh; overflow-y: auto; overflow-x: hidden; padding: 10px;"
   )
@@ -208,6 +277,9 @@ edish_server <- function(
     alp_choice = NULL,
     lb_result_var = "LBSTRESN",
     ref_range_upper_lim_var = "LBSTNRHI",
+    norm_ref_lines = NULL,
+    abs_ref_lines = NULL,
+    uln_multiples = NULL,
     on_sbj_click = NULL) {
 
   ##### THESE CHECKS DO NOT GET REPORTED TO THE CONSOLE!!!!
@@ -240,14 +312,14 @@ edish_server <- function(
     # Ensure font "Liberation Sans" is registered, so it can be used by {{ggiraph}}
     gdtools::register_liberationsans()
 
-    # Disable baseline inclusions option for mDISH plot (only relevant to eDISH plot)
-    shiny::observeEvent(input[[EDISH$PLOT_TYPE_ID]], {
-      if (input[[EDISH$PLOT_TYPE_ID]] == "Baseline") {
-        shinyjs::disable(EDISH$BASE_INCL_ID)
-      } else {
-        shinyjs::enable(EDISH$BASE_INCL_ID)
-      }
-    })
+    # # Disable baseline inclusions option for mDISH plot (only relevant to eDISH plot)
+    # shiny::observeEvent(input[[EDISH$PLOT_TYPE_ID]], {
+    #   if (input[[EDISH$PLOT_TYPE_ID]] == "Baseline") {
+    #     shinyjs::disable(EDISH$BASE_INCL_ID)
+    #   } else {
+    #     shinyjs::enable(EDISH$BASE_INCL_ID)
+    #   }
+    # })
 
     # Ensure window is a positive integer
     shiny::observeEvent(input[[EDISH$WINDOW_DAYS_ID]], ignoreInit = TRUE, {
@@ -260,6 +332,64 @@ edish_server <- function(
           shiny::updateNumericInput(session, EDISH$WINDOW_DAYS_ID, value = new_val)
         }
       }
+    })
+
+    # Update x-axis reference line when changing plot type, lab test, or between normalized and absolute
+    shiny::observeEvent(list(input[[EDISH$PLOT_TYPE_ID]], input[[EDISH$X_AXIS_ID]], input[[EDISH$X_ABS_ID]]), {
+
+      ref_lines <- if (input[[EDISH$X_ABS_ID]]) abs_ref_lines else norm_ref_lines
+      ref_val <- as.list(ref_lines)[[input[[EDISH$X_AXIS_ID]]]]
+      if (is.null(ref_val)) ref_val <- NA
+
+      unit_text <- {
+        if (input[[EDISH$X_ABS_ID]]) "abs"
+        else if (input[[EDISH$PLOT_TYPE_ID]] == "ULN") EDISH$TIMES_ULN
+        else EDISH$TIMES_BL
+      }
+
+      shinyWidgets::updateNumericInputIcon(
+        session = session,
+        inputId = EDISH$X_REF_ID,
+        value = ref_val,
+        icon = list(NULL, unit_text)
+      )
+    })
+
+    # Update y-axis reference line when changing plot type, lab test, or between normalized and absolute
+    shiny::observeEvent(list(input[[EDISH$PLOT_TYPE_ID]], input[[EDISH$Y_AXIS_ID]], input[[EDISH$Y_ABS_ID]]), {
+
+      ref_lines <- if (input[[EDISH$Y_ABS_ID]]) abs_ref_lines else norm_ref_lines
+      ref_val <- as.list(ref_lines)[[input[[EDISH$Y_AXIS_ID]]]]
+      if (is.null(ref_val)) ref_val <- NA
+
+      unit_text <- {
+        if (input[[EDISH$Y_ABS_ID]]) "abs"
+        else if (input[[EDISH$PLOT_TYPE_ID]] == "ULN") EDISH$TIMES_ULN
+        else EDISH$TIMES_BL
+      }
+
+      shinyWidgets::updateNumericInputIcon(
+        session = session,
+        inputId = EDISH$Y_REF_ID,
+        value = ref_val,
+        icon = list(NULL, unit_text)
+      )
+    })
+
+    # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    # Update ULN multiple when changing lab test or ????
+    shiny::observeEvent(input[[EDISH$X_AXIS_ID]], {
+
+      #browser()
+      ref_val <- as.list(uln_multiples)[[input[[EDISH$X_AXIS_ID]]]]
+ # if is.null(ref_val) input[[EDISH$X_REF_ID]]
+
+      shinyWidgets::updateNumericInputIcon(
+        session = session,
+        inputId = EDISH$ULN_MULTIPLE_ID,
+        value = ref_val
+        #icon = list(NULL, EDISH$TIMES_ULN)
+      )
     })
 
     work_data <- shiny::reactive({
@@ -364,8 +494,8 @@ edish_server <- function(
         sel_arm = input[[EDISH$ARM_ID]],
         lb_test_var = lb_test_var,
         sel_lb_test = input[[EDISH$X_AXIS_ID]],
-        x_ref = input[[EDISH$X_REF_ID]],
-        base_incl = input[[EDISH$BASE_INCL_ID]]
+        base_incl = input[[EDISH$BASE_INCL_ID]],
+        uln_multiple = input[[EDISH$ULN_MULTIPLE_ID]]
       )
     })
 
@@ -379,6 +509,8 @@ edish_server <- function(
         sel_x = input[[EDISH$X_AXIS_ID]],
         sel_y = input[[EDISH$Y_AXIS_ID]],
         norm_ref_type = input[[EDISH$PLOT_TYPE_ID]],
+        x_abs = input[[EDISH$X_ABS_ID]],
+        y_abs = input[[EDISH$Y_ABS_ID]],
         x_ref_line_num = input[[EDISH$X_REF_ID]],
         y_ref_line_num = input[[EDISH$Y_REF_ID]],
         x_rng_lower = input[[EDISH$X_RNG_ID]][1],
@@ -501,6 +633,21 @@ edish_server <- function(
 #'
 #' Window of the number of days considered between peaks.
 #'
+#' @param norm_ref_lines `[numeric(1+) | NULL]`
+#'
+#' A named numeric vector of reference line values corresponding to normalized value laboratory
+#' tests. Each value should be named with a value from `at_choices` or `tbili_choices`.
+#'
+#' @param abs_ref_lines `[numeric(1+) | NULL]`
+#'
+#' A named numeric vector of reference line values corresponding to absolute value laboratory
+#' tests. Each value should be named with a value from `at_choices` or `tbili_choices`.
+#'
+#' @param uln_multiples `[numeric(1+) | NULL]`
+#'
+#' A named numeric vector of ULN multiples corresponding to normalized value laboratory
+#' tests. Each value should be named with a value from `at_choices`.
+#'
 #' @param receiver_id `[character(1) | NULL]`
 #'
 #' Character string defining the ID of the module to which to send a subject ID. The
@@ -535,6 +682,13 @@ mod_edish <- function(
     ref_range_upper_lim_var = "LBSTNRHI",
     default_by_visit = FALSE,
     window_days = NULL,
+    norm_ref_lines = c("Alanine Aminotransferase" = 3,
+                       "Aspartate Aminotransferase" = 3,
+                       "Bilirubin" = 2),
+    abs_ref_lines = c("Alanine Aminotransferase" = 300,
+                      "Aspartate Aminotransferase" = 300),
+    uln_multiples = c("Alanine Aminotransferase" = 1.5,
+                      "Aspartate Aminotransferase" = 1.5),
     receiver_id = NULL) {
 
   mod <- list(
@@ -580,6 +734,9 @@ mod_edish <- function(
         alp_choice = alp_choice,
         lb_result_var = lb_result_var,
         ref_range_upper_lim_var = ref_range_upper_lim_var,
+        norm_ref_lines = norm_ref_lines,
+        abs_ref_lines = abs_ref_lines,
+        uln_multiples = uln_multiples,
         on_sbj_click = on_sbj_click_fun
       )
     },
@@ -612,6 +769,9 @@ mod_edish_API_docs <- list(
   ref_range_upper_lim_var = list(""),
   default_by_visit = list(""),
   window_days = list(""),
+  norm_ref_lines = list(""),
+  abs_ref_lines = list(""),
+  uln_multiples = list(""),
   receiver_id = list("")
 )
 
@@ -635,6 +795,9 @@ mod_edish_API_spec <- TC$group(
   ref_range_upper_lim_var = TC$col("lab_dataset_name", TC$numeric()) |> TC$flag("optional"),
   default_by_visit = TC$logical() |> TC$flag("manual_check"),
   window_days = TC$integer() |> TC$flag("optional", "manual_check"),
+  norm_ref_lines = TC$numeric() |> TC$flag("one_or_more", "optional"),
+  abs_ref_lines = TC$numeric() |> TC$flag("one_or_more", "optional"),
+  uln_multiples = TC$numeric() |> TC$flag("one_or_more", "optional"),
   receiver_id = TC$character() |> TC$flag("optional")
 ) |> TC$attach_docs(mod_edish_API_docs)
 
@@ -642,7 +805,8 @@ check_mod_edish <- function(
     afmm, datasets, module_id, subject_level_dataset_name, lab_dataset_name, lb_date_var,
     subjectid_var, arm_var, arm_default_vals, visit_var, baseline_visit_val, lb_test_var,
     at_choices, at_default_val, tbili_choices, tbili_default_val, alp_choice, lb_result_var,
-    ref_range_upper_lim_var, default_by_visit, window_days, receiver_id
+    ref_range_upper_lim_var, default_by_visit, window_days,
+    norm_ref_lines, abs_ref_lines, uln_multiples, receiver_id
 ) {
   err <- CM$container()
 
@@ -651,7 +815,8 @@ check_mod_edish <- function(
     module_id, subject_level_dataset_name, lab_dataset_name, lb_date_var,
     subjectid_var, arm_var, arm_default_vals, visit_var, baseline_visit_val, lb_test_var,
     at_choices, at_default_val, tbili_choices, tbili_default_val, alp_choice, lb_result_var,
-    ref_range_upper_lim_var, window_days, default_by_visit, receiver_id,
+    ref_range_upper_lim_var, default_by_visit, window_days,
+    norm_ref_lines, abs_ref_lines, uln_multiples, receiver_id,
     err
   )
 

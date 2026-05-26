@@ -1,6 +1,6 @@
 Package: dv.edish
 Title: eDISH Plot Module for DILI assessment
-Version: 2.0.2
+Version: 2.0.2-0002
 Authors@R: c(
     person("Boehringer-Ingelheim Pharma GmbH & Co.KG", role = c("cph", "fnd")),
     person("Isabel", "Glauss", , "isabel.glauss@boehringer-ingelheim.com", role = c("aut", "cre")),
@@ -42,4 +42,4 @@ Config/testthat/edition: 3
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
