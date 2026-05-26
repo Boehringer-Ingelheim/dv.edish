@@ -17,6 +17,9 @@ edish_server(
   alp_choice = NULL,
   lb_result_var = "LBSTRESN",
   ref_range_upper_lim_var = "LBSTNRHI",
+  norm_ref_lines = NULL,
+  abs_ref_lines = NULL,
+  uln_multiples = NULL,
   on_sbj_click = NULL
 )
 }
@@ -68,6 +71,21 @@ Name of the variable containing results of the laboratory test.}
 \item{ref_range_upper_lim_var}{\verb{[character(1)]}
 
 Name of the variable containing the reference range upper limits.}
+
+\item{norm_ref_lines}{\verb{[numeric(1+) | NULL]}
+
+A named numeric vector of reference line values corresponding to normalized value laboratory
+tests. Each value should be named with a value from \code{at_choices} or \code{tbili_choices}.}
+
+\item{abs_ref_lines}{\verb{[numeric(1+) | NULL]}
+
+A named numeric vector of reference line values corresponding to absolute value laboratory
+tests. Each value should be named with a value from \code{at_choices} or \code{tbili_choices}.}
+
+\item{uln_multiples}{\verb{[numeric(1+) | NULL]}
+
+A named numeric vector of ULN multiples corresponding to normalized value laboratory
+tests. Each value should be named with a value from \code{at_choices}.}
 
 \item{on_sbj_click}{\verb{[function() | NULL]}
 

@@ -24,6 +24,10 @@ mod_edish(
   ref_range_upper_lim_var = "LBSTNRHI",
   default_by_visit = FALSE,
   window_days = NULL,
+  norm_ref_lines = c(`Alanine Aminotransferase` = 3, `Aspartate Aminotransferase` = 3,
+    Bilirubin = 2),
+  abs_ref_lines = c(`Alanine Aminotransferase` = 300, `Aspartate Aminotransferase` = 300),
+  uln_multiples = c(`Alanine Aminotransferase` = 1.5, `Aspartate Aminotransferase` = 1.5),
   receiver_id = NULL
 )
 }
@@ -104,6 +108,21 @@ A flag to indicate the default of whether or not to plot aminotransferase values
 \item{window_days}{\verb{[integer(1) | NULL]}
 
 Window of the number of days considered between peaks.}
+
+\item{norm_ref_lines}{\verb{[numeric(1+) | NULL]}
+
+A named numeric vector of reference line values corresponding to normalized value laboratory
+tests. Each value should be named with a value from \code{at_choices} or \code{tbili_choices}.}
+
+\item{abs_ref_lines}{\verb{[numeric(1+) | NULL]}
+
+A named numeric vector of reference line values corresponding to absolute value laboratory
+tests. Each value should be named with a value from \code{at_choices} or \code{tbili_choices}.}
+
+\item{uln_multiples}{\verb{[numeric(1+) | NULL]}
+
+A named numeric vector of ULN multiples corresponding to normalized value laboratory
+tests. Each value should be named with a value from \code{at_choices}.}
 
 \item{receiver_id}{\verb{[character(1) | NULL]}
 
