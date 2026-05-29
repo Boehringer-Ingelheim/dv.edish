@@ -5,8 +5,9 @@
 # dv.edish::mod_edish
 check_mod_edish_auto <- function(afmm, datasets, module_id, subject_level_dataset_name, lab_dataset_name,
     lb_date_var, subjectid_var, arm_var, arm_default_vals, visit_var, baseline_visit_val, lb_test_var,
-    at_choices, at_default_val, tbili_choices, tbili_default_val, alp_choice, lb_result_var, ref_range_upper_lim_var,
-    default_by_visit, window_days, norm_ref_lines, abs_ref_lines, uln_multiples, receiver_id, err) {
+    at_choices, at_default_val, tbili_choices, tbili_default_val, alp_choice, lb_result_var, lb_unit_var,
+    ref_range_upper_lim_var, default_by_visit, window_days, norm_ref_lines, abs_ref_lines, uln_multiples,
+    receiver_id, err) {
     OK <- logical(0)
     used_dataset_names <- new.env(parent = emptyenv())
     OK[["module_id"]] <- CM$check_module_id("module_id", module_id, err)
@@ -62,6 +63,10 @@ check_mod_edish_auto <- function(afmm, datasets, module_id, subject_level_datase
     flags <- structure(list(), names = character(0))
     OK[["lb_result_var"]] <- OK[["lab_dataset_name"]] && CM$check_dataset_colum_name("lb_result_var",
         lb_result_var, subkind, flags, lab_dataset_name, datasets[[lab_dataset_name]], err)
+    subkind <- list(kind = "or", options = list(list(kind = "character"), list(kind = "factor")))
+    flags <- list(optional = TRUE)
+    OK[["lb_unit_var"]] <- OK[["lab_dataset_name"]] && CM$check_dataset_colum_name("lb_unit_var", lb_unit_var,
+        subkind, flags, lab_dataset_name, datasets[[lab_dataset_name]], err)
     subkind <- list(kind = "numeric", min = NA, max = NA)
     flags <- list(optional = TRUE)
     OK[["ref_range_upper_lim_var"]] <- OK[["lab_dataset_name"]] && CM$check_dataset_colum_name("ref_range_upper_lim_var",

@@ -372,6 +372,14 @@ filter_data <- function(dataset,
 #'
 #' String specifying the laboratory test to be displayed on the y-axis.
 #'
+#' @param unit_x `[character(1)] | NULL`
+#'
+#' String specifying the laboratory test unit to be displayed on the x-axis.
+#'
+#' @param unit_y `[character(1)] | NULL`
+#'
+#' String specifying the laboratory test unit to be displayed on the y-axis.
+#'
 #' @param norm_ref_type `[character(1)]`
 #'
 #' String indicating normalization reference type, either `"ULN"` or `"Baseline"`.
@@ -424,6 +432,8 @@ generate_plot <- function(dataset,
                           arm_var,
                           sel_x,
                           sel_y,
+                          unit_x,
+                          unit_y,
                           norm_ref_type,
                           x_abs,
                           y_abs,
@@ -439,8 +449,12 @@ generate_plot <- function(dataset,
   x_var <- ifelse(x_abs, ".abs_at", ".norm_at")
   y_var <- ifelse(y_abs, ".abs_tbili", ".norm_tbili")
 
-  x_label <- ifelse(x_abs, sel_x, paste0(sel_x, " (\u00d7 ", norm_ref_type, ")"))
-  y_label <- ifelse(y_abs, sel_y, paste0(sel_y, " (\u00d7 ", norm_ref_type, ")"))
+  x_label <- ifelse(x_abs,
+                    ifelse(is.null(unit_x), sel_x, paste0(sel_x, " (", unit_x, ")")),
+                    paste0(sel_x, " (\u00d7 ", norm_ref_type, ")"))
+  y_label <- ifelse(y_abs,
+                    ifelse(is.null(unit_y), sel_y, paste0(sel_y, " (", unit_y, ")")),
+                    paste0(sel_y, " (\u00d7 ", norm_ref_type, ")"))
 
   # Tooltip preparation ----
 
