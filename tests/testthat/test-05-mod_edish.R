@@ -77,6 +77,9 @@ test_that("the app displays the correct plot data after selections (snapshot tes
   # 4. Remove extra newlines introduced in ggplot2 4.0
   plot_output <- gsub("\\\\n   \\\\n", "\\\\n", plot_output)
 
+  # 5. Replace \n with actual new lines to make review easier
+  plot_output <- gsub("\\\\n", "\n", plot_output)
+
   # Re-assign the cleaned string
   app_vals$output$`edish-plot` <- plot_output
 
