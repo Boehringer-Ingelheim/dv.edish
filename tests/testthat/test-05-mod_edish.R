@@ -18,9 +18,13 @@ test_that("the default values are correct at app launch" |>
   app$wait_for_idle()
 
   # Get values after launch and test
-  actual <- app$get_values(input = c("edish-plot_type", "edish-arm_id", "edish-x_axis", "edish-y_axis",
-                                     "edish-x_ref", "edish-y_ref", "edish-x_rng", "edish-y_rng",
-                                     "edish-window_days", "edish-by_visit", "edish-base_incl"))
+  actual <- app$get_values(input = c("edish-plot_type", "edish-arm_id",
+                                     "edish-x_axis", "edish-y_axis",
+                                     "edish-x_ref", "edish-y_ref",
+                                     "edish-x_abs", "edish-y_abs",
+                                     "edish-x_rng", "edish-y_rng",
+                                     "edish-base_incl", "edish-uln_multiple",
+                                     "edish-window_days", "edish-by_visit"))
 
   expected <- list(
     input = list(
@@ -28,12 +32,15 @@ test_that("the default values are correct at app launch" |>
       `edish-base_incl` = "ALL",
       `edish-by_visit` = FALSE,
       `edish-plot_type` = "ULN",
+      `edish-uln_multiple` = NA,
       `edish-window_days` = NA,
+      `edish-x_abs` = FALSE,
       `edish-x_axis` = "alt",
-      `edish-x_ref` = 3L,
+      `edish-x_ref` = NA,
       `edish-x_rng` = NULL,
+      `edish-y_abs` = FALSE,
       `edish-y_axis` = "tbili",
-      `edish-y_ref` = 2L,
+      `edish-y_ref` = NA,
       `edish-y_rng` = NULL
     )
   )
