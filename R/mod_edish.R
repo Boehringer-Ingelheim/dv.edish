@@ -73,20 +73,6 @@ edish_UI <- function(module_id,
 
   ns <- shiny::NS(module_id)
 
-  drop_menu_options <- shinyWidgets::dropMenuOptions(
-    popperOptions = list(
-      modifiers = list(
-        preventOverflow = list(
-          enabled = TRUE,
-          boundariesElement = "scrollParent",
-          priority = list("left", "right", "bottom", "top")
-        )
-      )
-    )
-  )
-
-  drop_menu_style <- "max-height: 85vh; overflow-y: auto; overflow-x: hidden; padding: 10px;"
-
   drop_menu <- shinyWidgets::dropMenu(
     tag = shiny::actionButton(
       inputId = ns(EDISH$PLOT_OPTIONS_ID),
@@ -104,10 +90,22 @@ edish_UI <- function(module_id,
       choices = arm_default_vals,
       selected = arm_default_vals,
       multiple = TRUE
-    ),
-    options = drop_menu_options,
-    style = drop_menu_style
+    )
   )
+
+  drop_menu_options <- shinyWidgets::dropMenuOptions(
+    popperOptions = list(
+      modifiers = list(
+        preventOverflow = list(
+          enabled = TRUE,
+          boundariesElement = "scrollParent",
+          priority = list("left", "right", "bottom", "top")
+        )
+      )
+    )
+  )
+
+  drop_menu_style <- "max-height: 85vh; overflow-y: auto; overflow-x: hidden; padding: 10px;"
 
   drop_menu_x <- shinyWidgets::dropMenu(
     tag = shiny::actionButton(
@@ -320,18 +318,10 @@ edish_server <- function(
         ref_lines <- if (input[[EDISH$X_ABS_ID]]) abs_ref_lines else norm_ref_lines
         ref_val <- as.list(ref_lines)[[input[[EDISH$X_AXIS_ID]]]]
 
-        # Deal with cases without look-up values
-        if (is.null(ref_val)) {
-          if (!input[[EDISH$X_ABS_ID]] && is.null(norm_ref_lines)) {
-            # Use default when normalized reference line values not provided
-            ref_val <- EDISH$DEFAULT_X_REF_NORM
-          } else if (input[[EDISH$X_ABS_ID]] && is.null(abs_ref_lines)) {
-            # Use default when absolute reference line values not provided
-            ref_val <- EDISH$DEFAULT_X_REF_ABS
-          } else {
-            ref_val <- NA
-          }
-        }
+        # Assign default for cases without look-up values
+        if (is.null(ref_val)) ref_val <- ifelse(input[[EDISH$X_ABS_ID]],
+                                                EDISH$DEFAULT_X_REF_ABS,
+                                                EDISH$DEFAULT_X_REF_NORM)
       }
 
       unit_text <- {
@@ -359,18 +349,10 @@ edish_server <- function(
         ref_lines <- if (input[[EDISH$Y_ABS_ID]]) abs_ref_lines else norm_ref_lines
         ref_val <- as.list(ref_lines)[[input[[EDISH$Y_AXIS_ID]]]]
 
-        # Deal with cases without look-up values
-        if (is.null(ref_val)) {
-          if (!input[[EDISH$Y_ABS_ID]] && is.null(norm_ref_lines)) {
-            # Use default when normalized reference line values not provided
-            ref_val <- EDISH$DEFAULT_Y_REF_NORM
-          } else if (input[[EDISH$Y_ABS_ID]] && is.null(abs_ref_lines)) {
-            # Use default when absolute reference line values not provided
-            ref_val <- EDISH$DEFAULT_Y_REF_ABS
-          } else {
-            ref_val <- NA
-          }
-        }
+        # Assign default for cases without look-up values
+        if (is.null(ref_val)) ref_val <- ifelse(input[[EDISH$Y_ABS_ID]],
+                                                EDISH$DEFAULT_Y_REF_ABS,
+                                                EDISH$DEFAULT_Y_REF_NORM)
       }
 
       unit_text <- {
@@ -397,15 +379,8 @@ edish_server <- function(
       } else {
         ref_val <- as.list(uln_multiples)[[input[[EDISH$X_AXIS_ID]]]]
 
-        # Deal with cases without look-up values
-        if (is.null(ref_val)) {
-          if (is.null(uln_multiples)) {
-            # Use default when ULN multiples not provided
-            ref_val <- EDISH$DEFAULT_ULN_MULTIPLE
-          } else {
-            ref_val <- NA
-          }
-        }
+        # Assign default for cases without look-up values
+        if (is.null(ref_val)) ref_val <- EDISH$DEFAULT_ULN_MULTIPLE
       }
 
       shinyWidgets::updateNumericInputIcon(
@@ -467,16 +442,6 @@ edish_server <- function(
     r_values <- shiny::reactiveValues()
 
     shiny::onRestore(function(state) {
-
-      if (FALSE) {
-        formatted_text <- paste(capture.output(print(state$input)), collapse = "\n")
-        shiny::showModal(shiny::modalDialog(
-          title = "Session Restored!",
-          tags$pre(formatted_text),
-          easyClose = TRUE,
-          footer = modalButton("Got it")
-        ))
-      }
 
       if (length(state$input) > 0) {
 
