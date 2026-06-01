@@ -39,7 +39,12 @@ EDISH <- pack_of_constants(
                         ">" = "GT"),
   ULN_MULTIPLE_ID = "uln_multiple",
   TIMES_ULN = "\u00d7 ULN",
-  TIMES_BL = "\u00d7 Baseline"
+  TIMES_BL = "\u00d7 Baseline",
+  DEFAULT_X_REF_NORM = 3,
+  DEFAULT_X_REF_ABS = 300,
+  DEFAULT_Y_REF_NORM = 2,
+  DEFAULT_Y_REF_ABS = NA,
+  DEFAULT_ULN_MULTIPLE = 1.5
 )
 
 
@@ -118,7 +123,7 @@ edish_UI <- function(module_id,
     shinyWidgets::numericInputIcon(
       inputId = ns(EDISH$X_REF_ID),
       label = NULL,
-      value = 3,
+      value = NA,
       min = 0,
       max = Inf,
       step = 0.5,
@@ -153,7 +158,7 @@ edish_UI <- function(module_id,
     shinyWidgets::numericInputIcon(
       inputId = ns(EDISH$ULN_MULTIPLE_ID),
       label = NULL,
-      value = NULL,
+      value = NA,
       step = 0.5,
       icon = list(NULL, EDISH$TIMES_ULN)
     ),
@@ -175,7 +180,7 @@ edish_UI <- function(module_id,
     shinyWidgets::numericInputIcon(
       inputId = ns(EDISH$Y_REF_ID),
       label = NULL,
-      value = 2,
+      value = NA,
       min = 0,
       max = Inf,
       step = 0.5,
@@ -307,9 +312,27 @@ edish_server <- function(
     # Update x-axis reference line when changing plot type, lab test, or between normalized and absolute
     shiny::observeEvent(list(input[[EDISH$PLOT_TYPE_ID]], input[[EDISH$X_AXIS_ID]], input[[EDISH$X_ABS_ID]]), {
 
-      ref_lines <- if (input[[EDISH$X_ABS_ID]]) abs_ref_lines else norm_ref_lines
-      ref_val <- as.list(ref_lines)[[input[[EDISH$X_AXIS_ID]]]]
-      if (is.null(ref_val)) ref_val <- NA
+      if (!is.null(r_values[[EDISH$X_REF_ID]])) {
+        # On bookmark restore, keep value
+        ref_val <- input[[EDISH$X_REF_ID]]
+        r_values[[EDISH$X_REF_ID]] <- NULL
+      } else {
+        ref_lines <- if (input[[EDISH$X_ABS_ID]]) abs_ref_lines else norm_ref_lines
+        ref_val <- as.list(ref_lines)[[input[[EDISH$X_AXIS_ID]]]]
+
+        # Deal with cases without look-up values
+        if (is.null(ref_val)) {
+          if (!input[[EDISH$X_ABS_ID]] && is.null(norm_ref_lines)) {
+            # Use default when normalized reference line values not provided
+            ref_val <- EDISH$DEFAULT_X_REF_NORM
+          } else if (input[[EDISH$X_ABS_ID]] && is.null(abs_ref_lines)) {
+            # Use default when absolute reference line values not provided
+            ref_val <- EDISH$DEFAULT_X_REF_ABS
+          } else {
+            ref_val <- NA
+          }
+        }
+      }
 
       unit_text <- {
         if (input[[EDISH$X_ABS_ID]]) "abs"
@@ -328,9 +351,27 @@ edish_server <- function(
     # Update y-axis reference line when changing plot type, lab test, or between normalized and absolute
     shiny::observeEvent(list(input[[EDISH$PLOT_TYPE_ID]], input[[EDISH$Y_AXIS_ID]], input[[EDISH$Y_ABS_ID]]), {
 
-      ref_lines <- if (input[[EDISH$Y_ABS_ID]]) abs_ref_lines else norm_ref_lines
-      ref_val <- as.list(ref_lines)[[input[[EDISH$Y_AXIS_ID]]]]
-      if (is.null(ref_val)) ref_val <- NA
+      if (!is.null(r_values[[EDISH$Y_REF_ID]])) {
+        # On bookmark restore, keep value
+        ref_val <- input[[EDISH$Y_REF_ID]]
+        r_values[[EDISH$Y_REF_ID]] <- NULL
+      } else {
+        ref_lines <- if (input[[EDISH$Y_ABS_ID]]) abs_ref_lines else norm_ref_lines
+        ref_val <- as.list(ref_lines)[[input[[EDISH$Y_AXIS_ID]]]]
+
+        # Deal with cases without look-up values
+        if (is.null(ref_val)) {
+          if (!input[[EDISH$Y_ABS_ID]] && is.null(norm_ref_lines)) {
+            # Use default when normalized reference line values not provided
+            ref_val <- EDISH$DEFAULT_Y_REF_NORM
+          } else if (input[[EDISH$Y_ABS_ID]] && is.null(abs_ref_lines)) {
+            # Use default when absolute reference line values not provided
+            ref_val <- EDISH$DEFAULT_Y_REF_ABS
+          } else {
+            ref_val <- NA
+          }
+        }
+      }
 
       unit_text <- {
         if (input[[EDISH$Y_ABS_ID]]) "abs"
@@ -349,7 +390,23 @@ edish_server <- function(
     # Update ULN multiple when changing x-axis lab test
     shiny::observeEvent(input[[EDISH$X_AXIS_ID]], {
 
-      ref_val <- as.list(uln_multiples)[[input[[EDISH$X_AXIS_ID]]]]
+      if (!is.null(r_values[[EDISH$ULN_MULTIPLE_ID]])) {
+        # On bookmark restore, keep value
+        ref_val <- input[[EDISH$ULN_MULTIPLE_ID]]
+        r_values[[EDISH$ULN_MULTIPLE_ID]] <- NULL
+      } else {
+        ref_val <- as.list(uln_multiples)[[input[[EDISH$X_AXIS_ID]]]]
+
+        # Deal with cases without look-up values
+        if (is.null(ref_val)) {
+          if (is.null(uln_multiples)) {
+            # Use default when ULN multiples not provided
+            ref_val <- EDISH$DEFAULT_ULN_MULTIPLE
+          } else {
+            ref_val <- NA
+          }
+        }
+      }
 
       shinyWidgets::updateNumericInputIcon(
         session = session,
@@ -411,8 +468,28 @@ edish_server <- function(
 
     shiny::onRestore(function(state) {
 
-      # Store arm selections from restored bookmarked state, to be applied after work data has been created
-      if (length(state$input) > 0) r_values[[EDISH$ARM_ID]] <- state$input[[EDISH$ARM_ID]]
+      if (FALSE) {
+        formatted_text <- paste(capture.output(print(state$input)), collapse = "\n")
+        shiny::showModal(shiny::modalDialog(
+          title = "Session Restored!",
+          tags$pre(formatted_text),
+          easyClose = TRUE,
+          footer = modalButton("Got it")
+        ))
+      }
+
+      if (length(state$input) > 0) {
+
+        # Store arm selections from restored bookmarked state, to be applied after work data has been created
+        r_values[[EDISH$ARM_ID]] <- state$input[[EDISH$ARM_ID]]
+
+        # Store reference line values from restored bookmarked state, to be used when UI controls updated
+        r_values[[EDISH$X_REF_ID]] <- state$input[[EDISH$X_REF_ID]]
+        r_values[[EDISH$Y_REF_ID]] <- state$input[[EDISH$Y_REF_ID]]
+
+        # Store ULN multiple from restored bookmarked state, to be used when UI control updated
+        r_values[[EDISH$ULN_MULTIPLE_ID]] <- state$input[[EDISH$ULN_MULTIPLE_ID]]
+      }
 
       # When minimum or maximum from `shinyWidgets::numericRangeInput` is unspecified, the underlying
       # value is represented as `NA`. But when calling `shinyWidgets::updateNumericRangeInput()`, it
