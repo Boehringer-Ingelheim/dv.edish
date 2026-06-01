@@ -25,7 +25,7 @@
       [1] "Baseline"
       
       $input$`edish-uln_multiple`
-      [1] NA
+      [1] 1.5
       
       $input$`edish-window_days`
       [1] 10
@@ -45,7 +45,7 @@
       [1] FALSE
       
       $input$`edish-x_ref`
-      [1] NA
+      [1] 3
       
       $input$`edish-x_rng`
       NULL
@@ -65,7 +65,7 @@
       [1] FALSE
       
       $input$`edish-y_ref`
-      [1] NA
+      [1] 2
       
       $input$`edish-y_rng`
       NULL
@@ -88,46 +88,50 @@
          <rect x='0' y='0' width='576' height='383.76' fill='#FFFFFF' fill-opacity='1' stroke='#FFFFFF' stroke-opacity='1' stroke-width='0.75' stroke-linejoin='round' stroke-linecap='round' class='ggiraph-svg-bg'/>
         <\/g>
         <g clip-path='url(#svg_CONST)'>
-         <polyline points='28.80,352.60 515.46,352.60' fill='none' stroke='#EBEBEB' stroke-opacity='1' stroke-width='0.87' stroke-linejoin='round' stroke-linecap='butt'/>
-         <polyline points='28.80,309.53 515.46,309.53' fill='none' stroke='#EBEBEB' stroke-opacity='1' stroke-width='0.87' stroke-linejoin='round' stroke-linecap='butt'/>
-         <polyline points='28.80,271.54 515.46,271.54' fill='none' stroke='#EBEBEB' stroke-opacity='1' stroke-width='0.87' stroke-linejoin='round' stroke-linecap='butt'/>
-         <polyline points='28.80,237.55 515.46,237.55' fill='none' stroke='#EBEBEB' stroke-opacity='1' stroke-width='0.87' stroke-linejoin='round' stroke-linecap='butt'/>
-         <polyline points='28.80,13.97 515.46,13.97' fill='none' stroke='#EBEBEB' stroke-opacity='1' stroke-width='0.87' stroke-linejoin='round' stroke-linecap='butt'/>
-         <polyline points='243.89,358.51 243.89,4.48' fill='none' stroke='#EBEBEB' stroke-opacity='1' stroke-width='0.87' stroke-linejoin='round' stroke-linecap='butt'/>
-         <polyline points='301.81,358.51 301.81,4.48' fill='none' stroke='#EBEBEB' stroke-opacity='1' stroke-width='0.87' stroke-linejoin='round' stroke-linecap='butt'/>
-         <polyline points='335.69,358.51 335.69,4.48' fill='none' stroke='#EBEBEB' stroke-opacity='1' stroke-width='0.87' stroke-linejoin='round' stroke-linecap='butt'/>
-         <polyline points='359.73,358.51 359.73,4.48' fill='none' stroke='#EBEBEB' stroke-opacity='1' stroke-width='0.87' stroke-linejoin='round' stroke-linecap='butt'/>
-         <polyline points='378.38,358.51 378.38,4.48' fill='none' stroke='#EBEBEB' stroke-opacity='1' stroke-width='0.87' stroke-linejoin='round' stroke-linecap='butt'/>
-         <polyline points='393.62,358.51 393.62,4.48' fill='none' stroke='#EBEBEB' stroke-opacity='1' stroke-width='0.87' stroke-linejoin='round' stroke-linecap='butt'/>
-         <polyline points='406.50,358.51 406.50,4.48' fill='none' stroke='#EBEBEB' stroke-opacity='1' stroke-width='0.87' stroke-linejoin='round' stroke-linecap='butt'/>
-         <polyline points='417.66,358.51 417.66,4.48' fill='none' stroke='#EBEBEB' stroke-opacity='1' stroke-width='0.87' stroke-linejoin='round' stroke-linecap='butt'/>
-         <polyline points='427.50,358.51 427.50,4.48' fill='none' stroke='#EBEBEB' stroke-opacity='1' stroke-width='0.87' stroke-linejoin='round' stroke-linecap='butt'/>
-         <polyline points='436.30,358.51 436.30,4.48' fill='none' stroke='#EBEBEB' stroke-opacity='1' stroke-width='0.87' stroke-linejoin='round' stroke-linecap='butt'/>
-         <polyline points='494.22,358.51 494.22,4.48' fill='none' stroke='#EBEBEB' stroke-opacity='1' stroke-width='0.87' stroke-linejoin='round' stroke-linecap='butt'/>
-         <polyline id='svg_CONST' points='493.33,124.55 335.88,20.58' fill='none' stroke='#F8766D' stroke-opacity='0.3' stroke-width='1.07' stroke-linejoin='round' stroke-linecap='butt' data-id='01'/>
-         <polyline id='svg_CONST' points='394.22,269.26 50.92,342.41' fill='none' stroke='#00BFC4' stroke-opacity='0.3' stroke-width='1.07' stroke-linejoin='round' stroke-linecap='butt' data-id='02'/>
-         <circle id='svg_CONST' cx='493.33' cy='124.55' r='1.6pt' fill='#F8766D' fill-opacity='0.8' stroke='#F8766D' stroke-opacity='0.8' title='&amp;lt;div style=&amp;#39;background-color:#F8766D; color:white; border:1px solid white; padding:2px;&amp;#39;&amp;gt;Subject: 01&amp;lt;br&amp;gt;Arm: arm1&amp;lt;br&amp;gt;---&amp;lt;br&amp;gt;ast (× Baseline): 1.979&amp;lt;br&amp;gt;&amp;amp;nbsp;&amp;amp;nbsp;Visit: visit 2&amp;lt;br&amp;gt;&amp;amp;nbsp;&amp;amp;nbsp;Date: 2025-02-14 (1st)&amp;lt;br&amp;gt;&amp;amp;nbsp;&amp;amp;nbsp;ALP/Baseline ≤ 2 (0.146)&amp;lt;br&amp;gt;---&amp;lt;br&amp;gt;tbili (× Baseline): 1.420&amp;lt;br&amp;gt;&amp;amp;nbsp;&amp;amp;nbsp;Visit: visit 2&amp;lt;br&amp;gt;&amp;amp;nbsp;&amp;amp;nbsp;Date: 2025-02-14 (2nd)&amp;lt;br&amp;gt;---&amp;lt;br&amp;gt;Time between peaks: 0 days&amp;lt;/div&amp;gt;' data-id='01'/>
-         <circle id='svg_CONST' cx='335.88' cy='20.58' r='1.6pt' fill='#F8766D' fill-opacity='0.8' stroke='#F8766D' stroke-opacity='0.8' title='&amp;lt;div style=&amp;#39;background-color:#F8766D; color:white; border:1px solid white; padding:2px;&amp;#39;&amp;gt;Subject: 01&amp;lt;br&amp;gt;Arm: arm1&amp;lt;br&amp;gt;---&amp;lt;br&amp;gt;ast (× Baseline): 0.301&amp;lt;br&amp;gt;&amp;amp;nbsp;&amp;amp;nbsp;Visit: visit 3&amp;lt;br&amp;gt;&amp;amp;nbsp;&amp;amp;nbsp;Date: 2025-03-04 (1st)&amp;lt;br&amp;gt;&amp;amp;nbsp;&amp;amp;nbsp;ALP/Baseline ≤ 2 (0.300)&amp;lt;br&amp;gt;---&amp;lt;br&amp;gt;tbili (× Baseline): 1.959&amp;lt;br&amp;gt;&amp;amp;nbsp;&amp;amp;nbsp;Visit: visit 3&amp;lt;br&amp;gt;&amp;amp;nbsp;&amp;amp;nbsp;Date: 2025-03-04 (2nd)&amp;lt;br&amp;gt;---&amp;lt;br&amp;gt;Time between peaks: 0 days&amp;lt;/div&amp;gt;' data-id='01'/>
-         <circle id='svg_CONST' cx='394.22' cy='269.26' r='1.6pt' fill='#00BFC4' fill-opacity='0.8' stroke='#00BFC4' stroke-opacity='0.8' title='&amp;lt;div style=&amp;#39;background-color:#00BFC4; color:white; border:1px solid white; padding:2px;&amp;#39;&amp;gt;Subject: 02&amp;lt;br&amp;gt;Arm: arm2&amp;lt;br&amp;gt;---&amp;lt;br&amp;gt;ast (× Baseline): 0.604&amp;lt;br&amp;gt;&amp;amp;nbsp;&amp;amp;nbsp;Visit: visit 2&amp;lt;br&amp;gt;&amp;amp;nbsp;&amp;amp;nbsp;Date: 2025-02-14 (1st)&amp;lt;br&amp;gt;&amp;amp;nbsp;&amp;amp;nbsp;ALP/Baseline ≤ 2 (0.364)&amp;lt;br&amp;gt;---&amp;lt;br&amp;gt;tbili (× Baseline): 0.906&amp;lt;br&amp;gt;&amp;amp;nbsp;&amp;amp;nbsp;Visit: visit 2&amp;lt;br&amp;gt;&amp;amp;nbsp;&amp;amp;nbsp;Date: 2025-02-14 (2nd)&amp;lt;br&amp;gt;---&amp;lt;br&amp;gt;Time between peaks: 0 days&amp;lt;/div&amp;gt;' data-id='02'/>
+         <polyline points='28.80,352.40 515.46,352.40' fill='none' stroke='#EBEBEB' stroke-opacity='1' stroke-width='0.87' stroke-linejoin='round' stroke-linecap='butt'/>
+         <polyline points='28.80,310.19 515.46,310.19' fill='none' stroke='#EBEBEB' stroke-opacity='1' stroke-width='0.87' stroke-linejoin='round' stroke-linecap='butt'/>
+         <polyline points='28.80,272.96 515.46,272.96' fill='none' stroke='#EBEBEB' stroke-opacity='1' stroke-width='0.87' stroke-linejoin='round' stroke-linecap='butt'/>
+         <polyline points='28.80,239.66 515.46,239.66' fill='none' stroke='#EBEBEB' stroke-opacity='1' stroke-width='0.87' stroke-linejoin='round' stroke-linecap='butt'/>
+         <polyline points='28.80,20.58 515.46,20.58' fill='none' stroke='#EBEBEB' stroke-opacity='1' stroke-width='0.87' stroke-linejoin='round' stroke-linecap='butt'/>
+         <polyline points='229.83,358.51 229.83,4.48' fill='none' stroke='#EBEBEB' stroke-opacity='1' stroke-width='0.87' stroke-linejoin='round' stroke-linecap='butt'/>
+         <polyline points='283.53,358.51 283.53,4.48' fill='none' stroke='#EBEBEB' stroke-opacity='1' stroke-width='0.87' stroke-linejoin='round' stroke-linecap='butt'/>
+         <polyline points='314.94,358.51 314.94,4.48' fill='none' stroke='#EBEBEB' stroke-opacity='1' stroke-width='0.87' stroke-linejoin='round' stroke-linecap='butt'/>
+         <polyline points='337.23,358.51 337.23,4.48' fill='none' stroke='#EBEBEB' stroke-opacity='1' stroke-width='0.87' stroke-linejoin='round' stroke-linecap='butt'/>
+         <polyline points='354.52,358.51 354.52,4.48' fill='none' stroke='#EBEBEB' stroke-opacity='1' stroke-width='0.87' stroke-linejoin='round' stroke-linecap='butt'/>
+         <polyline points='368.65,358.51 368.65,4.48' fill='none' stroke='#EBEBEB' stroke-opacity='1' stroke-width='0.87' stroke-linejoin='round' stroke-linecap='butt'/>
+         <polyline points='380.59,358.51 380.59,4.48' fill='none' stroke='#EBEBEB' stroke-opacity='1' stroke-width='0.87' stroke-linejoin='round' stroke-linecap='butt'/>
+         <polyline points='390.93,358.51 390.93,4.48' fill='none' stroke='#EBEBEB' stroke-opacity='1' stroke-width='0.87' stroke-linejoin='round' stroke-linecap='butt'/>
+         <polyline points='400.06,358.51 400.06,4.48' fill='none' stroke='#EBEBEB' stroke-opacity='1' stroke-width='0.87' stroke-linejoin='round' stroke-linecap='butt'/>
+         <polyline points='408.22,358.51 408.22,4.48' fill='none' stroke='#EBEBEB' stroke-opacity='1' stroke-width='0.87' stroke-linejoin='round' stroke-linecap='butt'/>
+         <polyline points='461.92,358.51 461.92,4.48' fill='none' stroke='#EBEBEB' stroke-opacity='1' stroke-width='0.87' stroke-linejoin='round' stroke-linecap='butt'/>
+         <polyline points='493.33,358.51 493.33,4.48' fill='none' stroke='#EBEBEB' stroke-opacity='1' stroke-width='0.87' stroke-linejoin='round' stroke-linecap='butt'/>
+         <polyline id='svg_CONST' points='461.10,128.93 315.12,27.05' fill='none' stroke='#F8766D' stroke-opacity='0.3' stroke-width='1.07' stroke-linejoin='round' stroke-linecap='butt' data-id='01'/>
+         <polyline id='svg_CONST' points='369.21,270.73 50.92,342.41' fill='none' stroke='#00BFC4' stroke-opacity='0.3' stroke-width='1.07' stroke-linejoin='round' stroke-linecap='butt' data-id='02'/>
+         <line x1='493.33' y1='358.51' x2='493.33' y2='4.48' stroke='#000000' stroke-opacity='1' stroke-width='1.07' stroke-dasharray='1,3' stroke-linejoin='round' stroke-linecap='butt'/>
+         <line x1='28.8' y1='20.58' x2='515.46' y2='20.58' stroke='#000000' stroke-opacity='1' stroke-width='1.07' stroke-dasharray='1,3' stroke-linejoin='round' stroke-linecap='butt'/>
+         <circle id='svg_CONST' cx='461.1' cy='128.93' r='1.6pt' fill='#F8766D' fill-opacity='0.8' stroke='#F8766D' stroke-opacity='0.8' title='&amp;lt;div style=&amp;#39;background-color:#F8766D; color:white; border:1px solid white; padding:2px;&amp;#39;&amp;gt;Subject: 01&amp;lt;br&amp;gt;Arm: arm1&amp;lt;br&amp;gt;---&amp;lt;br&amp;gt;ast (× Baseline): 1.979&amp;lt;br&amp;gt;&amp;amp;nbsp;&amp;amp;nbsp;Visit: visit 2&amp;lt;br&amp;gt;&amp;amp;nbsp;&amp;amp;nbsp;Date: 2025-02-14 (1st)&amp;lt;br&amp;gt;&amp;amp;nbsp;&amp;amp;nbsp;ALP/Baseline ≤ 2 (0.146)&amp;lt;br&amp;gt;---&amp;lt;br&amp;gt;tbili (× Baseline): 1.420&amp;lt;br&amp;gt;&amp;amp;nbsp;&amp;amp;nbsp;Visit: visit 2&amp;lt;br&amp;gt;&amp;amp;nbsp;&amp;amp;nbsp;Date: 2025-02-14 (2nd)&amp;lt;br&amp;gt;---&amp;lt;br&amp;gt;Time between peaks: 0 days&amp;lt;/div&amp;gt;' data-id='01'/>
+         <circle id='svg_CONST' cx='315.12' cy='27.05' r='1.6pt' fill='#F8766D' fill-opacity='0.8' stroke='#F8766D' stroke-opacity='0.8' title='&amp;lt;div style=&amp;#39;background-color:#F8766D; color:white; border:1px solid white; padding:2px;&amp;#39;&amp;gt;Subject: 01&amp;lt;br&amp;gt;Arm: arm1&amp;lt;br&amp;gt;---&amp;lt;br&amp;gt;ast (× Baseline): 0.301&amp;lt;br&amp;gt;&amp;amp;nbsp;&amp;amp;nbsp;Visit: visit 3&amp;lt;br&amp;gt;&amp;amp;nbsp;&amp;amp;nbsp;Date: 2025-03-04 (1st)&amp;lt;br&amp;gt;&amp;amp;nbsp;&amp;amp;nbsp;ALP/Baseline ≤ 2 (0.300)&amp;lt;br&amp;gt;---&amp;lt;br&amp;gt;tbili (× Baseline): 1.959&amp;lt;br&amp;gt;&amp;amp;nbsp;&amp;amp;nbsp;Visit: visit 3&amp;lt;br&amp;gt;&amp;amp;nbsp;&amp;amp;nbsp;Date: 2025-03-04 (2nd)&amp;lt;br&amp;gt;---&amp;lt;br&amp;gt;Time between peaks: 0 days&amp;lt;/div&amp;gt;' data-id='01'/>
+         <circle id='svg_CONST' cx='369.21' cy='270.73' r='1.6pt' fill='#00BFC4' fill-opacity='0.8' stroke='#00BFC4' stroke-opacity='0.8' title='&amp;lt;div style=&amp;#39;background-color:#00BFC4; color:white; border:1px solid white; padding:2px;&amp;#39;&amp;gt;Subject: 02&amp;lt;br&amp;gt;Arm: arm2&amp;lt;br&amp;gt;---&amp;lt;br&amp;gt;ast (× Baseline): 0.604&amp;lt;br&amp;gt;&amp;amp;nbsp;&amp;amp;nbsp;Visit: visit 2&amp;lt;br&amp;gt;&amp;amp;nbsp;&amp;amp;nbsp;Date: 2025-02-14 (1st)&amp;lt;br&amp;gt;&amp;amp;nbsp;&amp;amp;nbsp;ALP/Baseline ≤ 2 (0.364)&amp;lt;br&amp;gt;---&amp;lt;br&amp;gt;tbili (× Baseline): 0.906&amp;lt;br&amp;gt;&amp;amp;nbsp;&amp;amp;nbsp;Visit: visit 2&amp;lt;br&amp;gt;&amp;amp;nbsp;&amp;amp;nbsp;Date: 2025-02-14 (2nd)&amp;lt;br&amp;gt;---&amp;lt;br&amp;gt;Time between peaks: 0 days&amp;lt;/div&amp;gt;' data-id='02'/>
          <circle id='svg_CONST' cx='50.92' cy='342.41' r='1.6pt' fill='#00BFC4' fill-opacity='0.8' stroke='#00BFC4' stroke-opacity='0.8' title='&amp;lt;div style=&amp;#39;background-color:#00BFC4; color:white; border:1px solid white; padding:2px;&amp;#39;&amp;gt;Subject: 02&amp;lt;br&amp;gt;Arm: arm2&amp;lt;br&amp;gt;---&amp;lt;br&amp;gt;ast (× Baseline): 0.010&amp;lt;br&amp;gt;&amp;amp;nbsp;&amp;amp;nbsp;Visit: visit 3&amp;lt;br&amp;gt;&amp;amp;nbsp;&amp;amp;nbsp;Date: 2025-03-04 (1st)&amp;lt;br&amp;gt;&amp;amp;nbsp;&amp;amp;nbsp;ALP/Baseline ≤ 2 (0.359)&amp;lt;br&amp;gt;---&amp;lt;br&amp;gt;tbili (× Baseline): 0.722&amp;lt;br&amp;gt;&amp;amp;nbsp;&amp;amp;nbsp;Visit: visit 3&amp;lt;br&amp;gt;&amp;amp;nbsp;&amp;amp;nbsp;Date: 2025-03-04 (2nd)&amp;lt;br&amp;gt;---&amp;lt;br&amp;gt;Time between peaks: 0 days&amp;lt;/div&amp;gt;' data-id='02'/>
         <\/g>
         <g clip-path='url(#svg_CONST)'>
-         <text x='14.78' y='355.08' font-size='5.4pt' font-family='Liberation Sans' fill='#4D4D4D' fill-opacity='1'>0.7<\/text>
-         <text x='14.78' y='312' font-size='5.4pt' font-family='Liberation Sans' fill='#4D4D4D' fill-opacity='1'>0.8<\/text>
-         <text x='14.78' y='274.01' font-size='5.4pt' font-family='Liberation Sans' fill='#4D4D4D' fill-opacity='1'>0.9<\/text>
-         <text x='20.77' y='240.02' font-size='5.4pt' font-family='Liberation Sans' fill='#4D4D4D' fill-opacity='1'>1<\/text>
-         <text x='20.77' y='16.44' font-size='5.4pt' font-family='Liberation Sans' fill='#4D4D4D' fill-opacity='1'>2<\/text>
-         <text x='238.9' y='367.49' font-size='5.4pt' font-family='Liberation Sans' fill='#4D4D4D' fill-opacity='1'>0.1<\/text>
-         <text x='296.82' y='367.49' font-size='5.4pt' font-family='Liberation Sans' fill='#4D4D4D' fill-opacity='1'>0.2<\/text>
-         <text x='330.7' y='367.49' font-size='5.4pt' font-family='Liberation Sans' fill='#4D4D4D' fill-opacity='1'>0.3<\/text>
-         <text x='354.74' y='367.49' font-size='5.4pt' font-family='Liberation Sans' fill='#4D4D4D' fill-opacity='1'>0.4<\/text>
-         <text x='373.39' y='367.49' font-size='5.4pt' font-family='Liberation Sans' fill='#4D4D4D' fill-opacity='1'>0.5<\/text>
-         <text x='388.62' y='367.49' font-size='5.4pt' font-family='Liberation Sans' fill='#4D4D4D' fill-opacity='1'>0.6<\/text>
-         <text x='401.5' y='367.49' font-size='5.4pt' font-family='Liberation Sans' fill='#4D4D4D' fill-opacity='1'>0.7<\/text>
-         <text x='412.66' y='367.49' font-size='5.4pt' font-family='Liberation Sans' fill='#4D4D4D' fill-opacity='1'>0.8<\/text>
-         <text x='422.5' y='367.49' font-size='5.4pt' font-family='Liberation Sans' fill='#4D4D4D' fill-opacity='1'>0.9<\/text>
-         <text x='434.3' y='367.49' font-size='5.4pt' font-family='Liberation Sans' fill='#4D4D4D' fill-opacity='1'>1<\/text>
-         <text x='492.23' y='367.49' font-size='5.4pt' font-family='Liberation Sans' fill='#4D4D4D' fill-opacity='1'>2<\/text>
+         <text x='14.78' y='354.87' font-size='5.4pt' font-family='Liberation Sans' fill='#4D4D4D' fill-opacity='1'>0.7<\/text>
+         <text x='14.78' y='312.67' font-size='5.4pt' font-family='Liberation Sans' fill='#4D4D4D' fill-opacity='1'>0.8<\/text>
+         <text x='14.78' y='275.44' font-size='5.4pt' font-family='Liberation Sans' fill='#4D4D4D' fill-opacity='1'>0.9<\/text>
+         <text x='20.77' y='242.13' font-size='5.4pt' font-family='Liberation Sans' fill='#4D4D4D' fill-opacity='1'>1<\/text>
+         <text x='20.77' y='23.05' font-size='5.4pt' font-family='Liberation Sans' fill='#4D4D4D' fill-opacity='1'>2<\/text>
+         <text x='224.84' y='367.49' font-size='5.4pt' font-family='Liberation Sans' fill='#4D4D4D' fill-opacity='1'>0.1<\/text>
+         <text x='278.54' y='367.49' font-size='5.4pt' font-family='Liberation Sans' fill='#4D4D4D' fill-opacity='1'>0.2<\/text>
+         <text x='309.95' y='367.49' font-size='5.4pt' font-family='Liberation Sans' fill='#4D4D4D' fill-opacity='1'>0.3<\/text>
+         <text x='332.24' y='367.49' font-size='5.4pt' font-family='Liberation Sans' fill='#4D4D4D' fill-opacity='1'>0.4<\/text>
+         <text x='349.53' y='367.49' font-size='5.4pt' font-family='Liberation Sans' fill='#4D4D4D' fill-opacity='1'>0.5<\/text>
+         <text x='363.65' y='367.49' font-size='5.4pt' font-family='Liberation Sans' fill='#4D4D4D' fill-opacity='1'>0.6<\/text>
+         <text x='375.59' y='367.49' font-size='5.4pt' font-family='Liberation Sans' fill='#4D4D4D' fill-opacity='1'>0.7<\/text>
+         <text x='385.94' y='367.49' font-size='5.4pt' font-family='Liberation Sans' fill='#4D4D4D' fill-opacity='1'>0.8<\/text>
+         <text x='395.06' y='367.49' font-size='5.4pt' font-family='Liberation Sans' fill='#4D4D4D' fill-opacity='1'>0.9<\/text>
+         <text x='406.22' y='367.49' font-size='5.4pt' font-family='Liberation Sans' fill='#4D4D4D' fill-opacity='1'>1<\/text>
+         <text x='459.92' y='367.49' font-size='5.4pt' font-family='Liberation Sans' fill='#4D4D4D' fill-opacity='1'>2<\/text>
+         <text x='491.34' y='367.49' font-size='5.4pt' font-family='Liberation Sans' fill='#4D4D4D' fill-opacity='1'>3<\/text>
          <text x='240.74' y='377.41' font-size='6.75pt' font-family='Liberation Sans'>ast (× Baseline)<\/text>
          <text transform='translate(10.68,213.63) rotate(-90.00)' font-size='6.75pt' font-family='Liberation Sans'>tbili (× Baseline)<\/text>
          <circle cx='537.54' cy='179.12' r='1.6pt' fill='#F8766D' fill-opacity='0.8' stroke='#F8766D' stroke-opacity='0.8'/>

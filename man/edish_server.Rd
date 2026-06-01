@@ -16,6 +16,7 @@ edish_server(
   at_choices = NULL,
   alp_choice = NULL,
   lb_result_var = "LBSTRESN",
+  lb_unit_var = NULL,
   ref_range_upper_lim_var = "LBSTNRHI",
   norm_ref_lines = NULL,
   abs_ref_lines = NULL,
@@ -67,6 +68,11 @@ Character vector specifying the alkaline phosphatase laboratory test choice.}
 \item{lb_result_var}{\verb{[character(1)]}
 
 Name of the variable containing results of the laboratory test.}
+
+\item{lb_unit_var}{\verb{[character(1)] | NULL}
+
+Name of variable containing the laboratory test unit. If not NULL then unit will be included in
+the axis labels. Only specify this if unit is not already included in \code{lb_test_var}.}
 
 \item{ref_range_upper_lim_var}{\verb{[character(1)]}
 

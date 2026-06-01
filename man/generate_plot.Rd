@@ -10,6 +10,8 @@ generate_plot(
   arm_var,
   sel_x,
   sel_y,
+  unit_x,
+  unit_y,
   norm_ref_type,
   x_abs,
   y_abs,
@@ -43,6 +45,14 @@ String specifying the laboratory test to be displayed on the x-axis.}
 \item{sel_y}{\verb{[character(1)]}
 
 String specifying the laboratory test to be displayed on the y-axis.}
+
+\item{unit_x}{\verb{[character(1)] | NULL}
+
+String specifying the laboratory test unit to be displayed on the x-axis.}
+
+\item{unit_y}{\verb{[character(1)] | NULL}
+
+String specifying the laboratory test unit to be displayed on the y-axis.}
 
 \item{norm_ref_type}{\verb{[character(1)]}
 

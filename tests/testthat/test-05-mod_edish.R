@@ -32,15 +32,15 @@ test_that("the default values are correct at app launch" |>
       `edish-base_incl` = "ALL",
       `edish-by_visit` = FALSE,
       `edish-plot_type` = "ULN",
-      `edish-uln_multiple` = NA,
+      `edish-uln_multiple` = 1.5,
       `edish-window_days` = NA,
       `edish-x_abs` = FALSE,
       `edish-x_axis` = "alt",
-      `edish-x_ref` = NA,
+      `edish-x_ref` = 3L,
       `edish-x_rng` = NULL,
       `edish-y_abs` = FALSE,
       `edish-y_axis` = "tbili",
-      `edish-y_ref` = NA,
+      `edish-y_ref` = 2L,
       `edish-y_rng` = NULL
     )
   )
@@ -90,7 +90,7 @@ test_that("the app displays the correct plot data after selections (snapshot tes
   # Re-assign the cleaned string
   app_vals$output$`edish-plot` <- plot_output
 
-  expect_snapshot(app_vals, cran = TRUE)
+  testthat::expect_snapshot(app_vals, cran = TRUE)
 
   app$stop()
 })
