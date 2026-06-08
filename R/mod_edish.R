@@ -147,6 +147,7 @@ edish_UI <- function(module_id,
                                       title = EDISH$BY_VISIT_INFO)),
       value = default_by_visit
     ),
+    shiny::hr(),
     shiny::radioButtons(
       inputId = ns(EDISH$BASE_INCL_ID),
       label = EDISH$BASE_INCL_LABEL,
@@ -157,8 +158,10 @@ edish_UI <- function(module_id,
       inputId = ns(EDISH$ULN_MULTIPLE_ID),
       label = NULL,
       value = NA,
+      min = 0,
+      max = Inf,
       step = 0.5,
-      icon = list(NULL, EDISH$TIMES_ULN)
+      icon = list("", EDISH$TIMES_ULN)
     ),
     options = drop_menu_options,
     style = drop_menu_style
@@ -388,6 +391,22 @@ edish_server <- function(
         inputId = EDISH$ULN_MULTIPLE_ID,
         value = ref_val
       )
+    })
+
+    # Update ULN mutiple widget annotation based on inclusion sign
+    shiny::observeEvent(input[[EDISH$BASE_INCL_ID]], {
+
+      incl_sign <- names(EDISH$BASE_INCL_CHOICES)[match(input[[EDISH$BASE_INCL_ID]], EDISH$BASE_INCL_CHOICES)]
+
+      shinyWidgets::updateNumericInputIcon(
+        session = session,
+        inputId = EDISH$ULN_MULTIPLE_ID,
+        icon = list(incl_sign, EDISH$TIMES_ULN)
+      )
+
+      # Disable ULN multiple widget when inclusion of "All" selected
+      if (incl_sign == "All") shinyjs::disable(id = EDISH$ULN_MULTIPLE_ID)
+      else shinyjs::enable(id = EDISH$ULN_MULTIPLE_ID)
     })
 
     work_data <- shiny::reactive({
