@@ -11,8 +11,8 @@ filter_data(
   sel_arm,
   lb_test_var,
   sel_lb_test,
-  x_ref,
-  base_incl
+  base_incl,
+  uln_multiple
 )
 }
 \arguments{
@@ -40,14 +40,15 @@ Name of the variable containing the laboratory test parameter.}
 
 String specifying a selected aminotransferase laboratory test.}
 
-\item{x_ref}{\verb{[numeric(1)]}
-
-Numeric normalized x-axis threshold reference.}
-
 \item{base_incl}{\verb{[character(1)]}
 
-String specifying the selected baseline inclusion choice, either \code{"LO"} (baseline within threshold),
-\code{"HI"} (baseline exceeds threshold), or \code{"ALL"} (all).}
+String specifying the selected baseline inclusion choice, either \code{"LT"} (baseline less than threshold),
+\code{"LTE"} (baseline less than equal to threshold), \code{"GTE"} (baseline greater than equal to threshold),
+\code{"GT"} (baseline greater than threshold), or \code{"ALL"} (all).}
+
+\item{uln_multiple}{\verb{[numeric(1)]}
+
+Numeric ULN multiple used as threshold for baseline inclusions.}
 }
 \value{
 A data frame.

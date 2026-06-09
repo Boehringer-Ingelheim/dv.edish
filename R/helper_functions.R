@@ -138,9 +138,12 @@ prepare_initial_data <- function(dataset_list,
 #' - `.visit_at`: Visit of peak aminotransferase value.
 #' - `.date_at`: Date of peak aminotransferase value.
 #' - `.norm_at`: Normalized peak aminotransferase value.
+#' - `.abs_at`: Absolute aminotransferase value.
+#' - `.norm_base_uln`: Normalized baseline aminotransferase value with respect to ULN.
 #' - `.visit_tbili`: Visit of peak total bilirubin value.
 #' - `.date_tbili`: Date of peak total bilirubin value.
 #' - `.norm_tbili`: Normalized peak total bilirubin value.
+#' - `.abs_tbili`: Absolute total bilirubin value.
 #' - `.norm_alp`: Normalized alkaline phosphotase value at same visit as aminotransferase value.
 #' - `.offset_days`: Number of days from aminotransferase visit to total bilirubin visit.
 #' - `.norm_ref_type`: Normalization reference type, copied from `norm_ref_type` argument.
@@ -199,11 +202,10 @@ derive_req_vars <- function(dataset,
   # Normalize lab values according to ULN or baseline reference values
   if (norm_ref_type == "ULN") {
     ref_dataset[[".norm_val"]] <- ref_dataset[[lb_result_var]] / ref_dataset[[ref_range_upper_lim_var]]
-    ref_dataset[[".norm_base"]] <- ref_dataset[[".base_val"]] / ref_dataset[[ref_range_upper_lim_var]]
   } else {
     ref_dataset[[".norm_val"]] <- ref_dataset[[lb_result_var]] / ref_dataset[[".base_val"]]
-    ref_dataset[[".norm_base"]] <- 1
   }
+  ref_dataset[[".norm_base_uln"]] <- ref_dataset[[".base_val"]] / ref_dataset[[ref_range_upper_lim_var]]
 
   # Initialise base group variables for calculating peak values
   base_group_vars <- c(subjectid_var, arm_var, lb_test_var)
@@ -222,7 +224,9 @@ derive_req_vars <- function(dataset,
     dplyr::select(dplyr::all_of(c(subjectid_var, arm_var, lb_test_var)),
                   .visit_at = dplyr::all_of(visit_var),
                   .date_at = dplyr::all_of(lb_date_var),
-                  .norm_at = ".norm_val", ".norm_base")
+                  .norm_at = ".norm_val",
+                  .abs_at = dplyr::all_of(lb_result_var),
+                  ".norm_base_uln")
 
   # Get post-baseline total bilirubin (TBILI) rows
   tbili_data <- ref_dataset |>
@@ -231,7 +235,8 @@ derive_req_vars <- function(dataset,
     dplyr::select(dplyr::all_of(c(subjectid_var, arm_var)),
                   .visit_tbili = dplyr::all_of(visit_var),
                   .date_tbili = dplyr::all_of(lb_date_var),
-                  .norm_tbili = ".norm_val")
+                  .norm_tbili = ".norm_val",
+                  .abs_tbili = dplyr::all_of(lb_result_var))
 
   # Merge TBILI rows with peak AT values,
   xy_data <- peak_at_data |>
@@ -291,14 +296,15 @@ derive_req_vars <- function(dataset,
 #'
 #' String specifying a selected aminotransferase laboratory test.
 #'
-#' @param x_ref `[numeric(1)]`
-#'
-#' Numeric normalized x-axis threshold reference.
-#'
 #' @param base_incl `[character(1)]`
 #'
-#' String specifying the selected baseline inclusion choice, either `"LO"` (baseline within threshold),
-#' `"HI"` (baseline exceeds threshold), or `"ALL"` (all).
+#' String specifying the selected baseline inclusion choice, either `"LT"` (baseline less than threshold),
+#' `"LTE"` (baseline less than equal to threshold), `"GTE"` (baseline greater than equal to threshold),
+#' `"GT"` (baseline greater than threshold), or `"ALL"` (all).
+#'
+#' @param uln_multiple `[numeric(1)]`
+#'
+#' Numeric ULN multiple used as threshold for baseline inclusions.
 #'
 #' @return A data frame.
 #'
@@ -312,8 +318,8 @@ filter_data <- function(dataset,
                         sel_arm,
                         lb_test_var,
                         sel_lb_test,
-                        x_ref,
-                        base_incl) {
+                        base_incl,
+                        uln_multiple) {
 
   ac <- checkmate::makeAssertCollection()
   checkmate::assert_string(norm_ref_type, min.chars = 1, add = ac)
@@ -322,8 +328,7 @@ filter_data <- function(dataset,
                               unique = TRUE, min.len = 1, null.ok = TRUE, add = ac)
   checkmate::assert_string(lb_test_var, min.chars = 1, add = ac)
   checkmate::assert_string(sel_lb_test, min.chars = 1, add = ac)
-  checkmate::assert_numeric(x_ref, len = 1, any.missing = TRUE, add = ac)
-  checkmate::assert_string(base_incl, pattern = "LO|HI|ALL", add = ac)
+  checkmate::assert_string(base_incl, pattern = "LT|LTE|GTE|GT|ALL", add = ac)
   checkmate::reportAssertions(ac)
 
   dataset <- dataset |>
@@ -332,12 +337,14 @@ filter_data <- function(dataset,
                   .data[[arm_var]] %in% sel_arm)
 
   # Apply baseline inclusions for ULN data
-  if (norm_ref_type == "ULN") {
-    if (base_incl == "LO") {
-      dataset <- dataset[which(dataset[[".norm_base"]] <= x_ref), ]
-    } else if (base_incl == "HI") {
-      dataset <- dataset[which(dataset[[".norm_base"]] > x_ref), ]
-    }
+  if (base_incl != "ALL") {
+    dataset <- switch(
+      base_incl,
+      "LT" = dataset[which(dataset[[".norm_base_uln"]] < uln_multiple), ],
+      "LTE" = dataset[which(dataset[[".norm_base_uln"]] <= uln_multiple), ],
+      "GTE" = dataset[which(dataset[[".norm_base_uln"]] >= uln_multiple), ],
+      "GT" = dataset[which(dataset[[".norm_base_uln"]] > uln_multiple), ]
+    )
   }
 
   return(dataset)
@@ -365,9 +372,25 @@ filter_data <- function(dataset,
 #'
 #' String specifying the laboratory test to be displayed on the y-axis.
 #'
+#' @param unit_x `[character(1)] | NULL`
+#'
+#' String specifying the laboratory test unit to be displayed on the x-axis.
+#'
+#' @param unit_y `[character(1)] | NULL`
+#'
+#' String specifying the laboratory test unit to be displayed on the y-axis.
+#'
 #' @param norm_ref_type `[character(1)]`
 #'
 #' String indicating normalization reference type, either `"ULN"` or `"Baseline"`.
+#'
+#' @param x_abs `[logical(1)]`
+#'
+#' Logical indicating if absolute value should be plotted on x-axis.
+#'
+#' @param y_abs `[logical(1)]`
+#'
+#' Logical indicating if absolute value should be plotted on y-axis.
 #'
 #' @param x_ref_line_num `[numeric(1)]`
 #'
@@ -409,7 +432,11 @@ generate_plot <- function(dataset,
                           arm_var,
                           sel_x,
                           sel_y,
+                          unit_x,
+                          unit_y,
                           norm_ref_type,
+                          x_abs,
+                          y_abs,
                           x_ref_line_num,
                           y_ref_line_num,
                           x_rng_lower,
@@ -418,6 +445,16 @@ generate_plot <- function(dataset,
                           y_rng_upper,
                           alp_flag,
                           by_visit) {
+
+  x_var <- ifelse(x_abs, ".abs_at", ".norm_at")
+  y_var <- ifelse(y_abs, ".abs_tbili", ".norm_tbili")
+
+  x_label <- ifelse(x_abs,
+                    ifelse(is.null(unit_x), sel_x, paste0(sel_x, " (", unit_x, ")")),
+                    paste0(sel_x, " (\u00d7 ", norm_ref_type, ")"))
+  y_label <- ifelse(y_abs,
+                    ifelse(is.null(unit_y), sel_y, paste0(sel_y, " (", unit_y, ")")),
+                    paste0(sel_y, " (\u00d7 ", norm_ref_type, ")"))
 
   # Tooltip preparation ----
 
@@ -486,11 +523,11 @@ generate_plot <- function(dataset,
 
     "Subject: ", dataset[[subjectid_var]],
     "<br>Arm: ", dataset[[arm_var]],
-    "<br>---<br>", sel_x, ": ", sprintf("%.3f", dataset[[".norm_at"]]),
+    "<br>---<br>", x_label, ": ", sprintf("%.3f", dataset[[x_var]]),
     "<br>&nbsp;&nbsp;Visit: ", dataset[[".visit_at"]],
     "<br>&nbsp;&nbsp;Date: ", hover_date_x,
     hover_alp,
-    "<br>---<br>", sel_y, ": ", sprintf("%.3f", dataset[[".norm_tbili"]]),
+    "<br>---<br>", y_label, ": ", sprintf("%.3f", dataset[[y_var]]),
     "<br>&nbsp;&nbsp;Visit: ", dataset[[".visit_tbili"]],
     "<br>&nbsp;&nbsp;Date: ", hover_date_y,
     "<br>---<br>Time between peaks: ", hover_offset,
@@ -517,8 +554,8 @@ generate_plot <- function(dataset,
   }
 
   plt_obj <- dataset |>
-    ggplot2::ggplot(ggplot2::aes(x = .data[[".norm_at"]],
-                                 y = .data[[".norm_tbili"]],
+    ggplot2::ggplot(ggplot2::aes(x = .data[[x_var]],
+                                 y = .data[[y_var]],
                                  color = .data[[arm_var]],
                                  group = .data[[subjectid_var]]))
 
@@ -548,8 +585,8 @@ generate_plot <- function(dataset,
     ggplot2::geom_hline(yintercept = y_ref_line_num,
                         color = "black",
                         linetype = "dotted") +
-    ggplot2::labs(x = paste0(sel_x, " (\u00d7 ", norm_ref_type, ")"),
-                  y = paste0(sel_y, " (\u00d7 ", norm_ref_type, ")"),
+    ggplot2::labs(x = x_label,
+                  y = y_label,
                   color = "") +
     ggplot2::theme_minimal(base_family = "Liberation Sans",
                            base_size = 9) +
