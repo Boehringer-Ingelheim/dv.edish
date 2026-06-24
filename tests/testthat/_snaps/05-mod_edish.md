@@ -24,6 +24,9 @@
       $input$`edish-plot_type`
       [1] "Baseline"
       
+      $input$`edish-show_table`
+      [1] FALSE
+      
       $input$`edish-uln_multiple`
       [1] 1.5
       
@@ -72,6 +75,17 @@
       
       
       $output
+      $output$`edish-freq_table`
+      $output$`edish-freq_table`$message
+      [1] ""
+      
+      $output$`edish-freq_table`$call
+      [1] "NULL"
+      
+      $output$`edish-freq_table`$type
+      [1] "shiny.silent.error" "validation"        
+      
+      
       $output$`edish-plot`
       {"x":{"html":"<?xml version=\"1.0\" encoding=\"UTF-8\"?>
       <svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' class='ggiraph-svg' role='graphics-document' id='svg_CONST' viewBox='0 0 576 383.76'>
