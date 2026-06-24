@@ -603,3 +603,53 @@ generate_plot <- function(dataset,
 
   return(plt_obj)
 }
+
+#' Generate a table of plot point frequencies in areas delimited by reference lines
+#'
+#' @inheritParams mod_edish
+#'
+#' @return A data frame of counts and percentages categorized by normal/elevated laboratory tests.
+#'
+#' @keywords internal
+generate_table <- function(dataset,
+                           sel_x,
+                           sel_y,
+                           x_abs,
+                           y_abs,
+                           x_ref_line_num,
+                           y_ref_line_num) {
+
+  x_var <- ifelse(x_abs, ".abs_at", ".norm_at")
+  y_var <- ifelse(y_abs, ".abs_tbili", ".norm_tbili")
+
+  classify_values <- function(val, ref) {
+    if (is.na(ref)) return(factor(EDISH$EM_DASH))
+
+    factor(ifelse(val < ref, "Normal", "Elevated"),
+           levels = c("Normal", "Elevated"))
+  }
+
+  dataset[[sel_x]] <- classify_values(dataset[[x_var]], x_ref_line_num)
+  dataset[[sel_y]] <- classify_values(dataset[[y_var]], y_ref_line_num)
+
+  dataset <- dataset[, c(sel_x, sel_y)] |>
+
+    # Calculate counts and percentages
+    dplyr::count(dplyr::across(dplyr::all_of(c(sel_x, sel_y))), .drop = FALSE) |>
+    dplyr::mutate("%" = sprintf("%.1f", 100 * n / sum(n, na.rm = TRUE))) |>
+
+    # Flag with unicode character which quadrant or half represented
+    dplyr::mutate("Quadrant" = dplyr::case_when(
+      .data[[sel_x]] == "Normal" & .data[[sel_y]] == "Normal" ~ "\u25F1",
+      .data[[sel_x]] == "Normal" & .data[[sel_y]] == "Elevated" ~ "\u25F0",
+      .data[[sel_x]] == "Elevated" & .data[[sel_y]] == "Normal" ~ "\u25F2",
+      .data[[sel_x]] == "Elevated" & .data[[sel_y]] == "Elevated" ~ "\u25F3",
+      .data[[sel_x]] == "Normal" & .data[[sel_y]] == EDISH$EM_DASH ~ "\u21A4",
+      .data[[sel_x]] == "Elevated" & .data[[sel_y]] == EDISH$EM_DASH ~ "\u21A6",
+      .data[[sel_x]] == EDISH$EM_DASH & .data[[sel_y]] == "Normal" ~ "\u21A7",
+      .data[[sel_x]] == EDISH$EM_DASH & .data[[sel_y]] == "Elevated" ~ "\u21A5",
+      .default = EDISH$EM_DASH
+    ))
+
+  return(dataset)
+}

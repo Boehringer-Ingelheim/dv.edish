@@ -28,6 +28,7 @@ EDISH <- pack_of_constants(
   PLOT_TYPE_CHOICES = c("eDISH (\u00d7 ULN)" = "ULN",
                         "mDISH (\u00d7 Baseline)" = "Baseline"),
   PLOT_ID = "plot",
+  TABLE_ID = "freq_table",
   WINDOW_DAYS_ID = "window_days",
   WINDOW_DAYS_LABEL = "Max days between peaks",
   BASE_INCL_ID = "base_incl",
@@ -44,7 +45,16 @@ EDISH <- pack_of_constants(
   DEFAULT_X_REF_ABS = 300,
   DEFAULT_Y_REF_NORM = 2,
   DEFAULT_Y_REF_ABS = NA,
-  DEFAULT_ULN_MULTIPLE = 1.5
+  DEFAULT_ULN_MULTIPLE = 1.5,
+  EM_DASH = "\u2014",
+  LOW_LFT_QUAD = "\u25F1",
+  UPP_LFT_QUAD = "\u25F0",
+  LOW_RGT_QUAD = "\u25F2",
+  UPP_RGT_QUAD = "\u25F3",
+  LFT_HALF = "\u21A4",
+  RGT_HALF = "\u21A6",
+  LOW_HALF = "\u21A7",
+  UPP_HALF = "\u21A5",
 )
 
 
@@ -219,7 +229,17 @@ edish_UI <- function(module_id,
     shiny::div(drop_menu_x, style = "display: inline-block;"),
     shiny::div(drop_menu_y, style = "display: inline-block;"),
     gdtools::liberationsansHtmlDependency(),
-    ggiraph::girafeOutput(outputId = ns(EDISH$PLOT_ID), width = "100%", height = "600px")
+    ggiraph::girafeOutput(outputId = ns(EDISH$PLOT_ID), width = "100%", height = "600px"),
+
+    # Table of counts and percentages of normal/elevated values
+    shiny::div(
+      shiny::tableOutput(outputId = ns(EDISH$TABLE_ID)),
+      style = "width: fit-content; margin: 20px auto;"
+      #style = "width: fit-content; margin: 20px auto; border: 1px solid lightgrey; border-radius: 4px;"
+    ),
+
+    # Add a little space underneath the table
+    shiny::div(style = "height: 5px;")
   )
 
   return(ui)
@@ -573,6 +593,22 @@ edish_server <- function(
         )
       )
     })
+
+    output[[EDISH$TABLE_ID]] <- shiny::renderTable({
+      shiny::validate(shiny::need(nrow(plot_data()) > 0, "No data available."))
+
+      plot_df <- generate_table(
+        dataset = plot_data(),
+        sel_x = input[[EDISH$X_AXIS_ID]],
+        sel_y = input[[EDISH$Y_AXIS_ID]],
+        x_abs = input[[EDISH$X_ABS_ID]],
+        y_abs = input[[EDISH$Y_ABS_ID]],
+        x_ref_line_num = input[[EDISH$X_REF_ID]],
+        y_ref_line_num = input[[EDISH$Y_REF_ID]]
+      )
+
+      plot_df
+    }, striped = TRUE, hover = TRUE, align = "c")
 
     # Jumping feature
     mod_return_value <- NULL
