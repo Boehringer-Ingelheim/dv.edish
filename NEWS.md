@@ -1,3 +1,7 @@
+# dv.edish 2.0.2-9002
+
+- Implement table of plot point frequencies (counts and percentages in areas delimited by reference lines).
+
 # dv.edish 2.0.2-9001
 
 - The user may switch the x- and/or y-axis between normalized values and absolute values.
