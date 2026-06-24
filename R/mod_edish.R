@@ -54,7 +54,7 @@ EDISH <- pack_of_constants(
   LFT_HALF = "\u21A4",
   RGT_HALF = "\u21A6",
   LOW_HALF = "\u21A7",
-  UPP_HALF = "\u21A5",
+  UPP_HALF = "\u21A5"
 )
 
 
