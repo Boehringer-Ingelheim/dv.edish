@@ -1,6 +1,6 @@
 # dv.edish 2.0.2-9002
 
-- Implement table of plot point frequencies (counts and percentages in areas delimited by reference lines).
+- Implement table of subject counts and percentages in areas delimited by the specified reference lines.
 
 # dv.edish 2.0.2-9001
 

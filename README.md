@@ -17,14 +17,15 @@ remotes::install_github("Boehringer-Ingelheim/dv.edish")
 The eDISH module shows a scatter plot depicting the correlation between peak values of an
 aminotransferase parameter and a liver function parameter on a subject level.
 
-Beneath the scatter plot a table of plot point frequencies can optionally be displayed.
+Beneath the scatter plot, a table of subject counts and percentages in areas delimited by the
+specified reference lines can optionally be displayed.
 
 The user can control the following from the drop-down "Plot Options" menu:
 
 - Whether the parameters are displayed in multiples of either their upper limits of normal
   (resulting in the eDISH plot) or the corresponding subject's baseline values (resulting in the mDISH plot).
 - Treatment arm selection.
-- Whether the table of plot point frequencies is displayed.
+- Whether the table of subject counts and percentages is displayed.
 
 The user can control the following from the drop-down "Specify x-axis" menu:
 

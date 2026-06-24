@@ -24,7 +24,7 @@ EDISH <- pack_of_constants(
   BY_VISIT_LABEL = "By visit",
   BY_VISIT_INFO = "Aminotransferase values will be plotted for each visit",
   SHOW_TABLE_ID = "show_table",
-  SHOW_TABLE_LABEL = "Display counts table",
+  SHOW_TABLE_LABEL = "Display subject counts table",
   PLOT_TYPE_ID = "plot_type",
   PLOT_TYPE_LABEL = "Plot type:",
   PLOT_TYPE_CHOICES = c("eDISH (\u00d7 ULN)" = "ULN",
@@ -608,6 +608,7 @@ edish_server <- function(
 
       plot_df <- generate_table(
         dataset = plot_data(),
+        subjectid_var = subjectid_var,
         sel_x = input[[EDISH$X_AXIS_ID]],
         sel_y = input[[EDISH$Y_AXIS_ID]],
         x_abs = input[[EDISH$X_ABS_ID]],

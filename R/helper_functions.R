@@ -604,14 +604,15 @@ generate_plot <- function(dataset,
   return(plt_obj)
 }
 
-#' Generate a table of plot point frequencies in areas delimited by reference lines
+#' Generate a table of subject counts and percentages in areas delimited by reference lines
 #'
 #' @inheritParams mod_edish
 #'
-#' @return A data frame of counts and percentages categorized by normal/elevated laboratory tests.
+#' @return A data frame of subject counts and percentages categorized by normal/elevated laboratory tests.
 #'
 #' @keywords internal
 generate_table <- function(dataset,
+                           subjectid_var,
                            sel_x,
                            sel_y,
                            x_abs,
@@ -632,7 +633,10 @@ generate_table <- function(dataset,
   dataset[[sel_x]] <- classify_values(dataset[[x_var]], x_ref_line_num)
   dataset[[sel_y]] <- classify_values(dataset[[y_var]], y_ref_line_num)
 
-  dataset <- dataset[, c(sel_x, sel_y)] |>
+  dataset <- dataset[, c(subjectid_var, sel_x, sel_y)] |>
+
+    # Keep only one row per subject per category combination
+    dplyr::distinct() |>
 
     # Calculate counts and percentages
     dplyr::count(dplyr::across(dplyr::all_of(c(sel_x, sel_y))), .drop = FALSE) |>
