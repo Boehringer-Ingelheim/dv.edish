@@ -643,7 +643,7 @@ generate_table <- function(dataset,
 
     # Calculate counts and percentages
     dplyr::count(dplyr::across(dplyr::all_of(c(sel_x, sel_y))), .drop = FALSE) |>
-    dplyr::mutate("%" = sprintf("%.1f", 100 * n / big_n)) |>
+    dplyr::mutate("%" = sprintf("%.1f", 100 * .data[["n"]] / big_n)) |>
 
     # Flag with unicode character which quadrant or half represented
     dplyr::mutate("Quadrant" = dplyr::case_when(
