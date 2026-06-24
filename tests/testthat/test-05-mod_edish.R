@@ -111,6 +111,7 @@ test_that("the app's state is restored when bookmarking" |>
   app_bmk$set_inputs(`edish-x_axis` = "ast")
   app_bmk$set_inputs(`edish-x_ref` = 3.5)
   app_bmk$set_inputs(`edish-by_visit` = TRUE)
+  app_bmk$set_inputs(`edish-show_table` = TRUE)
 
   # It is not possible to set shinyWidgets::numericalRangeInput using shinytest2
   # We use an alternative approach by setting the url query part manually
@@ -133,12 +134,13 @@ test_that("the app's state is restored when bookmarking" |>
 
   # Get values and test
   actual <- app_rst$get_values(input = c("edish-plot_type", "edish-arm_id", "edish-x_axis", "edish-y_axis",
-                                         "edish-x_ref", "edish-x_rng", "edish-y_rng", "edish-by_visit"))
+                                         "edish-x_ref", "edish-x_rng", "edish-y_rng", "edish-by_visit", "edish-show_table"))
   expected <- list(
     input = list(
       `edish-arm_id` = c("arm1", "arm2"),
       `edish-by_visit` = TRUE,
       `edish-plot_type` = "Baseline",
+      `edish-show_table` = TRUE,
       `edish-x_axis` = "ast",
       `edish-x_ref` = 3.5,
       `edish-x_rng` = c(0.1, 5.1),
