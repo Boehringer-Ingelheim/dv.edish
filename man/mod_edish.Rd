@@ -24,6 +24,7 @@ mod_edish(
   lb_unit_var = "LBSTRESU",
   ref_range_upper_lim_var = "LBSTNRHI",
   default_by_visit = FALSE,
+  default_show_table = FALSE,
   window_days = NULL,
   norm_ref_lines = c(`Alanine Aminotransferase` = 3, `Aspartate Aminotransferase` = 3,
     Bilirubin = 2),
@@ -110,6 +111,11 @@ Name of the variable containing the reference range upper limits.}
 \item{default_by_visit}{\verb{[logical(1)]}
 
 A flag to indicate the default of whether or not to plot aminotransferase values for each visit.}
+
+\item{default_show_table}{\verb{[logical(1)]}
+
+A flag to indicate whether or not to display a table of plot point frequencies delimited by
+reference lines.}
 
 \item{window_days}{\verb{[integer(1) | NULL]}
 
