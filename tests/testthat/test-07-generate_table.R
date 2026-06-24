@@ -40,7 +40,7 @@ test_that("the resulting quadrant table correctly summarises the data" |>
                          "Total Bilirubin" = factor(c("Normal", "Elevated", "Normal", "Elevated"),
                                                     levels = c("Normal", "Elevated")),
                          n = c(3L, 6L, 6L, 1L),
-                         "%" = c("18.8", "37.5", "37.5", "6.2"),
+                         "%" = c("30.0", "60.0", "60.0", "10.0"),
                          Quadrant = c(EDISH$LOW_LFT_QUAD, EDISH$UPP_LFT_QUAD, EDISH$LOW_RGT_QUAD, EDISH$UPP_RGT_QUAD),
                          check.names = FALSE)
 
@@ -67,7 +67,7 @@ test_that("the resulting half-half table correctly summarises the data" |>
                          "Total Bilirubin" = factor(c("Normal", "Elevated"),
                                                     levels = c("Normal", "Elevated")),
                          n = c(9L, 7L),
-                         "%" = c("56.2", "43.8"),
+                         "%" = c("90.0", "70.0"),
                          Quadrant = c(EDISH$LOW_HALF, EDISH$UPP_HALF),
                          check.names = FALSE)
 

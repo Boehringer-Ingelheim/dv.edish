@@ -633,6 +633,9 @@ generate_table <- function(dataset,
   dataset[[sel_x]] <- classify_values(dataset[[x_var]], x_ref_line_num)
   dataset[[sel_y]] <- classify_values(dataset[[y_var]], y_ref_line_num)
 
+  # Calculate total number of unique subjects for percentage calculation
+  big_n <- length(unique(dataset[[subjectid_var]]))
+
   dataset <- dataset[, c(subjectid_var, sel_x, sel_y)] |>
 
     # Keep only one row per subject per category combination
@@ -640,7 +643,7 @@ generate_table <- function(dataset,
 
     # Calculate counts and percentages
     dplyr::count(dplyr::across(dplyr::all_of(c(sel_x, sel_y))), .drop = FALSE) |>
-    dplyr::mutate("%" = sprintf("%.1f", 100 * n / sum(n, na.rm = TRUE))) |>
+    dplyr::mutate("%" = sprintf("%.1f", 100 * n / big_n)) |>
 
     # Flag with unicode character which quadrant or half represented
     dplyr::mutate("Quadrant" = dplyr::case_when(
