@@ -606,7 +606,7 @@ generate_plot <- function(dataset,
 
 #' Generate a table of subject counts and percentages in areas delimited by reference lines
 #'
-#' @inheritParams mod_edish
+#' @inheritParams generate_plot
 #'
 #' @return A data frame of subject counts and percentages categorized by normal/elevated laboratory tests.
 #'
