@@ -762,7 +762,7 @@ mod_edish <- function(
     module_id,
     subject_level_dataset_name,
     lab_dataset_name,
-    lb_date_var,
+    lb_date_var = "LBDT",
     subjectid_var = "USUBJID",
     arm_var = "ACTARM",
     arm_default_vals = NULL,
