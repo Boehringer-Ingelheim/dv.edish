@@ -7,7 +7,7 @@ mock_edish_app <- function() {
   dm <- pharmaverseadam::adsl |> dplyr::mutate(dplyr::across(dplyr::where(is.character), as.factor))
   lb <- pharmaverseadam::adlb |> dplyr::mutate(dplyr::across(dplyr::where(is.character), as.factor))
 
--  mock_edish_UI <- function() { # nolint
+  mock_edish_UI <- function() { # nolint
     shiny::fluidPage(edish_UI(
       module_id = "edish",
       arm_default_vals = "Xanomeline High Dose",
