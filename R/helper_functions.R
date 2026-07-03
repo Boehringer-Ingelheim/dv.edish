@@ -571,20 +571,26 @@ generate_plot <- function(dataset,
   }
 
   plt_obj <- plt_obj +
-    ggplot2::scale_x_log10(breaks = major_breaks,
+    ggplot2::scale_x_log10(breaks = sort(unique(c(major_breaks, x_ref_line_num))),
                            minor_breaks = NULL,
                            labels = function(x) sub("\\.0$", "", x),
                            limits = x_limits) +
-    ggplot2::scale_y_log10(breaks = major_breaks,
+    ggplot2::scale_y_log10(breaks = sort(unique(c(major_breaks, y_ref_line_num))),
                            minor_breaks = NULL,
                            labels = function(x) sub("\\.0$", "", x),
-                           limits = y_limits) +
+                           limits = y_limits)
+
+  if (!is.na(x_ref_line_num)) plt_obj <- plt_obj +
     ggplot2::geom_vline(xintercept = x_ref_line_num,
                         color = "black",
-                        linetype = "dotted") +
+                        linetype = "dotted")
+
+  if (!is.na(y_ref_line_num)) plt_obj <- plt_obj +
     ggplot2::geom_hline(yintercept = y_ref_line_num,
                         color = "black",
-                        linetype = "dotted") +
+                        linetype = "dotted")
+
+  plt_obj <- plt_obj +
     ggplot2::labs(x = x_label,
                   y = y_label,
                   color = "") +
