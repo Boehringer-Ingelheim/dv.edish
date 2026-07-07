@@ -542,13 +542,13 @@ generate_plot <- function(dataset,
   major_breaks <- unlist(lapply(exponents, function(k) (1:9) * 10^k))
 
   if (!is.null(x_rng_lower) && !is.null(x_rng_upper)) {
-    x_limits <- c(max(x_rng_lower, 1e-3), x_rng_upper)
+    x_limits <- c(max(x_rng_lower, EDISH$ZERO_OFFSET), x_rng_upper)
   } else {
     x_limits <- NULL
   }
 
   if (!is.null(y_rng_lower) && !is.null(y_rng_upper)) {
-    y_limits <- c(max(y_rng_lower, 1e-3), y_rng_upper)
+    y_limits <- c(max(y_rng_lower, EDISH$ZERO_OFFSET), y_rng_upper)
   } else {
     y_limits <- NULL
   }
@@ -569,6 +569,10 @@ generate_plot <- function(dataset,
         show.legend = FALSE
       )
   }
+
+  # Add small offset from zero
+  if (x_ref_line_num <= 0) x_ref_line_num <- EDISH$ZERO_OFFSET
+  if (y_ref_line_num <= 0) y_ref_line_num <- EDISH$ZERO_OFFSET
 
   plt_obj <- plt_obj +
     ggplot2::scale_x_log10(breaks = sort(unique(c(major_breaks, x_ref_line_num))),
