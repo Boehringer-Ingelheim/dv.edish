@@ -16,6 +16,7 @@ mock_edish_app <- function() {
       tbili_choices = c("Bilirubin", "Eosinophils/Leukocytes"),
       tbili_default_val = "Bilirubin",
       default_by_visit = FALSE,
+      default_show_table = FALSE,
       window_days = NULL
     ))
   }

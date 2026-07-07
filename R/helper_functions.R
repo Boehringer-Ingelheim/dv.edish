@@ -653,14 +653,14 @@ generate_table <- function(dataset,
 
     # Flag with unicode character which quadrant or half represented
     dplyr::mutate("Quadrant" = dplyr::case_when(
-      .data[[sel_x]] == "Normal" & .data[[sel_y]] == "Normal" ~ "\u25F1",
-      .data[[sel_x]] == "Normal" & .data[[sel_y]] == "Elevated" ~ "\u25F0",
-      .data[[sel_x]] == "Elevated" & .data[[sel_y]] == "Normal" ~ "\u25F2",
-      .data[[sel_x]] == "Elevated" & .data[[sel_y]] == "Elevated" ~ "\u25F3",
-      .data[[sel_x]] == "Normal" & .data[[sel_y]] == EDISH$EM_DASH ~ "\u21A4",
-      .data[[sel_x]] == "Elevated" & .data[[sel_y]] == EDISH$EM_DASH ~ "\u21A6",
-      .data[[sel_x]] == EDISH$EM_DASH & .data[[sel_y]] == "Normal" ~ "\u21A7",
-      .data[[sel_x]] == EDISH$EM_DASH & .data[[sel_y]] == "Elevated" ~ "\u21A5",
+      .data[[sel_x]] == "Normal" & .data[[sel_y]] == "Normal" ~ EDISH$LOW_LFT_QUAD,
+      .data[[sel_x]] == "Normal" & .data[[sel_y]] == "Elevated" ~ EDISH$UPP_LFT_QUAD,
+      .data[[sel_x]] == "Elevated" & .data[[sel_y]] == "Normal" ~ EDISH$LOW_RGT_QUAD,
+      .data[[sel_x]] == "Elevated" & .data[[sel_y]] == "Elevated" ~ EDISH$UPP_RGT_QUAD,
+      .data[[sel_x]] == "Normal" & .data[[sel_y]] == EDISH$EM_DASH ~ EDISH$LFT_HALF,
+      .data[[sel_x]] == "Elevated" & .data[[sel_y]] == EDISH$EM_DASH ~ EDISH$RGT_HALF,
+      .data[[sel_x]] == EDISH$EM_DASH & .data[[sel_y]] == "Normal" ~ EDISH$LOW_HALF,
+      .data[[sel_x]] == EDISH$EM_DASH & .data[[sel_y]] == "Elevated" ~ EDISH$UPP_HALF,
       .default = EDISH$EM_DASH
     ))
 
