@@ -3,6 +3,7 @@
 #' `mock_edish_app()` launches a mock app containing the dv.edish shiny module.
 #'
 #' @keywords internal
+#' @export
 mock_edish_app <- function() {
   dm <- pharmaverseadam::adsl |> dplyr::mutate(dplyr::across(dplyr::where(is.character), as.factor))
   lb <- pharmaverseadam::adlb |> dplyr::mutate(dplyr::across(dplyr::where(is.character), as.factor))
@@ -43,6 +44,7 @@ mock_edish_app <- function() {
 #' `mock_edish_mm()` launches a mock app containing the dv.edish shiny module by means of the `dv.manager`.
 #'
 #' @keywords internal
+#' @export
 mock_edish_mm <- function() {
   dm <- pharmaverseadam::adsl
   lb <- pharmaverseadam::adlb
