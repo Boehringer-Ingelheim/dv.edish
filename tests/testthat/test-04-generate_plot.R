@@ -98,7 +98,7 @@ test_that("the resulting plot object includes the correct axis range" |>
   actual_x <- plt_obj[["scales"]][["scales"]][[1]][["limits"]]
   actual_y <- plt_obj[["scales"]][["scales"]][[2]][["limits"]]
 
-  expected_x <- c(log10(0.001), NA)
+  expected_x <- c(log10(0.00000001), NA)
   expected_y <- c(log10(0.01), log10(4.5))
 
   expect_identical(actual_x, expected_x)
