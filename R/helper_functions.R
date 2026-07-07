@@ -571,8 +571,8 @@ generate_plot <- function(dataset,
   }
 
   # Add small offset from zero
-  if (x_ref_line_num <= 0) x_ref_line_num <- EDISH$ZERO_OFFSET
-  if (y_ref_line_num <= 0) y_ref_line_num <- EDISH$ZERO_OFFSET
+  if (!is.na(x_ref_line_num) && x_ref_line_num <= 0) x_ref_line_num <- EDISH$ZERO_OFFSET
+  if (!is.na(y_ref_line_num) && y_ref_line_num <= 0) y_ref_line_num <- EDISH$ZERO_OFFSET
 
   plt_obj <- plt_obj +
     ggplot2::scale_x_log10(breaks = sort(unique(c(major_breaks, x_ref_line_num))),
