@@ -75,18 +75,6 @@ test_that("the app displays the correct plot data after selections (snapshot tes
   # Standardize ggiraph IDs
   plot_output <- gsub("svg_[a-z0-9_]{10,}", "svg_CONST", plot_output)
 
-  # # 2. Remove the extra background rect introduced in ggplot2 4.0
-  # # This looks for the specific empty stroke rect and removes it
-  # plot_output <- gsub("<rect x='0' y='0' width='576' height='383.76' fill='#FFFFFF' fill-opacity='1' stroke='none'/>",
-  #                     "", plot_output)
-
-  # # 3. Fix the reference line stroke-widths (targeting <line> tags specifically)
-  # # Pre ggplot2 4.0 they are 1.07, with ggplot2 4.0 they are 0.87.
-  # plot_output <- gsub("<line ([^>]+)stroke-width='0.87'", "<line \\1stroke-width='1.07'", plot_output)
-
-  # # 4. Remove extra newlines introduced in ggplot2 4.0
-  # plot_output <- gsub("\\\\n   \\\\n", "\\\\n", plot_output)
-
   # Replace \n with actual new lines to make review easier
   plot_output <- gsub("\\\\n", "\n", plot_output)
 
