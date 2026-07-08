@@ -12,6 +12,7 @@ edish_UI(
   tbili_choices,
   tbili_default_val,
   default_by_visit,
+  default_show_table,
   window_days
 )
 }
@@ -44,6 +45,11 @@ Character specifying the default y-axis liver function laboratory test choice.}
 \item{default_by_visit}{\verb{[logical(1)]}
 
 A flag to indicate the default of whether or not to plot aminotransferase values for each visit.}
+
+\item{default_show_table}{\verb{[logical(1)]}
+
+A flag to indicate whether or not to display a table of plot point frequencies delimited by
+reference lines.}
 
 \item{window_days}{\verb{[integer(1) | NULL]}
 

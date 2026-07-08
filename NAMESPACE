@@ -2,5 +2,7 @@
 
 export(edish_UI)
 export(edish_server)
+export(mock_edish_app)
+export(mock_edish_mm)
 export(mod_edish)
 importFrom(rlang,.data)

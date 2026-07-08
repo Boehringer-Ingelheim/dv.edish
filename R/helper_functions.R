@@ -542,13 +542,13 @@ generate_plot <- function(dataset,
   major_breaks <- unlist(lapply(exponents, function(k) (1:9) * 10^k))
 
   if (!is.null(x_rng_lower) && !is.null(x_rng_upper)) {
-    x_limits <- c(max(x_rng_lower, 1e-3), x_rng_upper)
+    x_limits <- c(max(x_rng_lower, EDISH$ZERO_OFFSET), x_rng_upper)
   } else {
     x_limits <- NULL
   }
 
   if (!is.null(y_rng_lower) && !is.null(y_rng_upper)) {
-    y_limits <- c(max(y_rng_lower, 1e-3), y_rng_upper)
+    y_limits <- c(max(y_rng_lower, EDISH$ZERO_OFFSET), y_rng_upper)
   } else {
     y_limits <- NULL
   }
@@ -570,21 +570,31 @@ generate_plot <- function(dataset,
       )
   }
 
+  # Add small offset from zero
+  if (!is.na(x_ref_line_num) && x_ref_line_num <= 0) x_ref_line_num <- EDISH$ZERO_OFFSET
+  if (!is.na(y_ref_line_num) && y_ref_line_num <= 0) y_ref_line_num <- EDISH$ZERO_OFFSET
+
   plt_obj <- plt_obj +
-    ggplot2::scale_x_log10(breaks = major_breaks,
+    ggplot2::scale_x_log10(breaks = sort(unique(c(major_breaks, x_ref_line_num))),
                            minor_breaks = NULL,
                            labels = function(x) sub("\\.0$", "", x),
                            limits = x_limits) +
-    ggplot2::scale_y_log10(breaks = major_breaks,
+    ggplot2::scale_y_log10(breaks = sort(unique(c(major_breaks, y_ref_line_num))),
                            minor_breaks = NULL,
                            labels = function(x) sub("\\.0$", "", x),
-                           limits = y_limits) +
+                           limits = y_limits)
+
+  if (!is.na(x_ref_line_num)) plt_obj <- plt_obj +
     ggplot2::geom_vline(xintercept = x_ref_line_num,
                         color = "black",
-                        linetype = "dotted") +
+                        linetype = "dotted")
+
+  if (!is.na(y_ref_line_num)) plt_obj <- plt_obj +
     ggplot2::geom_hline(yintercept = y_ref_line_num,
                         color = "black",
-                        linetype = "dotted") +
+                        linetype = "dotted")
+
+  plt_obj <- plt_obj +
     ggplot2::labs(x = x_label,
                   y = y_label,
                   color = "") +
@@ -602,4 +612,61 @@ generate_plot <- function(dataset,
 
 
   return(plt_obj)
+}
+
+#' Generate a table of subject counts and percentages in areas delimited by reference lines
+#'
+#' @inheritParams generate_plot
+#'
+#' @return A data frame of subject counts and percentages categorized by normal/elevated laboratory tests.
+#'
+#' @keywords internal
+generate_table <- function(dataset,
+                           subjectid_var,
+                           sel_x,
+                           sel_y,
+                           x_abs,
+                           y_abs,
+                           x_ref_line_num,
+                           y_ref_line_num) {
+
+  x_var <- ifelse(x_abs, ".abs_at", ".norm_at")
+  y_var <- ifelse(y_abs, ".abs_tbili", ".norm_tbili")
+
+  classify_values <- function(val, ref) {
+    if (is.na(ref)) return(factor(EDISH$EM_DASH))
+
+    factor(ifelse(val < ref, "Normal", "Elevated"),
+           levels = c("Normal", "Elevated"))
+  }
+
+  dataset[[sel_x]] <- classify_values(dataset[[x_var]], x_ref_line_num)
+  dataset[[sel_y]] <- classify_values(dataset[[y_var]], y_ref_line_num)
+
+  # Calculate total number of unique subjects for percentage calculation
+  big_n <- length(unique(dataset[[subjectid_var]]))
+
+  dataset <- dataset[, c(subjectid_var, sel_x, sel_y)] |>
+
+    # Keep only one row per subject per category combination
+    dplyr::distinct() |>
+
+    # Calculate counts and percentages
+    dplyr::count(dplyr::across(dplyr::all_of(c(sel_x, sel_y))), .drop = FALSE) |>
+    dplyr::mutate("%" = sprintf("%.1f", 100 * .data[["n"]] / big_n)) |>
+
+    # Flag with unicode character which quadrant or half represented
+    dplyr::mutate("Quadrant" = dplyr::case_when(
+      .data[[sel_x]] == "Normal" & .data[[sel_y]] == "Normal" ~ EDISH$LOW_LFT_QUAD,
+      .data[[sel_x]] == "Normal" & .data[[sel_y]] == "Elevated" ~ EDISH$UPP_LFT_QUAD,
+      .data[[sel_x]] == "Elevated" & .data[[sel_y]] == "Normal" ~ EDISH$LOW_RGT_QUAD,
+      .data[[sel_x]] == "Elevated" & .data[[sel_y]] == "Elevated" ~ EDISH$UPP_RGT_QUAD,
+      .data[[sel_x]] == "Normal" & .data[[sel_y]] == EDISH$EM_DASH ~ EDISH$LFT_HALF,
+      .data[[sel_x]] == "Elevated" & .data[[sel_y]] == EDISH$EM_DASH ~ EDISH$RGT_HALF,
+      .data[[sel_x]] == EDISH$EM_DASH & .data[[sel_y]] == "Normal" ~ EDISH$LOW_HALF,
+      .data[[sel_x]] == EDISH$EM_DASH & .data[[sel_y]] == "Elevated" ~ EDISH$UPP_HALF,
+      .default = EDISH$EM_DASH
+    ))
+
+  return(dataset)
 }

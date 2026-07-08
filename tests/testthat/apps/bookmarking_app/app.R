@@ -40,6 +40,7 @@ test_ui <- function() {
       tbili_choices = "tbili",
       tbili_default_val = "tbili",
       default_by_visit = FALSE,
+      default_show_table = FALSE,
       window_days = NULL
     )
   )

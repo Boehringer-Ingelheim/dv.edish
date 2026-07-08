@@ -3,6 +3,7 @@
 #' `mock_edish_app()` launches a mock app containing the dv.edish shiny module.
 #'
 #' @keywords internal
+#' @export
 mock_edish_app <- function() {
   dm <- pharmaverseadam::adsl |> dplyr::mutate(dplyr::across(dplyr::where(is.character), as.factor))
   lb <- pharmaverseadam::adlb |> dplyr::mutate(dplyr::across(dplyr::where(is.character), as.factor))
@@ -16,6 +17,7 @@ mock_edish_app <- function() {
       tbili_choices = c("Bilirubin", "Eosinophils/Leukocytes"),
       tbili_default_val = "Bilirubin",
       default_by_visit = FALSE,
+      default_show_table = FALSE,
       window_days = NULL
     ))
   }
@@ -42,9 +44,13 @@ mock_edish_app <- function() {
 #' `mock_edish_mm()` launches a mock app containing the dv.edish shiny module by means of the `dv.manager`.
 #'
 #' @keywords internal
+#' @export
 mock_edish_mm <- function() {
   dm <- pharmaverseadam::adsl
   lb <- pharmaverseadam::adlb
+
+  attr(dm, "meta") <- base::file.info("NEWS.md")
+  attr(lb, "meta") <- base::file.info("NEWS.md")
 
   module_list <- list(
     "eDISH Demo" = mod_edish(

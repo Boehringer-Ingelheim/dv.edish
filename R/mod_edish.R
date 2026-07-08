@@ -23,11 +23,14 @@ EDISH <- pack_of_constants(
   BY_VISIT_ID = "by_visit",
   BY_VISIT_LABEL = "By visit",
   BY_VISIT_INFO = "Aminotransferase values will be plotted for each visit",
+  SHOW_TABLE_ID = "show_table",
+  SHOW_TABLE_LABEL = "Display subject counts table",
   PLOT_TYPE_ID = "plot_type",
   PLOT_TYPE_LABEL = "Plot type:",
   PLOT_TYPE_CHOICES = c("eDISH (\u00d7 ULN)" = "ULN",
                         "mDISH (\u00d7 Baseline)" = "Baseline"),
   PLOT_ID = "plot",
+  TABLE_ID = "freq_table",
   WINDOW_DAYS_ID = "window_days",
   WINDOW_DAYS_LABEL = "Max days between peaks",
   BASE_INCL_ID = "base_incl",
@@ -44,7 +47,17 @@ EDISH <- pack_of_constants(
   DEFAULT_X_REF_ABS = 300,
   DEFAULT_Y_REF_NORM = 2,
   DEFAULT_Y_REF_ABS = NA,
-  DEFAULT_ULN_MULTIPLE = 1.5
+  DEFAULT_ULN_MULTIPLE = 1.5,
+  EM_DASH = "\u2014",
+  LOW_LFT_QUAD = "\u25F1",
+  UPP_LFT_QUAD = "\u25F0",
+  LOW_RGT_QUAD = "\u25F2",
+  UPP_RGT_QUAD = "\u25F3",
+  LFT_HALF = "\u21A4",
+  RGT_HALF = "\u21A6",
+  LOW_HALF = "\u21A7",
+  UPP_HALF = "\u21A5",
+  ZERO_OFFSET = 1e-08
 )
 
 
@@ -69,6 +82,7 @@ edish_UI <- function(module_id,
                      tbili_choices,
                      tbili_default_val,
                      default_by_visit,
+                     default_show_table,
                      window_days) {
 
   ns <- shiny::NS(module_id)
@@ -90,6 +104,12 @@ edish_UI <- function(module_id,
       choices = arm_default_vals,
       selected = arm_default_vals,
       multiple = TRUE
+    ),
+    shiny::hr(),
+    shiny::checkboxInput(
+      ns(EDISH$SHOW_TABLE_ID),
+      label = EDISH$SHOW_TABLE_LABEL,
+      value = default_show_table
     )
   )
 
@@ -219,7 +239,16 @@ edish_UI <- function(module_id,
     shiny::div(drop_menu_x, style = "display: inline-block;"),
     shiny::div(drop_menu_y, style = "display: inline-block;"),
     gdtools::liberationsansHtmlDependency(),
-    ggiraph::girafeOutput(outputId = ns(EDISH$PLOT_ID), width = "100%", height = "600px")
+    ggiraph::girafeOutput(outputId = ns(EDISH$PLOT_ID), width = "100%", height = "600px"),
+
+    # Table of counts and percentages of normal/elevated values
+    shiny::div(
+      shiny::tableOutput(outputId = ns(EDISH$TABLE_ID)),
+      style = "width: fit-content; margin: 20px auto;"
+    ),
+
+    # Add a little space underneath the table
+    shiny::div(style = "height: 5px;")
   )
 
   return(ui)
@@ -574,6 +603,24 @@ edish_server <- function(
       )
     })
 
+    output[[EDISH$TABLE_ID]] <- shiny::renderTable({
+      shiny::req(input[[EDISH$SHOW_TABLE_ID]])
+      shiny::validate(shiny::need(nrow(plot_data()) > 0, "No data available."))
+
+      plot_df <- generate_table(
+        dataset = plot_data(),
+        subjectid_var = subjectid_var,
+        sel_x = input[[EDISH$X_AXIS_ID]],
+        sel_y = input[[EDISH$Y_AXIS_ID]],
+        x_abs = input[[EDISH$X_ABS_ID]],
+        y_abs = input[[EDISH$Y_ABS_ID]],
+        x_ref_line_num = input[[EDISH$X_REF_ID]],
+        y_ref_line_num = input[[EDISH$Y_REF_ID]]
+      )
+
+      plot_df
+    }, striped = TRUE, hover = TRUE, align = "c")
+
     # Jumping feature
     mod_return_value <- NULL
     if (!is.null(on_sbj_click)) {
@@ -674,6 +721,11 @@ edish_server <- function(
 #'
 #' A flag to indicate the default of whether or not to plot aminotransferase values for each visit.
 #'
+#' @param default_show_table `[logical(1)]`
+#'
+#' A flag to indicate whether or not to display a table of plot point frequencies delimited by
+#' reference lines.
+#'
 #' @param window_days `[integer(1) | NULL]`
 #'
 #' Window of the number of days considered between peaks.
@@ -711,7 +763,7 @@ mod_edish <- function(
     module_id,
     subject_level_dataset_name,
     lab_dataset_name,
-    lb_date_var,
+    lb_date_var = "LBDT",
     subjectid_var = "USUBJID",
     arm_var = "ACTARM",
     arm_default_vals = NULL,
@@ -727,6 +779,7 @@ mod_edish <- function(
     lb_unit_var = "LBSTRESU",
     ref_range_upper_lim_var = "LBSTNRHI",
     default_by_visit = FALSE,
+    default_show_table = FALSE,
     window_days = NULL,
     norm_ref_lines = c("Alanine Aminotransferase" = 3,
                        "Aspartate Aminotransferase" = 3,
@@ -746,6 +799,7 @@ mod_edish <- function(
                tbili_choices = tbili_choices,
                tbili_default_val = tbili_default_val,
                default_by_visit = default_by_visit,
+               default_show_table = default_show_table,
                window_days = window_days)
     },
     server = function(afmm) {
@@ -816,6 +870,7 @@ mod_edish_API_docs <- list(
   lb_unit_var = list(""),
   ref_range_upper_lim_var = list(""),
   default_by_visit = list(""),
+  default_show_table = list(""),
   window_days = list(""),
   norm_ref_lines = list(""),
   abs_ref_lines = list(""),
@@ -843,6 +898,7 @@ mod_edish_API_spec <- TC$group(
   lb_unit_var = TC$col("lab_dataset_name", TC$or(TC$character(), TC$factor())) |> TC$flag("optional"),
   ref_range_upper_lim_var = TC$col("lab_dataset_name", TC$numeric()) |> TC$flag("optional"),
   default_by_visit = TC$logical() |> TC$flag("manual_check"),
+  default_show_table = TC$logical() |> TC$flag("manual_check"),
   window_days = TC$integer() |> TC$flag("optional", "manual_check"),
   norm_ref_lines = TC$numeric() |> TC$flag("one_or_more", "optional"),
   abs_ref_lines = TC$numeric() |> TC$flag("one_or_more", "optional"),
@@ -854,7 +910,7 @@ check_mod_edish <- function(
     afmm, datasets, module_id, subject_level_dataset_name, lab_dataset_name, lb_date_var,
     subjectid_var, arm_var, arm_default_vals, visit_var, baseline_visit_val, lb_test_var,
     at_choices, at_default_val, tbili_choices, tbili_default_val, alp_choice, lb_result_var,
-    lb_unit_var, ref_range_upper_lim_var, default_by_visit, window_days,
+    lb_unit_var, ref_range_upper_lim_var, default_by_visit, default_show_table, window_days,
     norm_ref_lines, abs_ref_lines, uln_multiples, receiver_id
 ) {
   err <- CM$container()
@@ -864,7 +920,7 @@ check_mod_edish <- function(
     module_id, subject_level_dataset_name, lab_dataset_name, lb_date_var,
     subjectid_var, arm_var, arm_default_vals, visit_var, baseline_visit_val, lb_test_var,
     at_choices, at_default_val, tbili_choices, tbili_default_val, alp_choice, lb_result_var,
-    lb_unit_var, ref_range_upper_lim_var, default_by_visit, window_days,
+    lb_unit_var, ref_range_upper_lim_var, default_by_visit, default_show_table, window_days,
     norm_ref_lines, abs_ref_lines, uln_multiples, receiver_id,
     err
   )
@@ -891,6 +947,15 @@ check_mod_edish <- function(
     cond = checkmate::test_logical(default_by_visit, len = 1, any.missing = FALSE, null.ok = FALSE),
     msg = sprintf(
       "The value assigned to `default_by_visit` must be a non-missing logical, either TRUE or FALSE."
+    )
+  )
+
+  # Check that `default_show_table` is a logical scalar
+  CM$assert(
+    container = err,
+    cond = checkmate::test_logical(default_show_table, len = 1, any.missing = FALSE, null.ok = FALSE),
+    msg = sprintf(
+      "The value assigned to `default_show_table` must be a non-missing logical, either TRUE or FALSE."
     )
   )
 

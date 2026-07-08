@@ -1,3 +1,8 @@
+# dv.edish 2.0.2-9002
+
+- Implement table of subject counts and percentages in areas delimited by the specified reference lines.
+- Ensure reference line values appear on the axes.
+
 # dv.edish 2.0.2-9001
 
 - The user may switch the x- and/or y-axis between normalized values and absolute values.
