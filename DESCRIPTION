@@ -10,6 +10,9 @@ Description: This DaVinci package contains a module which is meant to
     support the assessment of drug-induced liver injury by means of the
     (modified) evaluation of Drug-Induced Serious Hepatotoxicity plot.
 License: Apache License (>= 2)
+URL: https://boehringer-ingelheim.github.io/dv.edish,
+    https://github.com/boehringer-ingelheim/dv.edish
+BugReports: https://github.com/boehringer-ingelheim/dv.edish/issues
 Depends: 
     R (>= 4.1)
 Imports:

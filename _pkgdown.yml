@@ -1,3 +1,5 @@
+url: https://boehringer-ingelheim.github.io/dv.edish
+
 template:
   bootstrap: 5
 
@@ -6,6 +8,7 @@ navbar:
   right:
     - icon: fa-github
       href: https://github.com/boehringer-ingelheim/dv.edish
+      aria-label: Source code on GitHub
   structure:
     # "articles" removed since there are no vignettes to display
     # QC report gets displayed as separate tab
@@ -29,3 +32,5 @@ reference:
 - contents:
   - edish_UI
   - edish_server
+  - mock_edish_app
+  - mock_edish_mm

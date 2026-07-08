@@ -3,7 +3,7 @@
 The eDISH module supports the assessment of drug-induced liver injury by means of the (modified)
 evaluation of Drug-Induced Serious Hepatotoxicity plot.
 
-![](man/figures/full_app.png)
+![Screenshot of eDISH app](man/figures/full_app.png)
 
 ## Installation
 
