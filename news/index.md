@@ -1,5 +1,22 @@
 # Changelog
 
+## dv.edish 2.1.0
+
+- The user may switch the x- and/or y-axis between normalized values and
+  absolute values.
+- The user can specify a ULN multiple and inequality sign (\<, ≤, ≥, \>)
+  to apply baseline inclusions. This is now completely independent to
+  reference lines, and can apply to both eDISH and mDISH plots.
+- The single large drop menu has been split into 3 smaller drop menus so
+  that less of the plot is hidden, and to reduce the likelihood that the
+  menu extends beyond the bottom of the page.
+- Implement table of subject counts and percentages in areas delimited
+  by the specified reference lines.
+- Ensure reference line values appear on the axes.
+- Update scrollbar settings for better handling with new Shiny
+  bootstrap.
+- Enable zoom option.
+
 ## dv.edish 2.0.2
 
 - \[NOT USER-FACING\] Update early error feedback snippets,
@@ -8,8 +25,9 @@
 ## dv.edish 2.0.1
 
 - Reinstate UI selection of liver function parameter on y-axis.
-- Convert [`mod_edish()`](../reference/mod_edish.md) `lb_date_var` to a
-  mandatory argument removing the `NULL` default.
+- Convert
+  [`mod_edish()`](https://boehringer-ingelheim.github.io/dv.edish/reference/mod_edish.md)
+  `lb_date_var` to a mandatory argument removing the `NULL` default.
 
 ## dv.edish 2.0.0
 
@@ -48,9 +66,11 @@
 ## dv.edish 1.1.0
 
 - Remove support for data dispatchers.
-- Split [`mod_edish()`](../reference/mod_edish.md) `dataset_names`
-  parameter into subject-level and laboratory datasets.
-- Provide early feedback of [`mod_edish()`](../reference/mod_edish.md)
+- Split
+  [`mod_edish()`](https://boehringer-ingelheim.github.io/dv.edish/reference/mod_edish.md)
+  `dataset_names` parameter into subject-level and laboratory datasets.
+- Provide early feedback of
+  [`mod_edish()`](https://boehringer-ingelheim.github.io/dv.edish/reference/mod_edish.md)
   misconfiguration.
 
 ## dv.edish 1.0.4

@@ -11,7 +11,11 @@ generate_plot(
   arm_var,
   sel_x,
   sel_y,
+  unit_x,
+  unit_y,
   norm_ref_type,
+  x_abs,
+  y_abs,
   x_ref_line_num,
   y_ref_line_num,
   x_rng_lower,
@@ -55,12 +59,38 @@ generate_plot(
 
   String specifying the laboratory test to be displayed on the y-axis.
 
+- unit_x:
+
+  `[character(1)] | NULL`
+
+  String specifying the laboratory test unit to be displayed on the
+  x-axis.
+
+- unit_y:
+
+  `[character(1)] | NULL`
+
+  String specifying the laboratory test unit to be displayed on the
+  y-axis.
+
 - norm_ref_type:
 
   `[character(1)]`
 
   String indicating normalization reference type, either `"ULN"` or
   `"Baseline"`.
+
+- x_abs:
+
+  `[logical(1)]`
+
+  Logical indicating if absolute value should be plotted on x-axis.
+
+- y_abs:
+
+  `[logical(1)]`
+
+  Logical indicating if absolute value should be plotted on y-axis.
 
 - x_ref_line_num:
 

@@ -13,8 +13,8 @@ filter_data(
   sel_arm,
   lb_test_var,
   sel_lb_test,
-  x_ref,
-  base_incl
+  base_incl,
+  uln_multiple
 )
 ```
 
@@ -58,19 +58,21 @@ filter_data(
 
   String specifying a selected aminotransferase laboratory test.
 
-- x_ref:
-
-  `[numeric(1)]`
-
-  Numeric normalized x-axis threshold reference.
-
 - base_incl:
 
   `[character(1)]`
 
   String specifying the selected baseline inclusion choice, either
-  `"LO"` (baseline within threshold), `"HI"` (baseline exceeds
-  threshold), or `"ALL"` (all).
+  `"LT"` (baseline less than threshold), `"LTE"` (baseline less than
+  equal to threshold), `"GTE"` (baseline greater than equal to
+  threshold), `"GT"` (baseline greater than threshold), or `"ALL"`
+  (all).
+
+- uln_multiple:
+
+  `[numeric(1)]`
+
+  Numeric ULN multiple used as threshold for baseline inclusions.
 
 ## Value
 

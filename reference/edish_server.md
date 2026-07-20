@@ -17,7 +17,11 @@ edish_server(
   at_choices = NULL,
   alp_choice = NULL,
   lb_result_var = "LBSTRESN",
+  lb_unit_var = NULL,
   ref_range_upper_lim_var = "LBSTNRHI",
+  norm_ref_lines = NULL,
+  abs_ref_lines = NULL,
+  uln_multiples = NULL,
   on_sbj_click = NULL
 )
 ```
@@ -29,7 +33,7 @@ edish_server(
   `[character(1)]`
 
   A unique ID string to create a namespace. Must match the ID of
-  [`edish_UI()`](edish_UI.md).
+  [`edish_UI()`](https://boehringer-ingelheim.github.io/dv.edish/reference/edish_UI.md).
 
 - dataset_list:
 
@@ -94,11 +98,43 @@ edish_server(
 
   Name of the variable containing results of the laboratory test.
 
+- lb_unit_var:
+
+  `[character(1)] | NULL`
+
+  Name of variable containing the laboratory test unit. If not NULL then
+  unit will be included in the axis labels. Only specify this if unit is
+  not already included in `lb_test_var`.
+
 - ref_range_upper_lim_var:
 
   `[character(1)]`
 
   Name of the variable containing the reference range upper limits.
+
+- norm_ref_lines:
+
+  `[numeric(1+) | NULL]`
+
+  A named numeric vector of reference line values corresponding to
+  normalized value laboratory tests. Each value should be named with a
+  value from `at_choices` or `tbili_choices`.
+
+- abs_ref_lines:
+
+  `[numeric(1+) | NULL]`
+
+  A named numeric vector of reference line values corresponding to
+  absolute value laboratory tests. Each value should be named with a
+  value from `at_choices` or `tbili_choices`.
+
+- uln_multiples:
+
+  `[numeric(1+) | NULL]`
+
+  A named numeric vector of ULN multiples corresponding to normalized
+  value laboratory tests. Each value should be named with a value from
+  `at_choices`.
 
 - on_sbj_click:
 
@@ -114,4 +150,6 @@ if applicable.
 
 ## See also
 
-[`mod_edish()`](mod_edish.md) and [`edish_UI()`](edish_UI.md)
+[`mod_edish()`](https://boehringer-ingelheim.github.io/dv.edish/reference/mod_edish.md)
+and
+[`edish_UI()`](https://boehringer-ingelheim.github.io/dv.edish/reference/edish_UI.md)

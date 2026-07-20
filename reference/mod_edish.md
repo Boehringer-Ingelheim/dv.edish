@@ -13,7 +13,7 @@ mod_edish(
   module_id,
   subject_level_dataset_name,
   lab_dataset_name,
-  lb_date_var,
+  lb_date_var = "LBDT",
   subjectid_var = "USUBJID",
   arm_var = "ACTARM",
   arm_default_vals = NULL,
@@ -26,9 +26,15 @@ mod_edish(
   tbili_default_val = "Bilirubin",
   alp_choice = "Alkaline Phosphatase",
   lb_result_var = "LBSTRESN",
+  lb_unit_var = "LBSTRESU",
   ref_range_upper_lim_var = "LBSTNRHI",
   default_by_visit = FALSE,
+  default_show_table = FALSE,
   window_days = NULL,
+  norm_ref_lines = c(`Alanine Aminotransferase` = 3, `Aspartate Aminotransferase` = 3,
+    Bilirubin = 2),
+  abs_ref_lines = c(`Alanine Aminotransferase` = 300, `Aspartate Aminotransferase` = 300),
+  uln_multiples = c(`Alanine Aminotransferase` = 1.5, `Aspartate Aminotransferase` = 1.5),
   receiver_id = NULL
 )
 ```
@@ -138,6 +144,14 @@ mod_edish(
 
   Name of the variable containing results of the laboratory test.
 
+- lb_unit_var:
+
+  `[character(1)] | NULL`
+
+  Name of variable containing the laboratory test unit. If not NULL then
+  unit will be included in the axis labels. Only specify this if unit is
+  not already included in `lb_test_var`.
+
 - ref_range_upper_lim_var:
 
   `[character(1)]`
@@ -151,11 +165,42 @@ mod_edish(
   A flag to indicate the default of whether or not to plot
   aminotransferase values for each visit.
 
+- default_show_table:
+
+  `[logical(1)]`
+
+  A flag to indicate whether or not to display a table of plot point
+  frequencies delimited by reference lines.
+
 - window_days:
 
   `[integer(1) | NULL]`
 
   Window of the number of days considered between peaks.
+
+- norm_ref_lines:
+
+  `[numeric(1+) | NULL]`
+
+  A named numeric vector of reference line values corresponding to
+  normalized value laboratory tests. Each value should be named with a
+  value from `at_choices` or `tbili_choices`.
+
+- abs_ref_lines:
+
+  `[numeric(1+) | NULL]`
+
+  A named numeric vector of reference line values corresponding to
+  absolute value laboratory tests. Each value should be named with a
+  value from `at_choices` or `tbili_choices`.
+
+- uln_multiples:
+
+  `[numeric(1+) | NULL]`
+
+  A named numeric vector of ULN multiples corresponding to normalized
+  value laboratory tests. Each value should be named with a value from
+  `at_choices`.
 
 - receiver_id:
 

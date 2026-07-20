@@ -13,6 +13,7 @@ edish_UI(
   tbili_choices,
   tbili_default_val,
   default_by_visit,
+  default_show_table,
   window_days
 )
 ```
@@ -24,7 +25,7 @@ edish_UI(
   `[character(1)]`
 
   A unique ID string to create a namespace. Must match the ID of
-  [`edish_server()`](edish_server.md).
+  [`edish_server()`](https://boehringer-ingelheim.github.io/dv.edish/reference/edish_server.md).
 
 - arm_default_vals:
 
@@ -68,6 +69,13 @@ edish_UI(
   A flag to indicate the default of whether or not to plot
   aminotransferase values for each visit.
 
+- default_show_table:
+
+  `[logical(1)]`
+
+  A flag to indicate whether or not to display a table of plot point
+  frequencies delimited by reference lines.
+
 - window_days:
 
   `[integer(1) | NULL]`
@@ -80,4 +88,6 @@ A shiny `uiOutput` element.
 
 ## See also
 
-[`mod_edish()`](mod_edish.md) and [`edish_server()`](edish_server.md)
+[`mod_edish()`](https://boehringer-ingelheim.github.io/dv.edish/reference/mod_edish.md)
+and
+[`edish_server()`](https://boehringer-ingelheim.github.io/dv.edish/reference/edish_server.md)

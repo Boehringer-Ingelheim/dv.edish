@@ -2,4 +2,5 @@
 
 ### All vignettes
 
-- [Quality Control](qc.md):
+- [Quality
+  Control](https://boehringer-ingelheim.github.io/dv.edish/articles/qc.md):

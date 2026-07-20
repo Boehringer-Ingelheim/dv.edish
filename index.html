@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">dv.edish</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,7 +36,7 @@
 <li class="nav-item"><a class="nav-link" href="articles/qc.html">Quality Control</a></li>
       </ul>
 <ul class="navbar-nav">
-<li class="nav-item"><a class="external-link nav-link" href="https://github.com/boehringer-ingelheim/dv.edish"><span class="fa fa-github"></span></a></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/boehringer-ingelheim/dv.edish" aria-label="Source code on GitHub"><span class="fa fa-github"></span></a></li>
       </ul>
 </div>
 
@@ -48,7 +48,9 @@
 <div class="page-header"><h1 id="edish-module">eDISH Module<a class="anchor" aria-label="anchor" href="#edish-module"></a>
 </h1></div>
 <p>The eDISH module supports the assessment of drug-induced liver injury by means of the (modified) evaluation of Drug-Induced Serious Hepatotoxicity plot.</p>
-<p><img src="reference/figures/full_app.png"></p>
+<div class="float">
+<img src="reference/figures/full_app.png" alt="Screenshot of eDISH app"><div class="figcaption">Screenshot of eDISH app</div>
+</div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
@@ -60,26 +62,39 @@
 <h2 id="features">Features<a class="anchor" aria-label="anchor" href="#features"></a>
 </h2>
 <p>The eDISH module shows a scatter plot depicting the correlation between peak values of an aminotransferase parameter and a liver function parameter on a subject level.</p>
-<p>The user can control the following from the user interface drop-down plot options:</p>
+<p>Beneath the scatter plot, a table of subject counts and percentages in areas delimited by the specified reference lines can optionally be displayed.</p>
+<p>The user can control the following from the drop-down “Plot Options” menu:</p>
 <ul>
-<li>Treatment arm selection.</li>
-<li>The aminotransferase parameter to be displayed on the x-axis (e.g. Alanine Aminotransferase or Aspartate Aminotransferase).</li>
-<li>The liver function parameter to be displayed on the y-axis (e.g. Total Bilirubin or Prothrombin Intl. Normalized Ratio)</li>
-<li>The window in which the liver function parameter value is considered in relation to the aminotransferase value.</li>
 <li>Whether the parameters are displayed in multiples of either their upper limits of normal (resulting in the eDISH plot) or the corresponding subject’s baseline values (resulting in the mDISH plot).</li>
-<li>Horizontal and vertical reference lines indicating Hy’s law multiples.</li>
-<li>Whether to include subjects based on their baseline value being within the aminotransferase threshold.</li>
+<li>Treatment arm selection.</li>
+<li>Whether the table of subject counts and percentages is displayed.</li>
+</ul>
+<p>The user can control the following from the drop-down “Specify x-axis” menu:</p>
+<ul>
+<li>The aminotransferase parameter to be displayed on the x-axis (e.g. Alanine Aminotransferase or Aspartate Aminotransferase).</li>
+<li>Vertical reference line indicating a ULN/baseline multiple or other threshold.</li>
+<li>Lower and/or upper values of the x-axis range. If not specified then these values are determined by the data.</li>
+<li>Whether to plot the absolute value of the parameter on the x-axis rather than a multiple of ULN/baseline.</li>
 <li>Whether to plot subject aminotransferase values by visit, with lines connecting points between visits.</li>
-<li>Lower and/or upper values of the x- and y-axis ranges. If not specified then these values are determined by the data.</li>
+<li>Whether to include subjects based on their baseline value being within the aminotransferase threshold.</li>
+<li>Whether to include subjects based on their baseline aminotransferase value being less than/less than equal to/more than/more than equal to a ULN multiple threshold.</li>
+</ul>
+<p>The user can control the following from the drop-down “Specify y-axis” menu:</p>
+<ul>
+<li>The liver function parameter to be displayed on the y-axis (e.g. Total Bilirubin or Prothrombin Intl. Normalized Ratio)</li>
+<li>Horizontal reference line indicating a ULN/baseline multiple or other threshold.</li>
+<li>Lower and/or upper values of the y-axis range. If not specified then these values are determined by the data.</li>
+<li>Whether to plot the absolute value of the parameter on the y-axis rather than a multiple of ULN/baseline.</li>
+<li>The window in which the liver function parameter value is considered in relation to the aminotransferase value.</li>
 </ul>
 <p>When hovering over a point the following pop-up information is displayed:</p>
 <ul>
 <li>Subject identifier.</li>
 <li>Arm.</li>
-<li>Normalized aminotransferase peak value, visit, and date.</li>
+<li>Normalized (or absolute if selected) aminotransferase peak value, visit, and date.</li>
 <li>Associated normalized Alkaline Phosphatase value categorized.</li>
 <li>R-ratio categorized.</li>
-<li>Normalized liver function parameter peak value, visit, and date.</li>
+<li>Normalized (or absolute if selected) liver function parameter peak value, visit, and date.</li>
 <li>Time in days between aminotransferase and liver function dates. Negative days indicates that liver function date is before aminotransferase date.</li>
 </ul>
 <p>Normalized Alkaline Phosphatase (ALP/ULN or ALP/Baseline) categories are shown as ≤ 2 or &gt; 2.</p>
@@ -140,6 +155,8 @@
   </main><aside class="col-md-3"><div class="links">
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
+<li><a href="https://github.com/boehringer-ingelheim/dv.edish/" class="external-link">Browse source code</a></li>
+<li><a href="https://github.com/boehringer-ingelheim/dv.edish/issues" class="external-link">Report a bug</a></li>
 <li><a href="https://github.com/Boehringer-Ingelheim/dv.edish/" class="external-link">Browse source code</a></li>
 </ul>
 </div>

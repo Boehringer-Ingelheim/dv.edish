@@ -31,7 +31,7 @@ derive_req_vars(
   `[data.frame]`
 
   A data frame containing the data from
-  [`prepare_initial_data()`](prepare_initial_data.md).
+  [`prepare_initial_data()`](https://boehringer-ingelheim.github.io/dv.edish/reference/prepare_initial_data.md).
 
 - subjectid_var:
 
@@ -135,11 +135,18 @@ A data frame with the following derived variables:
 
 - `.norm_at`: Normalized peak aminotransferase value.
 
+- `.abs_at`: Absolute aminotransferase value.
+
+- `.norm_base_uln`: Normalized baseline aminotransferase value with
+  respect to ULN.
+
 - `.visit_tbili`: Visit of peak total bilirubin value.
 
 - `.date_tbili`: Date of peak total bilirubin value.
 
 - `.norm_tbili`: Normalized peak total bilirubin value.
+
+- `.abs_tbili`: Absolute total bilirubin value.
 
 - `.norm_alp`: Normalized alkaline phosphotase value at same visit as
   aminotransferase value.
