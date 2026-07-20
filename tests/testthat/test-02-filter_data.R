@@ -4,13 +4,13 @@ dataset <- data.frame(
   "USUBJID" = c("01", "02", "02", "03", "03", "04"),
   "ARM"     = c("arm1", "arm2", "arm2", "arm3", "arm3", "screenfail"),
   "LBTEST"  = c("test1", "test2", "test3", "test2", "test2", "test1"),
-  ".norm_base" = c(1.2, 2.3, 3.4, 1.1, 2.2, 3.3)
+  ".norm_base_uln" = c(1.2, 2.3, 3.4, 1.1, 2.2, 3.0)
 )
 arm_var <- names(dataset)[2]
 lb_test_var <- names(dataset)[3]
 arm_vals <- unique(dataset[[arm_var]])
 lb_test_vals <- unique(dataset[[lb_test_var]])
-x_ref <- 3
+uln_multiple <- 3
 
 # Duplicate rows for normalization reference types ULN and Baseline
 dataset <- dplyr::bind_rows(
@@ -30,8 +30,8 @@ test_that("the resulting dataset contains only data corresponding to the desired
     sel_arm = arm_vals,
     lb_test_var = lb_test_var,
     sel_lb_test = lb_test_vals[2],
-    x_ref = x_ref,
-    base_incl = "ALL"
+    base_incl = "ALL",
+    uln_multiple = uln_multiple
   )
   exp <- dataset[dataset[[lb_test_var]] %in% lb_test_vals[2] &
                    dataset[[".norm_ref_type"]] == "ULN", ]
@@ -49,11 +49,11 @@ test_that("the resulting dataset contains only data with baseline within thresho
     sel_arm = arm_vals,
     lb_test_var = lb_test_var,
     sel_lb_test = lb_test_vals[2],
-    x_ref = x_ref,
-    base_incl = "LO"
+    base_incl = "LT",
+    uln_multiple = uln_multiple
   )
   exp <- dataset[dataset[[lb_test_var]] %in% lb_test_vals[2] &
-                   dataset[[".norm_base"]] < 3 &
+                   dataset[[".norm_base_uln"]] < 3 &
                    dataset[[".norm_ref_type"]] == "ULN", ]
   rownames(exp) <- NULL
   expect_identical(res, exp)
@@ -69,8 +69,8 @@ test_that("the resulting dataset contains only data corresponding to the desired
     sel_arm = NULL,
     lb_test_var = lb_test_var,
     sel_lb_test = lb_test_vals[2],
-    x_ref = x_ref,
-    base_incl = "ALL"
+    base_incl = "ALL",
+    uln_multiple = uln_multiple
   )
   exp <- dataset[0, ]
   rownames(exp) <- NULL
@@ -84,8 +84,8 @@ test_that("the resulting dataset contains only data corresponding to the desired
     sel_arm = arm_vals[3],
     lb_test_var = lb_test_var,
     sel_lb_test = lb_test_vals[2],
-    x_ref = x_ref,
-    base_incl = "ALL"
+    base_incl = "ALL",
+    uln_multiple = uln_multiple
   )
   exp <- dataset[dataset[[arm_var]] %in% arm_vals[3] &
                    dataset[[lb_test_var]] == lb_test_vals[2] &
@@ -101,8 +101,8 @@ test_that("the resulting dataset contains only data corresponding to the desired
     sel_arm = arm_vals[c(2, 3)],
     lb_test_var = lb_test_var,
     sel_lb_test = lb_test_vals[2],
-    x_ref = x_ref,
-    base_incl = "ALL"
+    base_incl = "ALL",
+    uln_multiple = uln_multiple
   )
   exp <- dataset[dataset[[arm_var]] %in% arm_vals[c(2, 3)] &
                    dataset[[lb_test_var]] == lb_test_vals[2] &
@@ -118,8 +118,8 @@ test_that("the resulting dataset contains only data corresponding to the desired
     sel_arm = arm_vals,
     lb_test_var = lb_test_var,
     sel_lb_test = lb_test_vals[1],
-    x_ref = x_ref,
-    base_incl = "ALL"
+    base_incl = "ALL",
+    uln_multiple = uln_multiple
   )
   exp <- dataset[dataset[[lb_test_var]] == lb_test_vals[1] &
                    dataset[[".norm_ref_type"]] == "ULN", ]

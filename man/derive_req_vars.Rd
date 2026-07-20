@@ -93,9 +93,12 @@ A data frame with the following derived variables:
 \item \code{.visit_at}: Visit of peak aminotransferase value.
 \item \code{.date_at}: Date of peak aminotransferase value.
 \item \code{.norm_at}: Normalized peak aminotransferase value.
+\item \code{.abs_at}: Absolute aminotransferase value.
+\item \code{.norm_base_uln}: Normalized baseline aminotransferase value with respect to ULN.
 \item \code{.visit_tbili}: Visit of peak total bilirubin value.
 \item \code{.date_tbili}: Date of peak total bilirubin value.
 \item \code{.norm_tbili}: Normalized peak total bilirubin value.
+\item \code{.abs_tbili}: Absolute total bilirubin value.
 \item \code{.norm_alp}: Normalized alkaline phosphotase value at same visit as aminotransferase value.
 \item \code{.offset_days}: Number of days from aminotransferase visit to total bilirubin visit.
 \item \code{.norm_ref_type}: Normalization reference type, copied from \code{norm_ref_type} argument.

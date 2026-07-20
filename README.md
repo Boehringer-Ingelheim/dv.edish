@@ -3,7 +3,7 @@
 The eDISH module supports the assessment of drug-induced liver injury by means of the (modified)
 evaluation of Drug-Induced Serious Hepatotoxicity plot.
 
-![](man/figures/full_app.png)
+![Screenshot of eDISH app](man/figures/full_app.png)
 
 ## Installation
 
@@ -17,30 +17,45 @@ remotes::install_github("Boehringer-Ingelheim/dv.edish")
 The eDISH module shows a scatter plot depicting the correlation between peak values of an
 aminotransferase parameter and a liver function parameter on a subject level.
 
-The user can control the following from the user interface drop-down plot options:
+Beneath the scatter plot, a table of subject counts and percentages in areas delimited by the
+specified reference lines can optionally be displayed.
 
-- Treatment arm selection.
-- The aminotransferase parameter to be displayed on the x-axis (e.g. Alanine Aminotransferase or
-  Aspartate Aminotransferase).
-- The liver function parameter to be displayed on the y-axis (e.g. Total Bilirubin or
-  Prothrombin Intl. Normalized Ratio)
-- The window in which the liver function parameter value is considered in relation to the aminotransferase value.
+The user can control the following from the drop-down "Plot Options" menu:
+
 - Whether the parameters are displayed in multiples of either their upper limits of normal
   (resulting in the eDISH plot) or the corresponding subject's baseline values (resulting in the mDISH plot).
-- Horizontal and vertical reference lines indicating Hy's law multiples.
-- Whether to include subjects based on their baseline value being within the aminotransferase threshold.
+- Treatment arm selection.
+- Whether the table of subject counts and percentages is displayed.
+
+The user can control the following from the drop-down "Specify x-axis" menu:
+
+- The aminotransferase parameter to be displayed on the x-axis (e.g. Alanine Aminotransferase or
+  Aspartate Aminotransferase).
+- Vertical reference line indicating a ULN/baseline multiple or other threshold.
+- Lower and/or upper values of the x-axis range. If not specified then these values are determined by the data.
+- Whether to plot the absolute value of the parameter on the x-axis rather than a multiple of ULN/baseline.
 - Whether to plot subject aminotransferase values by visit, with lines connecting points between visits.
-- Lower and/or upper values of the x- and y-axis ranges. If not specified then these values are
-  determined by the data.
+- Whether to include subjects based on their baseline value being within the aminotransferase threshold.
+- Whether to include subjects based on their baseline aminotransferase value being less than/less than
+  equal to/more than/more than equal to a ULN multiple threshold.
+
+The user can control the following from the drop-down "Specify y-axis" menu:
+
+- The liver function parameter to be displayed on the y-axis (e.g. Total Bilirubin or
+  Prothrombin Intl. Normalized Ratio)
+- Horizontal reference line indicating a ULN/baseline multiple or other threshold.
+- Lower and/or upper values of the y-axis range. If not specified then these values are determined by the data.
+- Whether to plot the absolute value of the parameter on the y-axis rather than a multiple of ULN/baseline.
+- The window in which the liver function parameter value is considered in relation to the aminotransferase value.
 
 When hovering over a point the following pop-up information is displayed:
 
 - Subject identifier.
 - Arm.
-- Normalized aminotransferase peak value, visit, and date.
+- Normalized (or absolute if selected) aminotransferase peak value, visit, and date.
 - Associated normalized Alkaline Phosphatase value categorized.
 - R-ratio categorized.
-- Normalized liver function parameter peak value, visit, and date.
+- Normalized (or absolute if selected) liver function parameter peak value, visit, and date.
 - Time in days between aminotransferase and liver function dates. Negative days indicates that liver function date
   is before aminotransferase date.
 

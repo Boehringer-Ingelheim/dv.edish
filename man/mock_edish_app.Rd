@@ -9,4 +9,3 @@ mock_edish_app()
 \description{
 \code{mock_edish_app()} launches a mock app containing the dv.edish shiny module.
 }
-\keyword{internal}

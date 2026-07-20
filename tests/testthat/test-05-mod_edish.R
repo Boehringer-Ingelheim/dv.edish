@@ -18,9 +18,13 @@ test_that("the default values are correct at app launch" |>
   app$wait_for_idle()
 
   # Get values after launch and test
-  actual <- app$get_values(input = c("edish-plot_type", "edish-arm_id", "edish-x_axis", "edish-y_axis",
-                                     "edish-x_ref", "edish-y_ref", "edish-x_rng", "edish-y_rng",
-                                     "edish-window_days", "edish-by_visit", "edish-base_incl"))
+  actual <- app$get_values(input = c("edish-plot_type", "edish-arm_id",
+                                     "edish-x_axis", "edish-y_axis",
+                                     "edish-x_ref", "edish-y_ref",
+                                     "edish-x_abs", "edish-y_abs",
+                                     "edish-x_rng", "edish-y_rng",
+                                     "edish-base_incl", "edish-uln_multiple",
+                                     "edish-window_days", "edish-by_visit"))
 
   expected <- list(
     input = list(
@@ -28,10 +32,13 @@ test_that("the default values are correct at app launch" |>
       `edish-base_incl` = "ALL",
       `edish-by_visit` = FALSE,
       `edish-plot_type` = "ULN",
+      `edish-uln_multiple` = 1.5,
       `edish-window_days` = NA,
+      `edish-x_abs` = FALSE,
       `edish-x_axis` = "alt",
       `edish-x_ref` = 3L,
       `edish-x_rng` = NULL,
+      `edish-y_abs` = FALSE,
       `edish-y_axis` = "tbili",
       `edish-y_ref` = 2L,
       `edish-y_rng` = NULL
@@ -62,25 +69,19 @@ test_that("the app displays the correct plot data after selections (snapshot tes
   app_vals <- app$get_values(input = TRUE, output = TRUE)
   plot_output <- app_vals$output$`edish-plot`
 
-  # 1. Standardize ggiraph IDs
+  # Pull out only the data between <svg> and </svg>
+  plot_output <- sub("^.*(<svg.*svg>).*$", "\\1", plot_output)
+
+  # Standardize ggiraph IDs
   plot_output <- gsub("svg_[a-z0-9_]{10,}", "svg_CONST", plot_output)
 
-  # 2. Remove the extra background rect introduced in ggplot2 4.0
-  # This looks for the specific empty stroke rect and removes it
-  plot_output <- gsub("<rect x='0' y='0' width='576' height='383.76' fill='#FFFFFF' fill-opacity='1' stroke='none'/>",
-                      "", plot_output)
-
-  # 3. Fix the reference line stroke-widths (targeting <line> tags specifically)
-  # Pre ggplot2 4.0 they are 1.07, with ggplot2 4.0 they are 0.87.
-  plot_output <- gsub("<line ([^>]+)stroke-width='0.87'", "<line \\1stroke-width='1.07'", plot_output)
-
-  # 4. Remove extra newlines introduced in ggplot2 4.0
-  plot_output <- gsub("\\\\n   \\\\n", "\\\\n", plot_output)
+  # Replace \n with actual new lines to make review easier
+  plot_output <- gsub("\\\\n", "\n", plot_output)
 
   # Re-assign the cleaned string
   app_vals$output$`edish-plot` <- plot_output
 
-  expect_snapshot(app_vals, cran = TRUE)
+  testthat::expect_snapshot(app_vals, cran = TRUE)
 
   app$stop()
 })
@@ -101,6 +102,7 @@ test_that("the app's state is restored when bookmarking" |>
   app_bmk$set_inputs(`edish-x_axis` = "ast")
   app_bmk$set_inputs(`edish-x_ref` = 3.5)
   app_bmk$set_inputs(`edish-by_visit` = TRUE)
+  app_bmk$set_inputs(`edish-show_table` = TRUE)
 
   # It is not possible to set shinyWidgets::numericalRangeInput using shinytest2
   # We use an alternative approach by setting the url query part manually
@@ -123,12 +125,13 @@ test_that("the app's state is restored when bookmarking" |>
 
   # Get values and test
   actual <- app_rst$get_values(input = c("edish-plot_type", "edish-arm_id", "edish-x_axis", "edish-y_axis",
-                                         "edish-x_ref", "edish-x_rng", "edish-y_rng", "edish-by_visit"))
+                                         "edish-x_ref", "edish-x_rng", "edish-y_rng", "edish-by_visit", "edish-show_table"))
   expected <- list(
     input = list(
       `edish-arm_id` = c("arm1", "arm2"),
       `edish-by_visit` = TRUE,
       `edish-plot_type` = "Baseline",
+      `edish-show_table` = TRUE,
       `edish-x_axis` = "ast",
       `edish-x_ref` = 3.5,
       `edish-x_rng` = c(0.1, 5.1),

@@ -25,6 +25,10 @@ plot_specs <- specs_list(
   multiple_vals = "In case of multiple values per subject, visit, and lab test, only the maximum value should be shown."
 )
 
+table_specs <- specs_list(
+  data = "The table displays the subject counts and percentages for each quadrant or half"
+)
+
 framework_specs <- specs_list(
   bookmarking = "The app's state gets restored correctly after bookmarking.",
   jumping_feature = "The module allows to drill-down by jumping to the Patient Profile module."
@@ -33,5 +37,6 @@ framework_specs <- specs_list(
 specs <- specs_list(
   input_menu_specs = input_menu_specs,
   plot_specs = plot_specs,
+  table_specs = table_specs,
   framework_specs = framework_specs
 )
