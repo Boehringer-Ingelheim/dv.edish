@@ -44,6 +44,11 @@ mock_edish_app <- function() {
 #'
 #' @export
 mock_edish_mm <- function() {
+
+  if (!requireNamespace("dv.manager")) stop("Install dv.manager")
+  if (!requireNamespace("dv.papo")) stop("Install dv.papo")
+  if (!requireNamespace("pharmaverseadam")) stop("Install pharmaverseadam")
+
   dm <- pharmaverseadam::adsl
   lb <- pharmaverseadam::adlb
 
@@ -75,6 +80,6 @@ mock_edish_mm <- function() {
   dv.manager::run_app(
     data = list("demo" = list("dm" = dm, "lb" = lb)),
     module_list = module_list,
-    filter_data = "dm"
+    filter_dataset_name = "dm"
   )
 }

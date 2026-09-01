@@ -804,7 +804,7 @@ mod_edish <- function(
     },
     server = function(afmm) {
       dataset_list <- shiny::reactive({
-        afmm$filtered_dataset()[c(subject_level_dataset_name, lab_dataset_name)]
+        afmm$filtered_dataset_list()[c(subject_level_dataset_name, lab_dataset_name)]
       })
 
       on_sbj_click_fun <- NULL
