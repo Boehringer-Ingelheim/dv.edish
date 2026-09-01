@@ -1,6 +1,6 @@
 Package: dv.edish
 Title: eDISH Plot Module for DILI assessment
-Version: 2.1.0
+Version: 2.1.0-9000
 Authors@R: c(
     person("Boehringer-Ingelheim Pharma GmbH & Co.KG", role = c("cph", "fnd")),
     person("Isabel", "Glauss", , "isabel.glauss@boehringer-ingelheim.com", role = c("aut", "cre")),
@@ -18,7 +18,7 @@ Depends:
 Imports:
     checkmate (>= 2.1.0),
     dplyr (>= 1.0.5),
-    dv.manager (>= 2.1.4),
+    dv.manager (>= 3.1.0),
     gdtools,
     ggiraph,
     ggplot2,
