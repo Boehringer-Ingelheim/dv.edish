@@ -1,4 +1,4 @@
-# YT#VHb8d7094dccccb00c0c217628906ca717#VH6cbb4db897d00c26bed7291a0f2f8658#
+# YT#VHef1af52f38c3fd9e7535ab6f81170fa3#VHd7ae73ab90ca3891a847507d0a833cc6#
 DR <- local({ # _D_ressing _R_oom
   inline_shiny_input <- function(elem, label = NULL, name_selector = NULL, label_elem = NULL) {
     if (is.character(label) && length(label) == 1 && nchar(label) > 0) {
@@ -125,13 +125,13 @@ DR <- local({ # _D_ressing _R_oom
         font-size: 2rem;
         display: inline-block;
         margin-left: 1rem;
-        content:'\203A';
+        content:'\u203A';
       }
 
       .toggle-checkbox:checked + .toggle-label .chevron:before {
         font-size: 2rem;
         display: inline-block;
-        content:'\203A';
+        content:'\u203A';
         transform: rotate(90deg);
       }
 
@@ -1068,8 +1068,8 @@ DR <- local({ # _D_ressing _R_oom
           afmm <- list(
             data = list(DS = datasets()),
             dataset_metadata = list(name = shiny::reactive("DS")),
-            unfiltered_dataset = datasets,
-            filtered_dataset = datasets,
+            unfiltered_dataset_list = datasets,
+            filtered_dataset_list = datasets,
             module_output = function() list()
           )
 
@@ -1133,12 +1133,11 @@ DR <- local({ # _D_ressing _R_oom
 
 # Interactive module demo/configuration tool
 #
-# Launch an experimental interactive point-and-click configuration app for `dv.explorer.parameter` modules.
-# Help is accessible by hovering over any of the provided parameters. \cr
-# To try it using demo data, run `dv.explorer.parameter::explorer_app(dv.explorer.parameter:::safety_data())` in your R prompt.
+# Launch an experimental interactive point-and-click configuration app for for the `dv.edish` module.
+# To try it using demo data, run `dv.edish:::explorer_app(datasets = list(dm = pharmaverseadam::adsl, lb = pharmaverseadam::adlb))` in your R prompt.
 #
 # @param datasets `[list(data.frame(n))]` (optional) Datasets available to the module. One of them should be a
-# demographic subject-level dataset and the rest should be visit-dependent datasets. If not provided, the UI offers a
+# demographic subject-level dataset and the other the visit-dependent dataset. If not provided, the UI offers a
 # file input selector that is functionally equivalent.
 #
 explorer_app <- function(datasets = NULL) {
