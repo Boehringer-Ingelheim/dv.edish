@@ -1,3 +1,7 @@
+# dv.edish 2.1.0-9000
+
+- [NOT USER-FACING] Address dv.manager deprecation warning messages.
+
 # dv.edish 2.1.0
 
 - The user may switch the x- and/or y-axis between normalized values and absolute values.
