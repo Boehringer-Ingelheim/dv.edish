@@ -841,7 +841,16 @@ mod_edish <- function(
         on_sbj_click = on_sbj_click_fun
       )
     },
-    module_id = module_id
+    module_id = module_id,
+    meta = list(
+      check_mod_fn = function(afmm, datasets) {
+          check_mod_edish(afmm, datasets, module_id, subject_level_dataset_name, lab_dataset_name, lb_date_var,
+                          subjectid_var, arm_var, arm_default_vals, visit_var, baseline_visit_val, lb_test_var,
+                          at_choices, at_default_val, tbili_choices, tbili_default_val, alp_choice, lb_result_var,
+                          lb_unit_var, ref_range_upper_lim_var, default_by_visit, default_show_table, window_days,
+                          norm_ref_lines, abs_ref_lines, uln_multiples, receiver_id)
+      }
+    )
   )
 
   return(mod)
@@ -1007,19 +1016,6 @@ check_mod_edish <- function(
     )
   }
 
-  res <- list(errors = err[["messages"]])
+  res <- err[["messages"]]
   return(res)
 }
-
-dataset_info_edish <- function(subject_level_dataset_name, lab_dataset_name, ...) {
-  # TODO: Replace this function with a generic one that builds the list based on mod_edish_API_spec.
-  # Something along the lines of CM$dataset_info(mod_boxplot_API_spec, args = match.call())
-  return(
-    list(
-      all = unique(c(subject_level_dataset_name, lab_dataset_name)),
-      subject_level = subject_level_dataset_name
-    )
-  )
-}
-
-mod_edish <- CM$module(mod_edish, check_mod_edish, dataset_info_edish)
