@@ -843,6 +843,10 @@ mod_edish <- function(
     },
     module_id = module_id,
     meta = list(
+      dataset_info = list(
+        all = unique(c(subject_level_dataset_name, lab_dataset_name)),
+        subject_level = subject_level_dataset_name
+        ),
       check_mod_fn = function(afmm, datasets) {
           check_mod_edish(afmm, datasets, module_id, subject_level_dataset_name, lab_dataset_name, lb_date_var,
                           subjectid_var, arm_var, arm_default_vals, visit_var, baseline_visit_val, lb_test_var,
