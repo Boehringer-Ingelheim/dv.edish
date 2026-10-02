@@ -1,4 +1,4 @@
-# YT#VHf29a3f572c107632b46daf31f56ecd34#VH1202cc468f3cbf448dd25ff917fc4762#
+# YT#VH766dd82f6ebc9cd0a92fee1078aec4f1#VHf29a3f572c107632b46daf31f56ecd34#
 TC <- local({ # _T_ype C_hecks
   # basic types
   T_logical <- function() list(kind = "logical")
@@ -81,7 +81,7 @@ TC <- local({ # _T_ype C_hecks
         "manual_check",               # CM$generate_check_functions will not generate an automated check for this element
         # domain-specific flags
         "subject_level_dataset_name", # indicates dataset with one row per subject
-        "subjid_var"                  # indicates unique subject identifier column on dataset pointed at by subject_level_dataset_name 
+        "subjid_var"                  # indicates unique subject identifier column on dataset pointed at by subject_level_dataset_name
       )
     )
     if (length(unknown_flags)) browser()
@@ -159,7 +159,7 @@ TC <- local({ # _T_ype C_hecks
       res <- "<placeholder>" # TODO: Refer to the actual column
     } else if (elem$kind == "choice_from_col_contents") {
       res <- "<placeholder>" # TODO: Refer to the actual column
-    } else if (elem$kind %in% c("logical", "integer", "numeric", "character", "group", "function")) {
+    } else if (elem$kind %in% c("logical", "integer", "numeric", "character", "group", "function", "or")) {
       # nothing
     } else {
       message(paste("Missing use for kind", elem$kind))

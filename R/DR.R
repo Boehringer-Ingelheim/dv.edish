@@ -1,5 +1,8 @@
-# YT#VHef1af52f38c3fd9e7535ab6f81170fa3#VHd7ae73ab90ca3891a847507d0a833cc6#
+# YT#VH7d6bc2c24e816dc54e05e8110dec8313#VHef1af52f38c3fd9e7535ab6f81170fa3#
 DR <- local({ # _D_ressing _R_oom
+  # 2026-08-28: [cleanup] Inherit `message_well` from CM.R
+  #             [feature] Call the module `check_mod_fn` instead of relying on it being wrapped by a CM$module call
+
   inline_shiny_input <- function(elem, label = NULL, name_selector = NULL, label_elem = NULL) {
     if (is.character(label) && length(label) == 1 && nchar(label) > 0) {
       label_elem <- shiny::tags$label(`for` = NULL, label)
@@ -92,7 +95,7 @@ DR <- local({ # _D_ressing _R_oom
       shiny::div(
         class = "card",
         style = "background-color:#eff7ff;",
-        shiny::div(class = "card-body", style = "padding-bottom:0.5rem;", ...)
+        shiny::div(class = "card-body", style = "padding-top:0.5rem; padding-left:0.5rem; padding-right:0.5rem;", ...)
       )
     }
 
@@ -935,6 +938,26 @@ DR <- local({ # _D_ressing _R_oom
         return(paste(res, collapse = "\n"))
       }
 
+      message_well <- function(title, contents, color = "f5f5f5") {
+        style <- sprintf(
+          paste0(
+            "padding: 0.5rem;",
+            "padding-left: 1rem;",
+            "margin-bottom: 20px;",
+            "background-color: %s;",
+            "border: 1px solid #e3e3e3;",
+            "border-radius: 4px;",
+            "-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.05);",
+            "box-shadow: inset 0 1px 1px rgba(0,0,0,.05);"
+          ),
+          color
+        )
+
+        res <- list(shiny::h3(title))
+        if (length(contents)) res <- append(res, list(shiny::tags[["div"]](contents, style = style)))
+        return(res)
+      }
+
       prev_code_update_delay_s <- 3 # TODO: constant
       prev_code <- prev_diffed_code <- ""
       prev_code_t <- Sys.time()
@@ -1013,10 +1036,10 @@ DR <- local({ # _D_ressing _R_oom
 
           if (!startsWith(code_to_eval, spec)) {
             return(build_error(
-              title = "Module configuration error",
+              title = "Module Configuration Error.",
               condition = base::simpleError(paste("Expected call to", spec)),
-              preface = "Module configuration error"
-            )) # FIXME: repeats message
+              preface = "Please refer to the diagnostic messages below."
+            ))
           }
 
           # FIXME(miguel): We should parse and evaluate arguments separately outside of a reactive environment
@@ -1073,18 +1096,36 @@ DR <- local({ # _D_ressing _R_oom
             module_output = function() list()
           )
 
-          # Executes server on a separate reactive domain and destroys its observers when reinvoked
-          server_return_val <- observer_dedup(
-            id = "unique_dedup_id",
-            ui_server_id[["server"]](afmm),
-            session = session
-          )
-
-          if (inherits(server_return_val, "try-error")) {
+          check_mod_fn <- ui_server_id[["meta"]][["check_mod_fn"]]
+          early_error_messages <- check_mod_fn(afmm, datasets())
+          
+          if (length(early_error_messages) == 0) {
+            server_return_val <- try(
+              # Executes server on a separate reactive domain and destroys its observers when reinvoked
+              observer_dedup(
+                id = "unique_dedup_id",
+                ui_server_id[["server"]](afmm),
+                session = session
+              ),
+              silent = TRUE
+            )
+            
+            if (inherits(server_return_val, "try-error")) {
+              return(build_error(
+                title = "Module Development Error",
+                condition = attr(server_return_val, "condition"),
+                preface = paste0("Please report the following error to ", get_package_maintainer_name(), "."),
+              ))
+            }
+          } else {
+            message_text <- paste(
+              paste("\u2022", early_error_messages), 
+              collapse = "\n"
+            )
             return(build_error(
-              title = "Module Development Error",
-              condition = attr(server_return_val, "condition"),
-              preface = paste0("Please report the following error to ", get_package_maintainer_name(), "."),
+              title = "Module Configuration Error",
+              condition = base::simpleError(message_text),
+              preface = paste0("Please refer to the diagnostic messages below."),
               ui = ui
             ))
           }
@@ -1105,8 +1146,8 @@ DR <- local({ # _D_ressing _R_oom
           error_context <- paste(deparse(error$condition[["call"]]), collapse = "\n")
 
           ui <- list(
-            CM$message_well(error$title, error$preface, color = "#f4d7d7"),
-            shiny::p("Message is:"),
+            message_well(error$title, error$preface, color = "#f4d7d7"),
+            shiny::p("Messages are:"),
             shiny::pre(error_message),
             shiny::p("And happened in the vicinity of:"),
             shiny::pre(error_context),
