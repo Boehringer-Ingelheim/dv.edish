@@ -1,5 +1,6 @@
-# dv.edish 2.1.0-9000
+# dv.edish 2.1.0-9001
 
+- [NOT USER-FACING] Call EEF from dv.manager.
 - [NOT USER-FACING] Address dv.manager deprecation warning messages.
 
 # dv.edish 2.1.0
