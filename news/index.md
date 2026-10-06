@@ -1,5 +1,10 @@
 # Changelog
 
+## dv.edish 2.1.1
+
+- \[NOT USER-FACING\] Call EEF from dv.manager.
+- \[NOT USER-FACING\] Address dv.manager deprecation warning messages.
+
 ## dv.edish 2.1.0
 
 - The user may switch the x- and/or y-axis between normalized values and
