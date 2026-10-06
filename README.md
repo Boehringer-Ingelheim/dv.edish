@@ -90,7 +90,7 @@ module_list <- list(
 dv.manager::run_app(
   data = list("demo" = list("dm" = dm, "lb" = lb)),
   module_list = module_list,
-  filter_data = "dm"
+  filter_dataset_name = "dm"
 )
 ```
 
